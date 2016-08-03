@@ -1,0 +1,34 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Materiais
+
+@{
+    ViewBag.Title = "Detalhe Material";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Materiais", "Administrador")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe Material</h2>
+</div>
+<hr />
+<br />
+
+    <div class="dl-horizontal">
+       
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Descrição:")
+                @Html.DisplayFor(model => model.descricao)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Tempo:")
+                @{ string valor = String.Format("{0:#,###,###,###}", Model.tempoMedioDecomposicao); }
+                @Html.DisplayFor(model => valor) ano(s)
+            </span>
+        </div>
+
+    </div>

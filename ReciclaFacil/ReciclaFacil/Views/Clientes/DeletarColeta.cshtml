@@ -1,0 +1,60 @@
+﻿@model ReciclaFacil.Models.Entities_RF.ClientesColetas
+
+@{
+    ViewBag.Title = "Deletar Coleta";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Clientes")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Remover Coleta</h2>
+</div>
+<hr />
+<br />
+
+<h4>Desejar remover essa coleta?</h4>
+<br />
+<div>
+    <div class="col-md-2 col-sm-3 col-xs-6">
+        @Html.Label("Data:", htmlAttributes: new { @style = "font-weight: bold" })
+
+        @{
+            string data = Model.Coletas.horaAgendada.Value.ToShortDateString();
+        }
+        @Html.DisplayFor(model => data)
+    </div>
+    <div class="col-md-2 col-sm-3 col-xs-6">
+        @Html.Label("Horário:", htmlAttributes: new { @style = "font-weight: bold" })
+        @{
+            string hora = Model.Coletas.horaAgendada.Value.ToShortTimeString();
+        }
+        @Html.DisplayFor(model => hora)
+    </div>
+    <div class="col-md-4 col-sm-6 col-xs-12" style="float: none;">
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th class="col-md-11">
+                    @Html.Label("Materiais da coleta:")
+                </th>
+            </tr>
+
+            @foreach (var item in Model.MateriaisColetados)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Materiais.descricao)
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        <div class="col-md-offset-3 col-sm-offset-4">
+            <input type="submit" value="Remover" class="btn btn-primary" />
+        </div>
+    }
+</div>

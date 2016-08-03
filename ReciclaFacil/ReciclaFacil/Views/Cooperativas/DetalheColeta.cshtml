@@ -1,0 +1,237 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Coletas
+
+@{
+    ViewBag.Title = "Detalhe da Coleta";
+
+    var aba = ViewBag.aba;
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Cooperativas")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe da Coleta</h2>
+</div>
+<hr />
+
+<div>
+    
+    <div class="dl-horizontal">
+        <div>
+            <span style="margin-right: 60px;">
+                <strong>@Html.Label("Data:")</strong>
+                @{
+                    string data = Model.horaAgendada.Value.ToShortDateString();
+                }
+                @Html.DisplayFor(model => data)
+            </span>
+            <span>
+                <strong>@Html.Label("Horário:")</strong>
+                @{
+                    string hora = Model.horaAgendada.Value.ToShortTimeString() + " hs";
+                }
+                @Html.DisplayFor(model => hora)
+            </span>
+        </div>
+        <br />
+        <div>
+            <span style="margin-right: 60px;">
+                <strong>@Html.Label("Situação:")</strong>
+                @if (Model.coletado == "A")
+            {
+                    <span>Aguardando </span>
+                }
+                else if (Model.coletado == "I")
+                {
+                    <span>Coletando</span>
+                } 
+                else {
+                    <span>Finalizada</span>
+                }
+            </span> 
+            <span>
+                @if (Model.coletado == "A") { 
+                <button type="button" title="Iniciar Coleta" class="btn-xs btn-primary" style="position:absolute" onclick="location.href='@Url.Action("IniciarColeta", "Cooperativas", new { coletaId = Model.coletaId })'">
+                    Iniciar
+                </button>
+                }
+                @if (Model.coletado == "I")
+                {
+                <button type="button" title="Finalizar Coleta" class="btn-xs btn-primary" style="position:absolute" onclick="location.href='@Url.Action("FinalizarColeta", "Cooperativas", new { coletaId = Model.coletaId })'">
+                    Finalizar
+                </button>
+                }
+            </span>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <!--Funcionarios-->
+        <li role="presentation" class='@( (aba == null || aba == 1) ? "active" : "" )'>
+            <a href="#funcionarios" aria-controls="funcionarios" role="tab" data-toggle="tab">Funcionários</a>
+        </li>
+        <!--Caminhoes-->
+        <li role="presentation" class='@(aba == 2 ? "active" : "" )'>
+            <a href="#caminhoes" aria-controls="caminhoes" role="tab" data-toggle="tab">Caminhões</a>
+        </li>
+        <!--Clientes-->
+        <li role="presentation" class='@(aba == 3 ? "active" : "" )'>
+            <a href="#clientes" aria-controls="clientes" role="tab" data-toggle="tab">Clientes</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        
+        <!--Funcionarios-->
+        <div role="tabpanel" class='@( (aba == null || aba == 1) ? "tab-pane active" : "tab-pane" )' id="funcionarios">
+            <p>
+                <button type="button" title="Associar Funcionarios" class="btn btn-primary" onclick="location.href='@Url.Action("AssociarFuncionario", "Cooperativas", new { coletaId = Model.coletaId})'">
+                    <span class="glyphicon glyphicon-plus"  />
+                </button>
+            </p>
+            @if (Model.Funcionarios == null)
+            {
+                <div class="panel-info">
+                    <h4 class="text-muted">Nenhum funcionário associado a coleta ainda!</h4>
+                </div>
+            }
+            else {
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                            <th>
+                                Nome:
+                            </th>
+                            <th>
+                                Nascimento:
+                            </th>
+                            <th></th>
+                        </tr>
+                        @foreach (var item in Model.Caminhoes)
+                        {
+                            <tr class="linha" onclick="location.href='@Url.Action("DetalheCaminhao", new { id = item.caminhaoId, coletaId = Model.coletaId, urlRetorno = "DetalheColeta" })'">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.placa)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.descricao)
+                                </td>
+                                <td>
+                                    @Html.ActionLink(" ", "DesassociarCaminhao", new { caminhaoId = item.caminhaoId, coletaId = Model.coletaId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            }
+
+        </div>
+        
+        <!--Caminhoes-->
+        <div role="tabpanel" class='@( aba == 2 ? "tab-pane active" : "tab-pane" )' id="caminhoes">
+            <p>
+                <button type="button" title="Associar Caminhao" class="btn btn-primary" onclick="location.href='@Url.Action("AssociarCaminhoes", "Cooperativas", new { coletaId = Model.coletaId })'">
+                    <span class="glyphicon glyphicon-plus" ></span>
+                </button>
+            </p>
+            @if (Model.Caminhoes.Count() == 0)
+            {
+                <h4 class="text-muted">Nenhum caminhão foi associado a coleta ainda!</h4>
+            }
+            else {
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Placa:
+                            </th>
+                            <th class="col-md-8 col-sm-8 col-xs-9">
+                                Descrição:
+                            </th>
+                            <th class="col-md-2 col-sm-2 col-xs-1"></th>
+                        </tr>
+
+                        @foreach (var item in Model.Caminhoes)
+                        {
+                            <tr class="linha" onclick="location.href='@Url.Action("DetalheCaminhao", new { id = item.caminhaoId, coletaId = Model.coletaId, urlRetorno = "DetalheColeta" })'">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.placa)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.descricao)
+                                </td>
+                                <td>
+                                    @Html.ActionLink(" ", "DesassociarCaminhao", new { caminhaoId = item.caminhaoId, coletaId = Model.coletaId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+                </div>
+            }
+
+        </div>
+
+        <!--Clientes-->
+        <div role="tabpanel" class='@( aba == 3 ? "tab-pane active" : "tab-pane" )' id="clientes">
+            
+            @if (Model.ClientesColetas.Count() == 0)
+            {
+                <h4 class="text-muted">Nenhum cliente agendado ainda!</h4>
+            }
+            else {
+                <br />
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Nome:
+                            </th>
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Celular:
+                            </th>
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Tipo:
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model.ClientesColetas)
+                        {
+                            <tr class="linha" onclick="location.href='@Url.Action("DetalheCliente", new { id = item.clienteId, coletaId = Model.coletaId, urlRetorno = "DetalheColeta" })'">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Clientes.nome)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Clientes.celular)
+                                </td>
+                                <td>
+                                    @switch (item.Clientes.tipo)
+                                    {
+                                        case "D":
+                                            <span>Doador</span>
+                                            break;
+                                        case "V":
+                                            <span>Vendedor</span>
+                                            break;
+                                    }    
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+

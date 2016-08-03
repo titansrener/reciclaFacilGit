@@ -1,0 +1,52 @@
+﻿@model ReciclaFacil.Models.RotasViewModel
+
+@{
+    ViewBag.Title = "Rotas da Coleta";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Rotas da Coleta</h2>
+</div>
+<hr />
+@if (Model.faltaCliente)
+{
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="text-center">Mapa:</span>
+        </div>
+    
+        <div class="panel-body">
+            <div id="mapa" style="width: 100%; height: 350px;"></div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="text-center">Direções:</span>
+        </div>
+
+        <div class="panel-body">
+            <div id="trajeto-texto" style="width: 100%; height: 200px; overflow-y:auto"></div>
+        </div>
+    </div>
+
+    <!-- Maps API Javascript -->
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDrQlANm80TLHu3G9Rw_FZ3TQc3T9jOC9w"></script>
+
+
+
+    <!-- Arquivo de inicialização do mapa -->
+    <script src="~/Scripts/ScriptRota/rotas.js"></script>
+
+    <script>
+        var clientes = @Html.Raw(Json.Encode(Model.clientesCoord));
+        initialize(@Html.Raw(Json.Encode(Model.cooperativaCoord)), clientes);
+    </script>
+}
+else {
+    <h4 class="text-muted">Todos os clientes já foram coletados ou não existem clientes agendados!</h4>
+}

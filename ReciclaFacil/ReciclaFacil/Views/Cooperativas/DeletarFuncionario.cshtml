@@ -1,0 +1,57 @@
+﻿@model ReciclaFacil.Models.RegFuncionarioViewModel
+
+@{
+    ViewBag.Title = "Deletar Funcionario";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" onclick="location.href='@Url.Action("Funcionarios", "Cooperativas")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Remover Funcionário</h2>
+</div>
+<hr />
+<br />
+
+<h4>Deseja remover esse funcionário?</h4>
+<div>
+    <br />
+    <div class="dl-horizontal">
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelFor(model => model.nome)
+                @Html.DisplayFor(model => model.nome)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelForModel("Data Nasc.:")
+                @{
+                    string data = Model.dataNascimento.ToShortDateString();
+                }
+                @Html.DisplayFor(model => data)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelFor(model => model.email)
+                @Html.DisplayFor(model => model.email)
+            </span>
+        </div>
+
+    </div>
+
+    <br />
+    
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-offset-2 col-sm-offset-3">
+            <input type="submit" value="Remover" class="btn btn-primary" />
+        </div>
+    }
+</div>

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ReciclaFacil.Models.Entities_RF.Materiais>
+
+@{
+    ViewBag.Title = "Materiais";
+}
+
+<br />
+<div>
+    <button type="button" title="Novo Material" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("CriarMaterial", "Administrador")'">
+        <span class="glyphicon glyphicon-plus" title="Criar Coleta"></span>
+    </button>
+    <h2 class="text-center">Materiais</h2>
+</div>
+<hr />
+<br />
+
+@if (Model.Count() == 0)
+{
+    <h4 class="text-muted">Nenhum material foi cadastrado ainda!</h4>
+}
+else {
+    <div class="table-responsive">
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th>
+                    @Html.Label("Descrição:")
+                </th>
+                <th>
+                    @Html.Label("Tempo:")
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr class="linha" onclick="location.href='@Url.Action("DetalheMaterial", "Administrador", new { id = item.materialId })'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.descricao)
+                    </td>
+                    <td>
+                        @{ string valor = String.Format("{0:#,###,###,###}", item.tempoMedioDecomposicao); }
+                        @Html.DisplayFor(model => valor) ano(s)
+                    </td>
+                    <td>
+                        @Html.ActionLink(" ", "EditarMaterial", new { id = item.materialId }, new { @class = "glyphicon glyphicon-pencil", @title = "Editar", @style = "margin-right:20px;" }) 
+                        @Html.ActionLink(" ", "DeleteMaterial", new { id = item.materialId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}

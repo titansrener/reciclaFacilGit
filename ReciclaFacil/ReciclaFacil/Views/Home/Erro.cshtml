@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "Erro";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar para Home" class="btn btn-primary" style="position:absolute" onclick="location.href='@Url.Action("Index", "Home")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+</div>
+<br />
+
+<h1>Ops! Ocorreu um erro.</h1>
+<h4 class="text-muted">@ViewBag.Erro</h4>
+

@@ -1,0 +1,262 @@
+﻿
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    overflow: hidden;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea,
+button {
+    max-width: 280px;
+    border-radius: 15px !important;
+}
+
+.linha:hover, tr.success:hover td,  tr.warning:hover td {
+    cursor: pointer;
+    background-color: lightblue !important; 
+}
+
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;     
+    padding: 10px;
+}
+
+.tab-content .tab-pane {
+    max-height: 330px;
+    overflow-y: auto;
+}
+
+.nav-tabs {
+    margin-bottom: 0;
+}
+
+table {
+    border: solid 1px #428bca;
+}
+
+.table-head {
+    margin-bottom: 0px !important;
+}
+
+
+td {
+    border-top: solid 1px #428bca !important;
+}
+
+.notifcacaoTitle:hover, .notifcacaoTitle:focus{
+    color: black !important;
+}
+
+/* Preloader */
+
+#preloader {
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background-color:#fff; /* change if the mask should have another color then white */
+    z-index:99; /* makes sure it stays on top */
+}
+
+#status {
+    width:200px;
+    height:200px;
+    position:absolute;
+    left:50%; /* centers the loading animation horizontally one the screen */
+    top:50%; /* centers the loading animation vertically one the screen */
+    background-image:url(../img/loading.gif); /* path to your loading animation */
+    background-repeat:no-repeat;
+    background-position:center;
+    margin:-100px 0 0 -100px; /* is width and height divided by two */
+}
+
+.jumbotron {
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 0px !important;
+    background-color: #428bca !important;
+    color: white !important;
+}
+
+.container-body {
+   margin-bottom: 40px;
+}
+
+.rodape {
+    background-color: white !important;
+}
+
+a:hover, a:active, a:focus, a.glyphicon:hover{
+    text-decoration: none;
+    color: #fff;
+}
+
+a.glyphicon {
+    color: black;
+}
+
+/* MENU */
+html,
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  line-height: 1.4;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  overflow: hidden;
+  *zoom: 1;
+  /*margin: 0 20px;*/
+}
+
+.site-content {
+  padding-top: 66px;
+}
+
+/* HEADER */
+.header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 66px;
+  line-height: 66px;
+  color: #fff;
+  background-color: #428bca;
+}
+
+.header__logo {
+  font-weight: 700;
+  padding: 0 25px;
+  float: left;
+}
+
+.header__logo:hover {
+    text-decoration: none !important;
+    color: #fff;
+    zoom: 1.5;
+}
+
+/* MENU */
+.menu {
+  float: left;
+}
+.menu a {
+  padding: 0 10px;
+}
+.menu a:hover {
+  color: #c5cae9;
+}
+
+/* RESPONSIVE */
+.site-pusher,
+.site-container {
+  height: 100%;
+}
+
+.site-container {
+  overflow: hidden;
+}
+
+.site-pusher {
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transform: translateX(0px);
+  transform: translateX(0px);
+}
+
+.site-content {
+  position: absolute;
+  top: 66px;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  padding-top: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.header {
+  position: static;
+}
+
+.header__icon {
+  position: relative;
+  display: block;
+  float: left;
+  width: 50px;
+  height: 66px;
+  cursor: pointer;
+}
+.header__icon:after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 1rem;
+  height: 0;
+  top: 16px;
+  left: 15px;
+  box-shadow: 0 10px 0 1px #fff, 0 16px 0 1px #fff, 0 22px 0 1px #fff;
+}
+
+.menu {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #428bca;
+  /*    overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;*/
+  width: 250px;
+  -webkit-transform: translateX(-250px);
+  transform: translateX(-250px);
+}
+.menu a {
+  display: block;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  /*border-bottom: 1px solid #3f51b5;*/
+}
+
+.with--sidebar .site-pusher {
+  -webkit-transform: translateX(250px);
+  transform: translateX(250px);
+}
+.with--sidebar .site-cache {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* FIM MENU */

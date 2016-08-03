@@ -1,0 +1,63 @@
+﻿@model ReciclaFacil.Models.AssociarFuncionarioViewModel
+
+@{
+    ViewBag.Title = "AssociarFuncionario";
+}
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Associar Funcionario</h2>
+</div>
+<hr />
+<br />
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @if (Model.funcionarios.Count > 0)
+    {
+        <h4>Selecione os funcionários para a coleta:</h4>
+        <div style="max-width: 470px">
+            <div class="text-danger col-md-offset-2">
+                @ViewBag.Aviso
+            </div>
+
+            <table class="table">
+                <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                    <th class="col-md-11">
+                        @Html.Label("Nome:")
+                    </th>
+                    <th></th>
+                </tr>
+                @for (var i = 0; i < Model.funcionarios.Count; i++)
+                {
+                    <tr>
+                        @Html.HiddenFor(it => it.funcionarios[i].funcionarioId)
+                        @Html.HiddenFor(it => it.funcionarios[i].nome)
+                        <td>@Html.DisplayFor(it => it.funcionarios[i].nome)</td>
+                        <td>@Html.CheckBoxFor(it => it.funcionarios[i].selecionado)</td>
+                    </tr>
+                }
+            </table>
+
+        </div>
+        
+        <div class="form-group">
+            <div class="col-md-offset-4 col-md-8">
+                <input type="submit" value="Associar" class="btn btn-primary" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="panel-info">
+            <h4 class="text-muted">Não existe funcionários cadastrados ou já associou todos!</h4>
+        </div>
+    }
+    </div>
+}

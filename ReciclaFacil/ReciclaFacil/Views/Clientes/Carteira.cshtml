@@ -1,0 +1,66 @@
+﻿@model IEnumerable<ReciclaFacil.Models.Entities_RF.Carteiras>
+
+@{
+    ViewBag.Title = "Carteira";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Clientes")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Minha Carteira</h2>
+</div>
+<hr />
+<br />
+
+@if (Model.Count() > 0)
+{
+    <div style="max-width: 600px; margin:auto;">
+        <div>
+            @{ string data = Model.First().dataUltimaMovimentacao.Value.ToShortDateString(); }
+            @{ decimal saldo = ViewBag.total; }
+            <span class="pull-left" style="margin-left:5%;">@Html.Label("Ultimo registro: ") @Html.DisplayFor(model => data)</span> 
+            <span class="pull-right" style="margin-right:5%;">@Html.Label("Saldo atual: ") @Html.DisplayFor(model => saldo)</span>
+        </div>
+        <br />
+        <br />
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th>
+                    @Html.Label("Data de registro:")
+                </th>
+                <th>
+                    @Html.Label("Hora de registro:")
+                </th>
+                <th>
+                    @Html.Label("Saldo:")
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @{ data = item.dataUltimaMovimentacao.Value.ToShortDateString(); }
+                        @Html.DisplayFor(modelItem => data)
+                    </td>
+                    <td>
+                        @{ string hora = item.dataUltimaMovimentacao.Value.ToShortTimeString(); }
+                        @Html.DisplayFor(modelItem => hora)
+                    </td>
+                    <td>
+                        @Html.Label("R$ ")
+                        @Html.DisplayFor(modelItem => item.saldo)
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}
+else {
+    <div class="panel-info">
+        <h4 class="text-muted">Nenhuma coleta realizada ainda!</h4>
+    </div>
+}

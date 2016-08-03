@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNet.Identity
+@using ReciclaFacil.Models
+
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+    @Html.AntiForgeryToken()
+
+    <div class="pull-right" style="margin-right:15px;">
+            @{ 
+                UserInfo user = new UserInfo();
+            }
+            @Html.ActionLink("Olá " + user.getNome(User.Identity.GetUserId()) + ",", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @style = "margin-right:10px;" })
+        <a href="javascript:document.getElementById('logoutForm').submit()" class="pull-right">Sair</a>
+    </div>
+    }
+}
+else
+{
+    <div class="pull-right" style="margin-right: 15px;">
+        @Html.ActionLink("Entrar", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @style = "margin-right:10px;" })
+        <div class="dropdown pull-right">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                Registre-se
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("Cliente", "RegisterCliente", "Account")</li>
+                <li>@Html.ActionLink("Empresa", "RegisterEmpresa", "Account")</li>
+                <li>@Html.ActionLink("Cooperativa", "RegisterCooperativa", "Account")</li>
+            </ul>
+        </div>
+    </div>
+}

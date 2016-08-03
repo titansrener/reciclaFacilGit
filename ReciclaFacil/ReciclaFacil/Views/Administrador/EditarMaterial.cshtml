@@ -1,0 +1,46 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Materiais
+
+@{
+    ViewBag.Title = "Editar Material";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Materiais", "Administrador")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Editar Material</h2>
+</div>
+<hr />
+<br />
+
+@using (Html.BeginForm("EditarMaterial", "Administrador", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.materialId)
+    
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("Descrição:", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-11">
+                @Html.EditorFor(model => model.descricao, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.descricao, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Tempo:", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-11">
+                @Html.EditorFor(model => model.tempoMedioDecomposicao, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.tempoMedioDecomposicao, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-9">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+

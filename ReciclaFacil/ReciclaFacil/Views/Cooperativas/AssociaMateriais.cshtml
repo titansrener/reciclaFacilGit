@@ -1,0 +1,64 @@
+﻿@model List<ReciclaFacil.Models.Entities_RF.Materiais>
+
+@{
+    ViewBag.Title = "Associar Materiais";
+}
+
+@using (Html.BeginForm("AssociaMateriais", "Cooperativas", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <br />
+    <div>
+        <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Materiais", "Cooperativas")'">
+            <span class="glyphicon glyphicon-arrow-left" />
+        </button>
+        <h2 class="text-center">Associar Materiais</h2>
+    </div>
+    
+    <hr />
+    <br />
+
+    if (Model.Count > 0)
+    {
+        <h4>Selecione os materiais com que trabalha:</h4>
+        <div style="max-width: 470px">
+            <h5 class="text-danger">@ViewBag.erro</h5>
+
+            <table class="table">
+                <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                    <th class="col-md-11">
+                        @Html.Label("Descrição:")
+                    </th>
+                    <th></th>
+                    @for (var i = 0; i < Model.Count; i++)
+                    {
+                    <tr>
+                        @Html.HiddenFor(it => it[i].materialId)
+                        @Html.HiddenFor(it => it[i].descricao)
+                        @Html.HiddenFor(it => it[i].tempoMedioDecomposicao)
+                        <td>
+                            @Html.DisplayFor(it => it[i].descricao)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(it => it[i].selecionado)
+                        </td>
+                    </tr>
+                    }
+                </table>
+
+            </div>
+
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-8">
+                    <input type="submit" value="Associar" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    } else
+    {
+        <div class="panel-info">
+            <h4 class="text-muted">Não existe materiais cadastrados ou já está associado a todos!</h4>
+        </div>
+    }
+}

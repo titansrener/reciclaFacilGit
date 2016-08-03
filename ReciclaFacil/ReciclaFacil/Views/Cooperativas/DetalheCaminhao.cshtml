@@ -1,0 +1,37 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Caminhoes
+
+@{
+    ViewBag.Title = "Detalhes do Caminhão";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe Caminhão</h2>
+</div>
+<hr />
+<br />
+    <div class="dl-horizontal">
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Cooperativa:")
+                @Html.DisplayFor(model => model.Cooperativas.razaoSocial)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Placa:")
+                @Html.DisplayFor(model => model.placa)
+            </span>
+        </div> 
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Descrição:")
+                @Html.DisplayFor(model => model.descricao)
+            </span>
+        </div>     
+    </div>

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ReciclaFacil.Models.Entities_RF.Caminhoes>
+
+@{
+    ViewBag.Title = "Caminhões";
+}
+
+<br />
+<div>
+    <button type="button" title="Novo Caminhao" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("CriarCaminhao", "Cooperativas")'">
+        <span class="glyphicon glyphicon-plus" ></span>
+    </button>
+    <h2 class="text-center">Caminhões</h2>
+</div>
+<hr />
+<br />
+
+@if (Model.Count() == 0)
+{
+ <h4 class="text-muted">Nenhum caminhão foi cadastrado ainda!</h4>
+}
+else {
+    <div class="table-responsive">
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th class="col-md-2 col-sm-2 col-xs-2">
+                    Placa:
+                </th>
+                <th class="col-md-8 col-sm-8 col-xs-9">
+                    Descrição:
+                </th>
+                <th class="col-md-2 col-sm-2 col-xs-1"></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr class="linha" onclick="location.href='@Url.Action("DetalheCaminhao", new { id = item.caminhaoId })'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.placa)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.descricao)
+                    </td>
+                    <td>
+                        @Html.ActionLink(" ","EditarCaminhao", new { id = item.caminhaoId }, new { @class = "glyphicon glyphicon-pencil", @title = "Editar", @style = "margin-right: 30px;" } ) 
+                        @Html.ActionLink(" ", "DeletarCaminhao", new { id = item.caminhaoId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}
+

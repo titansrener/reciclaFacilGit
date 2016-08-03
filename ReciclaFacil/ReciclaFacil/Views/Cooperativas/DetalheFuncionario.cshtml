@@ -1,0 +1,43 @@
+﻿@model ReciclaFacil.Models.RegFuncionarioViewModel
+
+@{
+    ViewBag.Title = "Detalhe Funcionario";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe Funcionario</h2>
+</div>
+<hr />
+<br />
+
+    <div class="dl-horizontal">
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelFor(model => model.nome)
+                @Html.DisplayFor(model => model.nome)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelForModel("Data Nasc.:")
+                @{
+                    string data = Model.dataNascimento.ToShortDateString();
+                }
+                @Html.DisplayFor(model => data)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelFor(model => model.email)
+                @Html.DisplayFor(model => model.email)
+            </span>
+        </div>
+
+    </div>

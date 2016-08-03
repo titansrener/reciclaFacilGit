@@ -1,0 +1,196 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Coletas
+
+@{
+    ViewBag.Title = "Detalhe da Coleta";
+
+    var aba = ViewBag.aba;
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Funcionarios")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe da Coleta</h2>
+</div>
+<hr />
+
+<div>
+
+    <div class="dl-horizontal">
+        <div>
+            <span style="margin-right: 60px;">
+                <strong>@Html.Label("Data:")</strong>
+                @{
+                    string data = Model.horaAgendada.Value.ToShortDateString();
+                }
+                @Html.DisplayFor(model => data)
+            </span>
+            <span>
+                <strong>@Html.Label("Horário:")</strong>
+                @{
+                    string hora = Model.horaAgendada.Value.ToShortTimeString() + " hs";
+                }
+                @Html.DisplayFor(model => hora)
+            </span>
+        </div>
+        <br />
+        <div>
+            <span>
+                <strong>@Html.Label("Situação:")</strong>
+                @if (Model.coletado == "A")
+            {
+                    <span>Aguardando </span>
+                }
+                else if (Model.coletado == "I")
+                {
+                    <span>Coletando</span>
+                }
+                else {
+                    <span>Finalizada</span>
+                }
+            </span>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <!--Clientes-->
+        <li role="presentation" class='@( (aba == null || aba == 1) ? "active" : "" )'>
+            <a href="#clientes" aria-controls="clientes" role="tab" data-toggle="tab">Clientes</a>
+        </li>
+        <!--Caminhoes-->
+        <li role="presentation" class='@(aba == 2 ? "active" : "" )'>
+            <a href="#caminhoes" aria-controls="caminhoes" role="tab" data-toggle="tab">Caminhões</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+
+        <!--Clientes-->
+        <div role="tabpanel" class='@( (aba == null || aba == 1) ? "tab-pane active" : "tab-pane" )' id="clientes">
+
+            @if (Model.ClientesColetas.Count() == 0)
+            {
+                <h4 class="text-muted">Nenhum cliente agendado ainda!</h4>
+            }
+            else {
+                <br />
+                if (Model.coletado == "A")
+                {
+                    <h4>Selecione um cliente:</h4>
+                } else if(Model.coletado == "I")
+                {
+                    <h4>Selecione um cliente para coletar</h4>
+                }
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Nome:
+                            </th>
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Celular:
+                            </th>
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Tipo:
+                            </th>
+                            <th class="col-md-1 col-sm-1 col-xs-1"></th>
+                        </tr>
+
+                        @foreach (var item in Model.ClientesColetas.OrderBy(x => x.coletado))
+                                {
+                                <tr onclick="location.href='@Url.Action("DetalheCliente", new { clienteId = item.clienteId, coletaId = Model.coletaId, urlRetorno = "DetalheColeta" })'"
+                                    class='@( (item.coletado == "S") ?
+                                        "linha success"
+                                    : (item.coletado == "N") ?
+                                        "linha warning"
+                                    :   "linha" )'>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Clientes.nome)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Clientes.celular)
+                                    </td>
+                                    <td>
+                                        @switch (item.Clientes.tipo)
+                                            {
+                                                case "D":
+                                            <span>Doador</span>
+                                                    break;
+                                                case "V":
+                                            <span>Vendedor</span>
+                                                    break;
+                                            }
+                                    </td>
+                                    @if (item.coletado == "S")
+                                    {
+                                        <td>
+                                            <span class="glyphicon glyphicon-ok-sign" title="Coletado"/>
+                                        </td>
+                                    }
+                                    else if (item.coletado == "N")
+                                    {
+                                        <td>
+                                            <span class="glyphicon glyphicon-remove-sign" title="Não Coletado"/>
+                                        </td>
+                                    } else
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                                }
+
+                    </table>
+                </div>
+            }
+
+        </div>
+
+        <!--Caminhoes-->
+        <div role="tabpanel" class='@( aba == 2 ? "tab-pane active" : "tab-pane" )' id="caminhoes">
+            @if (Model.Caminhoes.Count() == 0)
+            {
+                <h4 class="text-muted">Nenhum caminhão foi associado a coleta ainda!</h4>
+            }
+            else {
+                <br />
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                            <th class="col-md-2 col-sm-2 col-xs-2">
+                                Placa:
+                            </th>
+                            <th class="col-md-10 col-sm-10 col-xs-10">
+                                Descrição:
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model.Caminhoes)
+                            {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.placa)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.descricao)
+                                </td>
+                            </tr>
+                            }
+
+                    </table>
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>

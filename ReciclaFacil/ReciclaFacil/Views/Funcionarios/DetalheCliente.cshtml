@@ -1,0 +1,152 @@
+﻿@model ReciclaFacil.Models.DetalheClienteViewModel
+
+@{
+    ViewBag.Title = "Detalhe Cliente";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe Cliente</h2>
+</div>
+<hr />
+
+@using (Html.BeginForm())
+{
+
+    @Html.HiddenFor(model => model.cliente.clienteId)
+    @Html.HiddenFor(model => model.cliente.nome)
+    @Html.HiddenFor(model => model.cliente.tipo)
+    @Html.HiddenFor(model => model.cliente.endereco)
+    @Html.HiddenFor(model => model.cliente.telefone)
+    @Html.HiddenFor(model => model.cliente.celular)
+    @Html.HiddenFor(model => model.cliente.clienteId)
+    @Html.HiddenFor(model => model.coleta.coletaId)
+    @Html.HiddenFor(model => model.coleta.coletado)
+    @Html.HiddenFor(model => model.clienteColeta.coletado)
+
+
+    @Html.AntiForgeryToken()
+    <div class="dl-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Nome:")
+                @Html.DisplayFor(model => model.cliente.nome)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Endereço:")
+                @Html.DisplayFor(model => model.cliente.endereco)
+            </span>
+        </div>
+
+        <div class="clearfix">
+
+            <div class="pull-left">
+                <span style="margin-left: 20px;">
+                    @Html.Label("Telefone:")
+                    @if (Model.cliente.telefone == null)
+                    {
+                        <span>não informado</span>
+                    }
+                    @Html.DisplayFor(model => model.cliente.telefone)
+                </span>
+            </div>
+
+            <div class="pull-left">
+                <span style="margin-left: 20px;">
+                    @Html.Label("Celular:")
+                    @Html.DisplayFor(model => model.cliente.celular)
+                </span>
+            </div>
+
+        </div>
+
+        <br />
+        
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Materiais da coleta:</div>
+                @if (Model.coleta.coletado == "A" && Model.clienteColeta.coletado == "A")
+                {
+                    <div style="display: inline-table" class="panel-body">
+                        @{ var ultimo = Model.materiais.Last(); }
+                        @for (int i = 0; i < Model.materiais.Count; i++)
+                        {
+                            @Html.HiddenFor(it => it.materiais[i].clienteId)
+                            <span>@Html.DisplayFor(it => it.materiais[i].Materiais.descricao)</span>
+                            if (!Model.materiais[i].Equals(ultimo))
+                            {
+                                <span>, </span>
+                            }
+                            else {
+                                <span>.</span>
+                            }
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="panel-body">
+                        @for (int i = 0; i < Model.materiais.Count; i++)
+                        {
+                            @Html.HiddenFor(it => it.materiais[i].coletaId)
+                            @Html.HiddenFor(it => it.materiais[i].clienteId)
+                            @Html.HiddenFor(it => it.materiais[i].materialId)
+                            
+                            @Html.HiddenFor(it => it.materiais[i].Materiais.materialId)
+                            @Html.HiddenFor(it => it.materiais[i].Materiais.descricao)
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    @Html.DisplayFor(it => it.materiais[i].Materiais.descricao)
+                                </div>
+                                <div class="panel-body">
+                                    <div class="input-group" style = "max-width: 385px;">
+                                        <span class="input-group-addon" id="basic-addon1">Peso:</span>
+                                        @if (Model.clienteColeta.coletado != "A")
+                                        {
+                                            @Html.EditorFor(it => it.materiais[i].quantidade, new { htmlAttributes = new { @class = "form-control", @placeholder = "Ex.: 1,45", @style = "border-radius: 0px !important;", @onkeypress = "return funcao( this , event ) ;", @disabled = "disabled" } })
+                                        } else {
+                                            @Html.EditorFor(it => it.materiais[i].quantidade, new { htmlAttributes = new { @class = "form-control", @placeholder = "Ex.: 1,45", @style = "border-radius: 0px !important;", @onkeypress = "return funcao( this , event ) ;" } })
+                                        }
+                                        <span class="input-group-addon" id="basic-addon1">Kg.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                }
+
+            </div>
+        @if (Model.coleta.coletado == "I" && Model.clienteColeta.coletado == "A")
+        {
+            <div class="col-md-offset-10 col-md-2">
+                <input type="submit" value="Coletar" class="btn btn-primary" />
+            </div>
+        }
+        </div>
+
+    </div>
+}
+
+<script language="javascript">
+function funcao( obj , e )
+{
+    var tecla = ( window.event ) ? e.keyCode : e.which;
+    if ( tecla == 8 || tecla == 0 )
+        return true;
+    if ( tecla != 44 && tecla < 48 || tecla > 57 )
+        return false;
+}
+
+</script>
+
+
+    

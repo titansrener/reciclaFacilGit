@@ -1,0 +1,70 @@
+﻿@model ReciclaFacil.Models.AgendamentoViewModel
+
+@{
+    ViewBag.Title = "Agendar Coleta";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Clientes")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Agendar Coleta</h2>
+</div>
+<hr />
+<br />
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.coletaId, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3" })
+            <div class="col-md-9 col-sm-9">
+                @Html.DropDownListFor(model => model.coletaId, (IEnumerable<SelectListItem>)ViewBag.horario, "Selecionar", htmlAttributes: new { @class = "form-control", @style = "width:160px; padding-right:0px" })
+                @Html.ValidationMessageFor(model => model.coletaId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-5">
+                <h5 class="text-danger">@ViewBag.erro</h5>
+                <table class="table">
+                    <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                        <th class="col-md-11">
+                            @Html.Label("Selecione os materiais:")
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @for (var i = 0; i < Model.materiais.Count; i++)
+                {
+                        <tr>
+                            @Html.HiddenFor(it => it.materiais[i].materialId)
+                            @Html.HiddenFor(it => it.materiais[i].descricao)
+                            @Html.HiddenFor(it => it.materiais[i].tempoMedioDecomposicao)
+                            <td>
+                                @Html.DisplayFor(it => it.materiais[i].descricao)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(it => it.materiais[i].selecionado)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+
+        
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-8">
+                    <input type="submit" value="Agendar" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

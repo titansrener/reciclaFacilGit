@@ -1,0 +1,104 @@
+﻿@using ReciclaFacil.Models;
+@using ReciclaFacil.Models.Entities_RF;
+@using Microsoft.AspNet.Identity;
+@model IEnumerable<ReciclaFacil.Models.Entities_RF.Notificacoes>
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("index", "Home")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Notificações</h2>
+</div>
+<hr />
+<br />
+
+<div style="max-width: 700px; margin:auto;">
+    @if (Model.Count() > 0)
+    {
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            @foreach (var item in Model)
+            {
+                <div id='panel@(item.notificacaoId)' class= '@( (item.ativa == true) ? "panel panel-primary" : "panel panel-default" )'>
+                    @{ 
+                        string heading = "heading" + item.notificacaoId;
+                        string url = "#collapse" + item.notificacaoId;
+                        string idUrl = "collapse" + item.notificacaoId;
+                     }
+                    <div class="panel-heading" role="tab" id='@heading'>
+                        @{ var ativo = item.ativa == true ? 1 : 0 ; }
+                        <a id="title@(item.notificacaoId)" role="button" data-toggle="collapse" data-parent="#accordion" href='@url' aria-expanded="true" aria-controls="collapseOne" class='@(item.ativa == true ? "collapsed" : "collapsed notifcacaoTitle")' onclick="desativarNotificacao(@item.notificacaoId, @ativo)">
+                            <h4 class="panel-title">
+                                @item.dataHorario
+                            </h4>
+                        </a>
+                    </div>
+
+                    <div id='@idUrl' class="panel-collapse collapse" role="tabpanel" aria-labelledby='@heading'>
+                        <div class="panel-body">
+                            @item.descricao
+                            <br />
+                            <br />
+                            <span>
+                                @{ UserInfo user = new UserInfo();
+                                    ClientesColetas cc = item.Coletas.ClientesColetas.Where(x => x.clienteId == item.clienteId).First();
+                                    }
+                                @if (cc.coletado == "A" && user.getTipoCliente(User.Identity.GetUserId()) == "V" && item.tipo == "C")
+                                {
+                                    <span>Você aceita o valor?</span>
+                                    <button type="button" title="Aceitar Valor" class="btn-xs btn-primary" onclick="location.href='@Url.Action("AceitarValor", "Clientes", new { coletaId = item.coletaId })'">
+                                        Aceitar
+                                    </button>
+
+                                    <button type="button" title="Recusar Valor" class="btn-xs btn-primary" onclick="location.href='@Url.Action("RecusarValor", "Clientes", new { coletaId = item.coletaId })'">
+                                        Recusar
+                                    </button>
+                                }
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+            
+        </div>
+    }
+    else {
+        <div class="panel-info">
+            <h4 class="text-muted">Nenhuma notificação encontrada!</h4>
+        </div>
+    }
+    <br /><br />
+
+    
+</div>
+
+<script>
+    function desativarNotificacao(id, status) {
+        classe = document.getElementById('panel' + id).className;
+        if (status == 1 && classe == 'panel panel-primary') {
+            document.getElementById('panel' + id).className = 'panel panel-default notifcacaoTitle';
+            document.getElementById('title' + id).className = 'notifcacaoTitle';
+
+            $.ajax({
+                type: "POST",
+                url: "/Clientes/desativaNotificacao",
+                data: { "notificacaoID": id },
+                processData: true,
+                success:
+                function (resultado) {
+                    if (resultado == true) {
+                        atualizarNotificacoes();
+                    }
+                }
+            })
+        }
+
+        
+    };
+
+
+
+</script>

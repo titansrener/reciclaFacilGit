@@ -1,0 +1,223 @@
+﻿@using Microsoft.AspNet.Identity
+@using ReciclaFacil.Models
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Recicla Fácil Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="status">&nbsp;</div>
+    </div>
+
+    <div class="site-container">
+        <div class="site-pusher">
+
+            <header class="header">
+                @{
+                    UserInfo user = new UserInfo();
+                }
+                <a href="#" class="header__icon" id="header__icon"  title="Menu"></a>
+                @Html.ActionLink("Recicla Fácil", "Index", "Home", new { area = "" }, new { @class = "header__logo" })
+                
+                <span class="hidden-sm hidden-xs">
+                    @Html.Partial("_LoginPartial")
+                </span>
+
+                @if (User.Identity.IsAuthenticated && user.getRoles(User.Identity.GetUserId()) == "Cliente")
+                {
+                    <span class="pull-right">
+                        <button type="button" class="btn btn-primary" style="margin-right: 15px;"
+                                onclick="location.href='@Url.Action("Notificacoes", "Clientes")'">
+                            <span id="notificacoesCount">
+                                @{
+                                    Html.RenderPartial(Url.Content("../Clientes/notificacoesCount"), 0);
+                                }
+                            </span>
+                        </button>
+                    </span>
+                    <script type="text/javascript"
+                            src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+                            <script type="text/javascript">
+                        function atualizarNotificacoes() {
+                            $.ajax(
+                            {
+                                type: 'GET',
+                                url: '../Clientes/notificacoesCount',
+                                dataType: 'html',
+                                cache: false,
+                                async: true,
+                                success: function (data) {
+                                    $('#notificacoesCount').removeData();
+                                    $('#notificacoesCount').html(data);
+                                }
+                            });
+                        }
+                        atualizarNotificacoes();
+                        $(document).ready(function () {
+                            setInterval(atualizarNotificacoes, 5000); // 5 segundos
+                        });
+                    </script>
+                }
+
+                <nav class="menu">
+                    
+                    <h3 class="text-center">Menu</h3>
+                    <hr />
+                    
+                    @Html.ActionLink("Home", "Index", "Home")
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        if (user.getRoles(User.Identity.GetUserId()) == "Cliente")
+                        {
+                            @Html.ActionLink("Coletas", "Index", "Clientes")
+                            if (user.getTipoCliente(User.Identity.GetUserId()) == "V") {
+                                @Html.ActionLink("Carteira", "Carteira", "Clientes")
+                            }
+                        }
+                        else if (user.getRoles(User.Identity.GetUserId()) == "Funcionario")
+                        {
+                            @Html.ActionLink("Coletas", "Index", "Funcionarios")
+                        }
+                        else if (user.getRoles(User.Identity.GetUserId()) == "Cooperativa")
+                        {
+                            @Html.ActionLink("Coletas", "Index", "Cooperativas")
+                            @Html.ActionLink("Funcionários", "Funcionarios", "Cooperativas")
+                            @Html.ActionLink("Caminhões", "Caminhoes", "Cooperativas")
+                            @Html.ActionLink("Materiais", "Materiais", "Cooperativas")
+                        }
+                        else if (user.getRoles(User.Identity.GetUserId()) == "Admin")
+                        {
+                            @Html.ActionLink("Materiais", "Materiais", "Administrador")
+                        }
+                        <span class="hidden-lg hidden-md">
+                            @Html.ActionLink("Olá " + user.getNome(User.Identity.GetUserId()) + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+                        </span>
+                        <a href="javascript:document.getElementById('logoutForm').submit()">Sair</a>
+                        
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Entrar", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+                    }
+                </nav>
+
+            </header>
+
+            @*<div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            @Html.ActionLink("Recicla Fácil", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </div>
+                        <div class="navbar-collapse collapse">
+                            @{
+                                UserInfo user = new UserInfo();
+                            }
+                            <ul class="nav navbar-nav">
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                @if (User.Identity.IsAuthenticated)
+                        {
+                            if (user.getRoles(User.Identity.GetUserId()) == "Cliente")
+                            {
+                                <li>@Html.ActionLink("Coletas", "Index", "Clientes")</li>
+                            }
+                            else if (user.getRoles(User.Identity.GetUserId()) == "Funcionario")
+                            {
+                                <li>@Html.ActionLink("Coletas", "Index", "Funcionarios")</li>
+                            }
+                            else if (user.getRoles(User.Identity.GetUserId()) == "Cooperativa")
+                            {
+                                <li>@Html.ActionLink("Coletas", "Index", "Cooperativas")</li>
+                                <li>@Html.ActionLink("Funcionários", "Funcionarios", "Cooperativas")</li>
+                                <li>@Html.ActionLink("Caminhões", "Caminhoes", "Cooperativas")</li>
+                                <li>@Html.ActionLink("Materiais", "Materiais", "Cooperativas")</li>
+                            }
+                            else if (user.getRoles(User.Identity.GetUserId()) == "Admin")
+                            {
+                                <li>@Html.ActionLink("Materiais", "Materiais", "Administrador")</li>
+                            }
+                       }
+
+                            </ul>
+                            @Html.Partial("_LoginPartial")
+                        </div>
+                    </div>
+                </div>*@
+
+            <div class="site-content">
+
+                <div class="container body-content container-body">
+                    @RenderBody()
+                </div>
+                <div class="container body-content navbar-fixed-bottom rodape">
+                    <hr style="margin-top: 5px; margin-bottom: 5px;" />
+                    <footer>
+                        <p>&copy; @DateTime.Now.Year - Recicla Fácil Application</p>
+                    </footer>
+                </div>
+
+            </div> <!-- END site-content -->
+            <div class="site-cache" id="site-cache"></div>
+        </div> <!-- END site-pusher -->
+    </div> <!-- END site-container -->
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/inputmask")
+    @RenderSection("scripts", required: false)
+
+    <!-- Preloader -->
+    <script type="text/javascript">
+        //<![CDATA[
+
+        $(document).ready(function () { // makes sure the whole site is loaded
+            $('#status').delay(300).fadeOut('slow'); // will first fade out the loading animation
+            $('#preloader').delay(400).fadeOut('slow'); // will fade out the white DIV that covers the website.
+            $('body').delay(400).css({ 'overflow': 'visible' });
+        })
+
+        $(document).submit(function () { // makes sure the whole site is loaded
+            $('#status').css({ 'display': 'block' }); // will first fade out the loading animation
+            $('#preloader').css({ 'display': 'block' }); // will fade out the white DIV that covers the website.
+            $('body').css({ 'overflow': 'hidden' });
+        })
+        //]]>
+
+        // Menu
+
+        $(document).ready(function () {
+
+            (function ($) {
+
+                $('#header__icon').click(function (e) {
+                    e.preventDefault();
+                    $('body').toggleClass('with--sidebar');
+                });
+
+                $('#site-cache').click(function (e) {
+                    $('body').removeClass('with--sidebar');
+                });
+
+            })(jQuery);
+
+        });
+
+        // Fim Menu
+
+    </script>
+</body>
+
+</html>

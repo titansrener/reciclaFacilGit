@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ReciclaFacil.Models.Entities_RF.Funcionarios>
+
+@{
+    ViewBag.Title = "Funcionarios";
+}
+
+<br />
+<div>
+    <button type="button" title="Novo Funcionario" class="btn btn-primary" style="position:absolute" onclick="location.href='@Url.Action("RegisterFuncionario", "Account")'">
+        <span class="glyphicon glyphicon-plus" ></span>
+    </button>
+    <h2 class="text-center">Funcionarios</h2>
+</div>
+<hr />
+
+<br />
+
+@if (Model.Count() == 0)
+{
+    <div class="panel-info">
+        <h4 class="text-muted">Nenhum funcionário cadastrado ainda!</h4>
+    </div>
+}
+else {
+    <div class="table-responsive">
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th>
+                    @Html.Label("Nome:")
+                </th>
+                <th>
+                    @Html.Label("Nascimento:")
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr class="linha" onclick="location.href='@Url.Action("DetalheFuncionario", new { id = item.funcionarioId })'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.nome)
+                    </td>
+                    <td>
+                        @{
+                            string data = item.dataNascimento.ToShortDateString();
+                        }
+                        @Html.DisplayFor(modelItem => data)
+                    </td>
+                    <td>
+                        @Html.ActionLink(" ", "EditarFuncionario", new { id = item.funcionarioId }, new { @class = "glyphicon glyphicon-pencil", @title = "Editar", @style = "margin-right: 20px;" })
+                        @Html.ActionLink(" ", "DeletarFuncionario", new { id = item.funcionarioId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}

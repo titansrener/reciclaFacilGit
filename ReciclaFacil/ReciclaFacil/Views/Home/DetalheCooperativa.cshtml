@@ -1,0 +1,88 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Cooperativas
+@using ReciclaFacil.Models
+
+@{
+    ViewBag.Title = "DetalheCooperativa";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Home")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <br />
+    <h2 class="text-center">Detalhe Cooperativa</h2>
+</div>
+<hr />
+<br />
+
+<div class="dl-horizontal">
+
+    <div>
+        <span style="margin-left: 20px;">
+            @Html.Label("Razão Social:")
+            @Html.DisplayFor(model => model.razaoSocial)
+        </span>
+    </div>
+
+    <div>
+        <span style="margin-left: 20px;">
+            @Html.Label("Endereço:")
+            @{ var endereco = Model.endereco + ", " + Model.cidade + " - " + Model.estado; }
+            @Html.DisplayFor(model => endereco)
+        </span>
+    </div>
+
+    <div class="clearfix">
+
+        <div class="pull-left">
+            <span style="margin-left: 20px;">
+                @Html.Label("CNPJ:")
+                @Html.DisplayFor(model => model.cnpj)
+            </span>
+        </div>
+        
+    </div>
+
+    <div>
+        <span style="margin-left: 20px;">
+            @{ UserInfo user = new UserInfo();
+                var email = user.getEmail(Model.cooperativaId);}
+            @Html.Label("E-mail:")
+            @Html.DisplayFor(model => email)
+        </span>
+    </div>
+    <br />
+    <div class="col-md-6 col-sm-6 col-xs-12" style="float: none;">
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th class="col-md-10">
+                    @Html.Label("Materiais comercializados:")
+                </th>
+                <th class="col-md-2"></th>
+            </tr>
+            @if (Model.MateriaisComercializados.Count() > 0)
+            {
+                foreach (var item in Model.MateriaisComercializados)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Materiais.descricao)
+                        </td>
+                        <td>
+                            @if (item.valorRevenda != null)
+                            { <span>R$ </span> }
+                            @Html.DisplayFor(modelItem => item.valorRevenda)
+                        </td>
+                    </tr>
+                }
+            } else
+            {
+                <tr>
+                    <td colspan="2">Nenhuma material associado!</td>
+                </tr>
+            }
+        </table>
+    </div>
+
+</div>

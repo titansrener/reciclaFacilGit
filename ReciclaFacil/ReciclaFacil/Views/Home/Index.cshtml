@@ -1,0 +1,144 @@
+﻿@using ReciclaFacil.Models
+@using Microsoft.AspNet.Identity
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<!-- Maps API Javascript -->
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDrQlANm80TLHu3G9Rw_FZ3TQc3T9jOC9w"></script>
+
+<script>
+    function pesquisar() {
+        var razao = document.getElementById('razaoSocial').value;
+        var cidade = document.getElementById('cidade').value;
+        var estado = document.getElementById('estado').value;
+        document.getElementById('pesquisando').style.visibility = 'visible';
+        $.ajax(
+        {
+            type: 'GET',
+            url: '../Home/MapaCooperativa',
+            data: {
+                razaoSocial: razao,
+                cidade: cidade,
+                estado: estado
+            },
+            dataType: 'html',
+            cache: false,
+            async: true,
+            success: function (data) {
+                $('#divMapa').removeData();
+                $('#divMapa').html(data);
+            }
+        });
+    };
+
+
+</script>
+
+<br />
+@{
+    UserInfo user = new UserInfo();
+}
+@if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && user.getRoles(User.Identity.GetUserId()) != "Cooperativa"))
+{
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+        <div class="panel panel-primary">
+            <div class="panel-heading" role="tab" id="panelHead">
+                <a id="title1" role="button" data-toggle="collapse" data-parent="#accordion" href="#painelPesquisa" aria-expanded="true" aria-controls="collapseOne" class="collapsed" onclick="esconderMapa()">
+                    <h4 class="panel-title text-center">
+                        Pesquisar cooperativas
+                    </h4>
+                </a>
+            </div>
+
+            <div id="painelPesquisa" class="panel-collapse collapse" role="tabpanel" aria-labelledby='panelHead'>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            @Html.Label("Razão Social:", htmlAttributes: new { @class = "control-label" })
+                            <input id="razaoSocial" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            @Html.Label("Cidade:", htmlAttributes: new { @class = "control-label" })
+                            <input id="cidade" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            @Html.Label("Estado:", htmlAttributes: new { @class = "control-label" })
+                            @Html.DropDownList("estado", ViewBag.estado as IEnumerable<SelectListItem>, "Selecionar", htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" style="padding-top: 15px;">
+                            <button class="btn btn-primary" style="margin: auto;" id="btnPesquisar" onclick="pesquisar()">
+                                Perquisar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row text-center" style="padding: 10px;" id="divMapa">
+                        <label id="pesquisando" style="visibility:hidden;">Pesquisando...</label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+}
+
+
+<!-- Start WOWSlider.com HEAD section --> <!-- add to the <head> of your page -->
+<link rel="stylesheet" type="text/css" href="~/Content/SlideCSS/style.css" />
+<script type="text/javascript" src="~/Scripts/ScriptSlider/jquery.js"></script>
+<!-- End WOWSlider.com HEAD section -->
+<!-- Start WOWSlider.com BODY section --> <!-- add to the <body> of your page -->
+<div id="wowslider-container1">
+    <div class="ws_images">
+        <ul>
+            <li><a href="http://www.google.com.br" target="_blank"><img src="~/img/images/01.jpg" alt="" title="" id="wows1_0" /></a></li>
+            <li><a href="http://www.google.com.br" target="_blank"><img src="~/img/images/02.jpg" alt="" title="" id="wows1_1" /></a></li>
+            <li><a href="http://www.google.com.br" target="_blank"><img src="~/img/images/03.jpg" alt="" title="" id="wows1_2" /></a></li>
+            <li><a href="http://www.google.com.br" target="_blank"><img src="~/img/images/04.jpg" alt="" title="" id="wows1_3" /></a></li>
+        </ul>
+    </div>
+    <div class="ws_bullets">
+        <div>
+            <a href="#" title=""><span><img src="~/img/tooltips/01.jpg" alt="" />1</span></a>
+            <a href="#" title=""><span><img src="~/img/tooltips/02.jpg" alt="" />2</span></a>
+            <a href="#" title=""><span><img src="~/img/tooltips/03.jpg" alt="" />3</span></a>
+            <a href="#" title=""><span><img src="~/img/tooltips/04.jpg" alt="" />4</span></a>
+        </div>
+    </div><div class="ws_script" style="position:absolute;left:-99%"></div>
+    <div class="ws_shadow"></div>
+</div>
+<script type="text/javascript" src="~/Scripts/ScriptSlider/wowslider.js"></script>
+<script type="text/javascript" src="~/Scripts/ScriptSlider/script.js"></script>
+<!-- End WOWSlider.com BODY section -->
+
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>PAPÉIS: </h2>
+        <p>
+            Todos os tipos são recicláveis, inclusive caixas do tipo longa-vida e de papelão. Não recicle papel com material orgânico, como caixas de pizza cheias de gordura, pontas de cigarro, fitas adesivas, fotografias, papéis sanitários e papel-carbono.
+        </p>
+    </div>
+    <div class="col-md-4">
+        <h2>PLÁSTICOS:</h2>
+        <p>
+            90% do lixo produzido no mundo é composto de plástico. Por isso, esse material merece uma atenção especial. Recicle sacos de supermercados, garrafas de refrigerante (pet), tampinhas e até brinquedos quebrados.
+        </p>
+    </div>
+    <div class="col-md-4">
+        <h2>METAIS:</h2>
+        <p>
+            Além de todos os tipos de latas de alumínio, é possível reciclar tampinhas,
+            pregos e parafusos. Atenção: clipes, grampos, canos e esponjas de aço devem ficar de fora.
+        </p>
+    </div>
+</div>

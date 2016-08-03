@@ -1,0 +1,20 @@
+﻿@model ReciclaFacil.Models.MapaCooperativaViewModel
+
+<script src="~/Scripts/ScriptRota/MapaCoop.js"></script>
+<label id="pesquisando" style="visibility:hidden; text-align: center;">Pesquisando...</label>
+
+<div id="mapa" style="width: 100%;"></div>
+
+<script>
+
+    function esconderMapa() {
+        var mapa = document.getElementById("mapa");
+        mapa.style.height = "0px";
+
+        document.getElementById('razaoSocial').value = "";
+        document.getElementById('cidade').value = "";
+        document.getElementById('estado').value = "";
+    };
+    var coop = @Html.Raw(Json.Encode(Model.cooperativas));
+    initialize(coop);
+</script>

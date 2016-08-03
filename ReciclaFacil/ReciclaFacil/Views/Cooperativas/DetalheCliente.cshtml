@@ -1,0 +1,98 @@
+﻿@model ReciclaFacil.Models.Entities_RF.ClientesColetas
+@using ReciclaFacil.Models.Entities_RF
+
+@{
+    ViewBag.Title = "Detalhe Cliente";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Detalhe Cliente</h2>
+</div>
+<hr />
+<br />
+
+    <div class="dl-horizontal">
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Nome:")
+                @Html.DisplayFor(model => model.Clientes.nome)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Endereço:")
+                @Html.DisplayFor(model => model.Clientes.endereco)
+            </span>
+        </div>
+
+        <div class="clearfix">
+
+            <div class="pull-left">
+                <span style="margin-left: 20px;">
+                    @Html.Label("Telefone:")
+                    @if (Model.Clientes.telefone == null)
+                    {
+                        <span>não informado</span>
+                    }
+                    @Html.DisplayFor(model => model.Clientes.telefone)
+                </span>
+            </div>
+
+            <div class="pull-left">
+                <span style="margin-left: 20px;">
+                    @Html.Label("Celular:")
+                    @Html.DisplayFor(model => model.Clientes.celular)
+                </span>
+            </div>
+
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("E-mail:")
+                @Html.DisplayFor(model => model.Clientes.email)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Tipo:")
+                @switch (Model.Clientes.tipo)
+                {
+                    case "D":
+                        <span>Doador</span>
+                        break;
+                    case "V":
+                        <span>Vendedor</span>
+                        break;
+                }                
+            </span>
+        </div>
+
+
+        <div class="col-md-4 col-sm-6 col-xs-12" style="float: none;">
+            <table class="table">
+                <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                    <th class="col-md-11">
+                        @Html.Label("Materiais da coleta:")
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.MateriaisColetados)
+            {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Materiais.descricao)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        
+    </div>

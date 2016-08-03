@@ -1,0 +1,79 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Coletas
+
+@{
+    ViewBag.Title = "DeletarColeta";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Index", "Cooperativas")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Remover Coleta</h2>
+</div>
+<hr />
+<br />
+
+@if (ViewBag.Aviso != null)
+{
+    <div class="text-danger">
+        @ViewBag.Aviso
+    </div>
+}
+else {
+    <h4>Deseja remover essa coleta?</h4>
+}
+
+<div>
+    <br />
+    <div class="dl-horizontal">
+        <div>
+            <span style="margin-right: 60px;">
+                <strong>@Html.Label("Data:")</strong>
+                @{
+                    string data = Model.horaAgendada.Value.ToShortDateString();
+                }
+                @Html.DisplayFor(model => data)
+            </span>
+            <span>
+                <strong>@Html.Label("Horário:")</strong>
+                @{
+                    string hora = Model.horaAgendada.Value.ToShortTimeString() + " hs";
+                }
+                @Html.DisplayFor(model => hora)
+            </span>
+        </div>
+        <br />
+        <div>
+            <span>
+                <strong>@Html.Label("Situação:")</strong>
+                @if (Model.coletado == "A")
+            {
+                    <span>Aguardando </span>
+                }
+                else if (Model.coletado == "C")
+                {
+                    <span>Coletando</span>
+                }
+                else {
+                    <span>Finalizada</span>
+                }
+            </span>
+        </div>
+
+    </div>
+    <br />
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-offset-2 col-sm-offset-3">
+            @if (ViewBag.Aviso != null)
+            {
+                <input type="submit" value="Remover" class="btn btn-primary" disabled="disabled"/>
+            } else {
+                <input type="submit" value="Remover" class="btn btn-primary" />
+            }
+        </div>
+    }
+</div>

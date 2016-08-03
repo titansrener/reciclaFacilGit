@@ -1,0 +1,55 @@
+﻿@model ReciclaFacil.Models.Entities_RF.MateriaisComercializados
+
+@{
+    ViewBag.Title = "DeletarMaterial";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" onclick="location.href='@Url.Action("Materiais", "Cooperativas")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Desassociar Material</h2>
+</div>
+<hr />
+<br />
+<h4>Deseja remover esse material?</h4>
+<div>
+    <br />
+    <div class="dl-horizontal">
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Descrição:")
+                @Html.DisplayFor(model => model.Materiais.descricao)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Decomposição:")
+                @{ string valor = String.Format("{0:#,###,###,###}", Model.Materiais.tempoMedioDecomposicao); }
+                @Html.DisplayFor(model => valor) <span> ano(s)</span>
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Valor de Revenda:")
+                @if (Model.valorRevenda != null)
+                { <span>R$ </span> } @Html.DisplayFor(model => model.valorRevenda)
+            </span>
+        </div>
+
+    </div>
+
+    <br />
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-offset-2 col-sm-offset-3">
+            <input type="submit" value="Remover" class="btn btn-primary" />
+        </div>
+    }
+</div>

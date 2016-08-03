@@ -1,0 +1,56 @@
+﻿@model IEnumerable<ReciclaFacil.Models.Entities_RF.MateriaisComercializados>
+
+@{
+    ViewBag.Title = "Materiais Associados";
+}
+
+<br />
+<div>
+    <button type="button" title="Associar Material" class="btn btn-primary pull-left" onclick="location.href='@Url.Action("AssociaMateriais", "Cooperativas")'">
+        <span class="glyphicon glyphicon-plus" ></span>
+    </button>
+    <h2 class="text-center">Materiais Associados</h2>
+</div>
+<hr />
+<br />
+
+@if (Model.Count() == 0)
+{
+    <div class="panel-info">
+        <h4 class="text-muted">Nenhum material associado ainda!</h4>
+    </div>
+}
+else {
+    <div class="table-responsive">
+        <table class="table">
+            <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+                <th class="col-md-5 col-sm-6 col-xs-6">
+                    @Html.Label("Descrição:")
+                </th>
+                <th class="col-md-5 col-sm-4 col-xs-3">
+                    @Html.Label("Valor Revenda:")
+                </th>
+                <th class="col-md-2 col-sm-2 col-xs-3"></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr class="linha" onclick="location.href='@Url.Action("DetalheMaterial", "Cooperativas", new { id = item.materialId })'">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Materiais.descricao)
+                    </td>
+                    <td>
+                        @if (item.valorRevenda != null)
+                        { <span>R$ </span> }
+                        @Html.DisplayFor(modelItem => item.valorRevenda)
+                    </td>
+                    <td>
+                        @Html.ActionLink(" ", "EditarMaterial", new { id = item.materialId }, new { @class = "glyphicon glyphicon-pencil", @title = "Editar", @style = "margin-right : 20px;" })
+                        @Html.ActionLink(" ", "DeletarMaterial", new { id = item.materialId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}

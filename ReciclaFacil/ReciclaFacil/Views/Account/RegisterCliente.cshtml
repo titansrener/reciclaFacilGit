@@ -1,0 +1,247 @@
+﻿@model ReciclaFacil.Models.RegisterClienteViewModel
+
+@{
+    ViewBag.Title = "Novo Cliente";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Novo Cliente</h2>
+</div>
+<hr />
+<br />
+
+
+@using (Html.BeginForm("RegisterCliente", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            @*<div class="form-group col-md-5">
+                @Html.LabelFor(model => model.cpf, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9" onclick="validarCPF(model => model.cpf)">
+                    @Html.EditorFor(model => model.cpf, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.cpf, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.nome, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.nome, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.nome, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group col-md-7">
+                @Html.LabelFor(model => model.dataNascimento, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.dataNascimento, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.dataNascimento, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.sexo, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(model => model.sexo, ViewBag.sexo as IEnumerable<SelectListItem>, "Selecionar", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.sexo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group col-md-7">
+                @Html.LabelFor(model => model.endereco, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.endereco, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.endereco, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.numero, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.numero, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.numero, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group col-md-7">
+                @Html.LabelFor(model => model.cidade, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.cidade, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.cidade, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.estado, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+
+                    @Html.DropDownListFor(model => model.estado, ViewBag.estado as IEnumerable<SelectListItem>, "Selecionar", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.estado, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group col-md-7">
+                @Html.LabelFor(model => model.celular, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.celular, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.celular, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.telefone, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.telefone, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.telefone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group col-md-7">
+                @Html.LabelFor(model => model.cooperativaId, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(model => model.cooperativaId, ViewBag.cooperativas as IEnumerable<SelectListItem>, "Selecionar", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.cooperativaId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.tipo, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(model => model.tipo, ViewBag.tipo as IEnumerable<SelectListItem>, "Selecionar", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.tipo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group  col-md-7">
+                @Html.LabelFor(model => model.email, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.email, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+
+        @*O campo CPF tá escondido*@
+
+        <div class="row">
+            <div class="form-group col-md-5" hidden>
+                @Html.LabelFor(model => model.cpf, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9" onclick="validarCPF(model => model.cpf)">
+                    @Html.EditorFor(model => model.cpf, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.cpf, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group  col-md-5">
+                @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group  col-md-7">
+                @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <div class="col-lg-offset-9 col-md-3">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    @*Máscaras*@
+    <script>
+            $(document).ready(function ($) {
+                $("#telefone").inputmask("mask", { "mask": "(99) 99999-9999" });
+                $("#celular").inputmask("mask", { "mask": "(99) 99999-9999" });
+                $("#cpf").inputmask("mask", { "mask": "999.999.999-99" }, { reverse: true });
+                //$("#cep").inputmask("mask", { "mask": "99999-999" });
+                //$("#nascimento").inputmask("mask", { "mask": "99/99/9999" });
+                //$("#preco").inputmask("mask", { "mask": "999.999,99" }, { reverse: true });
+                //$("#valor").inputmask("mask", { "mask": "#.##9,99" }, { reverse: true });
+                //$("#ip").inputmask("mask", { "mask": "999.999.999.999" });
+            });
+     </script>
+
+
+    @*Validando CPF*@
+
+    <script>
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
+            if (cpf == '') return false;
+            // Elimina CPFs invalidos conhecidos    
+            if (cpf.length != 11 ||
+                cpf == "00000000000" ||
+                cpf == "11111111111" ||
+                cpf == "22222222222" ||
+                cpf == "33333333333" ||
+                cpf == "44444444444" ||
+                cpf == "55555555555" ||
+                cpf == "66666666666" ||
+                cpf == "77777777777" ||
+                cpf == "88888888888" ||
+                cpf == "99999999999")
+                return false;
+            // Valida 1o digito 
+            add = 0;
+            for (i = 0; i < 9; i++)
+                add += parseInt(cpf.charAt(i)) * (10 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11)
+                rev = 0;
+            if (rev != parseInt(cpf.charAt(9)))
+                return false;
+            // Valida 2o digito 
+            add = 0;
+            for (i = 0; i < 10; i++)
+                add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11)
+                rev = 0;
+            if (rev != parseInt(cpf.charAt(10)))
+                return false;
+            return true;
+        }
+
+    </script>
+}

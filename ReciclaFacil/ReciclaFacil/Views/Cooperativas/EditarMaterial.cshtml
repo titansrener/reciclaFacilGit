@@ -1,0 +1,49 @@
+﻿@model ReciclaFacil.Models.Entities_RF.MateriaisComercializados
+
+@{
+    ViewBag.Title = "EditarMaterial";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("Materiais", "Cooperativas")'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Editar Material</h2>
+</div>
+<hr />
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <br />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.materialId)
+        @Html.HiddenFor(model => model.Materiais.materialId)
+        @Html.HiddenFor(model => model.cooperativaId)
+
+        <div class="form-group">
+            @Html.Label("Descrição:", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Materiais.descricao, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly"} })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Valor Revenda:", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.valorRevenda, new { htmlAttributes = new { @class = "form-control" ,@placeholder = "Ex.: 1,50" } })
+                @Html.ValidationMessageFor(model => model.valorRevenda, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-4 col-md-8">
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+

@@ -1,0 +1,45 @@
+﻿@model ReciclaFacil.Models.Entities_RF.Funcionarios
+
+@{
+    ViewBag.Title = "Desassociar Funcionario";
+}
+
+<br />
+<div>
+    <button type="button" title="Voltar" class="btn btn-primary pull-left" onclick="location.href='@ViewBag.retorno'">
+        <span class="glyphicon glyphicon-arrow-left" />
+    </button>
+    <h2 class="text-center">Desassociar Funcionario</h2>
+</div>
+<hr />
+<br />
+<h4>Deseja remover esse funcionario?</h4>
+<div>
+
+    <div class="dl-horizontal">
+        <br />
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.Label("Nome:")
+                @Html.DisplayFor(model => model.nome)
+            </span>
+        </div>
+
+        <div>
+            <span style="margin-left: 20px;">
+                @Html.LabelForModel("Data Nasc.:")
+                @{ string data = Model.dataNascimento.ToShortDateString(); }
+                @Html.DisplayFor(model => data)
+            </span>
+        </div>
+
+    </div>
+    <br />
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-offset-2 col-sm-offset-3">
+            <input type="submit" value="Remover" class="btn btn-primary" />
+        </div>
+    }
+</div>

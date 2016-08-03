@@ -1,0 +1,79 @@
+﻿@model IEnumerable<ReciclaFacil.Models.Entities_RF.ClientesColetas>
+
+@{
+    ViewBag.Title = "Minhas Coletas";
+}
+
+<br />
+<div>
+    <button type="button" title="Agendar Coleta" class="btn btn-primary pull-left" style="position:absolute" onclick="location.href='@Url.Action("AgendarColeta", "Clientes")'">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+    <h2 class="text-center">Minhas Coletas</h2>
+</div>
+<hr />
+<br />
+
+@if (Model.Count() > 0)
+{
+    <table class="table">
+        <tr style="background-color: #428bca;border-color: #357ebd;color: white;">
+            <th>
+                @Html.Label("Data:")
+            </th>
+            <th>
+                @Html.Label("Horário:")
+            </th>
+            <th class="hidden-xs">
+                @Html.Label("Situação: ")
+            </th>
+            <th class="hidden-xs hidden-sm">
+                @Html.Label("Nº Materiais:")
+            </th>
+            <th></th>
+        </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr onclick="location.href='@Url.Action("DetalheColeta", "Clientes", new { coletaId = item.coletaId })'"
+            class='@( (item.coletado == "F") ?
+                      "success linha"
+                    : (item.coletado == "A") && (DateTime.Now > item.Coletas.horaAgendada) ?
+                      "warning linha"
+                    : "linha" )'>
+            <td>
+                @{ string data = item.Coletas.horaAgendada.Value.ToShortDateString(); }
+                @Html.DisplayFor(modelItem => data)
+            </td>
+            <td>
+                @{ string hora = item.Coletas.horaAgendada.Value.ToShortTimeString(); }
+                @Html.DisplayFor(modelItem => hora)
+            </td>
+            <td class="hidden-xs">
+                @if (item.Coletas.coletado == "A")
+                {
+                    <span>Aguardando</span>
+                } else if (item.Coletas.coletado == "I")
+                {
+                    <span>Iniciada</span>
+                } else {
+                    <span>Finalizada</span>
+                }
+            </td>
+            <td class="hidden-xs hidden-sm">
+                @Html.DisplayFor(modelItem => item.MateriaisColetados.Count)
+            </td>
+            <td>
+                @Html.ActionLink(" ", "EditarColeta", new { coletaId = item.coletaId }, new { @class = "glyphicon glyphicon-pencil", @title = "Editar", @style = "margin-right:20px;" }) 
+                @Html.ActionLink(" ", "DeletarColeta", new { coletaId = item.coletaId }, new { @class = "glyphicon glyphicon-remove", @title = "Remover" })
+            </td>
+        </tr>
+    }
+
+    </table>
+
+} else {
+    <div class="panel-info">
+        <h4 class="text-muted">Nenhuma coleta agendada ainda!</h4>
+    </div>
+}

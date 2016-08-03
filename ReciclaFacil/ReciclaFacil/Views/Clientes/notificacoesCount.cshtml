@@ -1,0 +1,12 @@
+﻿@model Int32
+
+    <span class="glyphicon glyphicon-bell">
+        @if (Model > 0)
+        {
+            <span class="badge" style="margin-left: -10px; background-color: #fa0008">
+                <span style="top: -2px; position: relative;">@Html.DisplayFor(m => m)</span>
+            </span>
+        }
+    </span>
+    
+    
