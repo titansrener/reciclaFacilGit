@@ -16,11 +16,7 @@ builder.Services.AddDbContext<ReciclaFacilDbContext>(options =>
 {
     var template = builder.Configuration.GetConnectionString("ReciclaFacil")
         ?? throw new InvalidOperationException("A conexão ReciclaFacil não foi configurada.");
-    var databaseFile = Path.GetFullPath(Path.Combine(
-        builder.Environment.ContentRootPath, "..", "ReciclaFacil", "App_Data", "ReciclaFacil_DB.mdf"));
-    options.UseSqlServer(
-        template.Replace("{DatabaseFile}", databaseFile),
-        sql => sql.UseNetTopologySuite());
+    options.UseSqlServer(template, sql => sql.UseNetTopologySuite());
 });
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

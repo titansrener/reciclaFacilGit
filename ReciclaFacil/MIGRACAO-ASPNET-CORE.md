@@ -30,3 +30,9 @@ dotnet run --project .\ReciclaFacil.Core\ReciclaFacil.Core.csproj
 ```
 
 A aplicação responde em `http://localhost:5080` e o health check em `/health`.
+
+## Banco de desenvolvimento
+
+O banco vazio `ReciclaFacilWeb` é criado na instância `.\SQLEXPRESS` pelo script
+`Database/001_initial_core_schema.sql`. O script é idempotente e pode ser executado
+novamente sem apagar tabelas ou dados.
