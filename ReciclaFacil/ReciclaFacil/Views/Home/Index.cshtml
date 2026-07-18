@@ -2,22 +2,26 @@
 @using Microsoft.AspNet.Identity
 
 @{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Início";
 }
 
 <!-- Maps API Javascript -->
-<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDrQlANm80TLHu3G9Rw_FZ3TQc3T9jOC9w"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrQlANm80TLHu3G9Rw_FZ3TQc3T9jOC9w" async defer></script>
 
 <script>
     function pesquisar() {
         var razao = document.getElementById('razaoSocial').value;
         var cidade = document.getElementById('cidade').value;
         var estado = document.getElementById('estado').value;
-        document.getElementById('pesquisando').style.visibility = 'visible';
+        var status = document.getElementById('pesquisando');
+        var botao = document.getElementById('btnPesquisar');
+        status.textContent = 'Pesquisando...';
+        status.style.visibility = 'visible';
+        botao.disabled = true;
         $.ajax(
         {
             type: 'GET',
-            url: '../Home/MapaCooperativa',
+            url: '@Url.Action("MapaCooperativa", "Home")',
             data: {
                 razaoSocial: razao,
                 cidade: cidade,
@@ -27,8 +31,13 @@
             cache: false,
             async: true,
             success: function (data) {
-                $('#divMapa').removeData();
                 $('#divMapa').html(data);
+            },
+            error: function () {
+                status.textContent = 'Não foi possível realizar a pesquisa. Tente novamente.';
+            },
+            complete: function () {
+                botao.disabled = false;
             }
         });
     };
@@ -36,13 +45,18 @@
 
 </script>
 
-<br />
+<section class="home-hero">
+    <span class="hero-eyebrow">Coleta inteligente, impacto real</span>
+    <h1>Reciclar ficou mais simples.</h1>
+    <p>Encontre cooperativas, agende suas coletas e acompanhe sua contribuição para uma cidade mais sustentável.</p>
+    <a class="btn btn-primary btn-lg" href="#buscar-cooperativa">Encontrar uma cooperativa</a>
+</section>
 @{
     UserInfo user = new UserInfo();
 }
 @if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && user.getRoles(User.Identity.GetUserId()) != "Cooperativa"))
 {
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel-group" id="buscar-cooperativa" role="tablist" aria-multiselectable="true">
 
         <div class="panel panel-primary">
             <div class="panel-heading" role="tab" id="panelHead">
@@ -73,7 +87,8 @@
                     <div class="row">
                         <div class="col-md-12" style="padding-top: 15px;">
                             <button class="btn btn-primary" style="margin: auto;" id="btnPesquisar" onclick="pesquisar()">
-                                Perquisar
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                Pesquisar
                             </button>
                         </div>
                     </div>
@@ -121,24 +136,39 @@
 <!-- End WOWSlider.com BODY section -->
 
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>PAPÉIS: </h2>
+<section class="recycling-guide" aria-labelledby="guia-reciclagem">
+    <div class="section-heading">
+        <span class="hero-eyebrow">Faça a separação correta</span>
+        <h2 id="guia-reciclagem">Guia rápido de reciclagem</h2>
+    </div>
+    <div class="row">
+    <article class="col-md-4">
+        <div class="info-card">
+        <span class="material-icon material-paper" aria-hidden="true">P</span>
+        <h3>Papéis</h3>
         <p>
             Todos os tipos são recicláveis, inclusive caixas do tipo longa-vida e de papelão. Não recicle papel com material orgânico, como caixas de pizza cheias de gordura, pontas de cigarro, fitas adesivas, fotografias, papéis sanitários e papel-carbono.
         </p>
-    </div>
-    <div class="col-md-4">
-        <h2>PLÁSTICOS:</h2>
+        </div>
+    </article>
+    <article class="col-md-4">
+        <div class="info-card">
+        <span class="material-icon material-plastic" aria-hidden="true">P</span>
+        <h3>Plásticos</h3>
         <p>
             90% do lixo produzido no mundo é composto de plástico. Por isso, esse material merece uma atenção especial. Recicle sacos de supermercados, garrafas de refrigerante (pet), tampinhas e até brinquedos quebrados.
         </p>
-    </div>
-    <div class="col-md-4">
-        <h2>METAIS:</h2>
+        </div>
+    </article>
+    <article class="col-md-4">
+        <div class="info-card">
+        <span class="material-icon material-metal" aria-hidden="true">M</span>
+        <h3>Metais</h3>
         <p>
             Além de todos os tipos de latas de alumínio, é possível reciclar tampinhas,
             pregos e parafusos. Atenção: clipes, grampos, canos e esponjas de aço devem ficar de fora.
         </p>
+        </div>
+    </article>
     </div>
-</div>
+</section>

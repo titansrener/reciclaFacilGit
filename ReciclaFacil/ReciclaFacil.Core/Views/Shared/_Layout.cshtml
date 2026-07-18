@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b3d2b" />
+    <title>@ViewData["Title"] | Recicla Fácil</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+    <header class="app-header">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <span aria-hidden="true">♻</span> Recicla Fácil
+        </a>
+        <nav aria-label="Navegação principal">
+            <a asp-controller="Home" asp-action="Index">Início</a>
+            <a href="#buscar">Cooperativas</a>
+        </nav>
+    </header>
+    <main id="conteudo" class="container">
+        @RenderBody()
+    </main>
+    <footer>
+        <div class="container">
+            <span>© @DateTime.Now.Year Recicla Fácil</span>
+            <span>ASP.NET Core @Environment.Version</span>
+        </div>
+    </footer>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

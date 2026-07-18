@@ -1,0 +1,50 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Início";
+}
+
+<section class="hero">
+    <span class="eyebrow">Coleta inteligente, impacto real</span>
+    <h1>Reciclar ficou mais simples.</h1>
+    <p>Encontre cooperativas, organize sua coleta e ajude a transformar sua cidade.</p>
+    <a class="button button-light" href="#buscar">Encontrar uma cooperativa</a>
+</section>
+
+<section class="search-card" id="buscar" aria-labelledby="titulo-busca">
+    <div>
+        <span class="eyebrow">Perto de você</span>
+        <h2 id="titulo-busca">Pesquisar cooperativas</h2>
+    </div>
+    <form id="form-busca" asp-controller="Home" asp-action="MapaCooperativa" method="get">
+        <label>
+            Razão social
+            <input name="razaoSocial" autocomplete="organization" />
+        </label>
+        <label>
+            Cidade
+            <input name="cidade" autocomplete="address-level2" />
+        </label>
+        <label>
+            Estado
+            <select name="estado" autocomplete="address-level1">
+                <option value="">Todos</option>
+                @foreach (var estado in Model.Estados)
+                {
+                    <option value="@estado">@estado</option>
+                }
+            </select>
+        </label>
+        <button class="button" type="submit">Pesquisar</button>
+    </form>
+    <div id="resultados" aria-live="polite"></div>
+</section>
+
+<section class="guide" aria-labelledby="titulo-guia">
+    <span class="eyebrow">Separação correta</span>
+    <h2 id="titulo-guia">Guia rápido de reciclagem</h2>
+    <div class="cards">
+        <article><span class="material paper">P</span><h3>Papéis</h3><p>Separe papéis limpos e secos. Materiais engordurados ou sanitários não devem ser reciclados.</p></article>
+        <article><span class="material plastic">P</span><h3>Plásticos</h3><p>Recicle embalagens, garrafas PET, tampinhas, sacolas e utensílios plásticos limpos.</p></article>
+        <article><span class="material metal">M</span><h3>Metais</h3><p>Latas, tampinhas, pregos e parafusos podem ganhar uma nova vida por meio da reciclagem.</p></article>
+    </div>
+</section>

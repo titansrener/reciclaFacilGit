@@ -1,31 +1,25 @@
-﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity
 @using ReciclaFacil.Models
 
 @if (Request.IsAuthenticated)
 {
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "account-actions" }))
     {
-    @Html.AntiForgeryToken()
-
-    <div class="pull-right" style="margin-right:15px;">
-            @{ 
-                UserInfo user = new UserInfo();
-            }
-            @Html.ActionLink("Olá " + user.getNome(User.Identity.GetUserId()) + ",", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @style = "margin-right:10px;" })
-        <a href="javascript:document.getElementById('logoutForm').submit()" class="pull-right">Sair</a>
-    </div>
+        @Html.AntiForgeryToken()
+        var user = new UserInfo();
+        @Html.ActionLink("Olá, " + user.getNome(User.Identity.GetUserId()), "Index", "Manage", null, new { @class = "account-link" })
+        <button type="submit" class="link-button">Sair</button>
     }
 }
 else
 {
-    <div class="pull-right" style="margin-right: 15px;">
-        @Html.ActionLink("Entrar", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @style = "margin-right:10px;" })
-        <div class="dropdown pull-right">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                Registre-se
-                <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
+    <div class="account-actions">
+        @Html.ActionLink("Entrar", "Login", "Account", null, new { @class = "account-link" })
+        <div class="dropdown">
+            <button class="register-button dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Criar conta <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
                 <li>@Html.ActionLink("Cliente", "RegisterCliente", "Account")</li>
                 <li>@Html.ActionLink("Empresa", "RegisterEmpresa", "Account")</li>
                 <li>@Html.ActionLink("Cooperativa", "RegisterCooperativa", "Account")</li>

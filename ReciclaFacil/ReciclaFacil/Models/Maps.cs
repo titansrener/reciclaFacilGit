@@ -15,7 +15,7 @@ namespace ReciclaFacil.Models
     public class NetGoogleGeocoding
     {
         public GeocodeJsonResponse GoogleGeoCodeResponse;
-        const string GoogleGeoCodeJsonServiceUrl = "http://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=true&components=country:BR";
+        const string GoogleGeoCodeJsonServiceUrl = "https://maps.googleapis.com/maps/api/geocode/json?address={0}&sensor=true&components=country:BR";
         public NetGoogleGeocoding()
         {
             GoogleGeoCodeResponse = new GeocodeJsonResponse()
