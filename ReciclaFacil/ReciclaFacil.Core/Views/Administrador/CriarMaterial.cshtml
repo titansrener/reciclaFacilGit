@@ -1,0 +1,11 @@
+@model MaterialEditViewModel
+@{
+    ViewData["Title"] = "Novo material";
+}
+<section class="form-card">
+    <span class="eyebrow">Administração</span>
+    <h1>Novo material</h1>
+    <form asp-action="CriarMaterial" method="post">
+        <partial name="_MaterialForm" model="Model" />
+    </form>
+</section>

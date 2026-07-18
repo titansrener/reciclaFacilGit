@@ -1,0 +1,13 @@
+@model MaterialEditViewModel
+<div asp-validation-summary="ModelOnly" class="validation-errors"></div>
+<input asp-for="Id" type="hidden" />
+<label asp-for="Descricao"></label>
+<input asp-for="Descricao" />
+<span asp-validation-for="Descricao"></span>
+<label asp-for="TempoMedioDecomposicao"></label>
+<input asp-for="TempoMedioDecomposicao" min="0" inputmode="numeric" />
+<span asp-validation-for="TempoMedioDecomposicao"></span>
+<div class="form-actions">
+    <a class="button button-secondary" asp-action="Materiais">Cancelar</a>
+    <button class="button" type="submit">Salvar</button>
+</div>

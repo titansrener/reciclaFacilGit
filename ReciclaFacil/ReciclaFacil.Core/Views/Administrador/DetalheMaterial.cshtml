@@ -1,0 +1,11 @@
+@model MaterialEditViewModel
+@{
+    ViewData["Title"] = Model.Descricao;
+}
+<a class="back-link" asp-action="Materiais">← Voltar aos materiais</a>
+<section class="detail-card">
+    <span class="eyebrow">Material reciclável</span>
+    <h1>@Model.Descricao</h1>
+    <dl><div><dt>Tempo médio de decomposição</dt><dd>@Model.TempoMedioDecomposicao.ToString("N0") ano(s)</dd></div></dl>
+    <a class="button" asp-action="EditarMaterial" asp-route-id="@Model.Id">Editar</a>
+</section>

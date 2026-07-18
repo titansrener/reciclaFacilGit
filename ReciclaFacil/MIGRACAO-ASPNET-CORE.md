@@ -13,6 +13,8 @@ O login já lê as tabelas `Usuarios` e `UsuarioRole` por EF Core e mantém comp
 com os hashes de senha do ASP.NET Identity 2. A pesquisa de cooperativas consulta o banco
 real, incluindo coordenadas espaciais e materiais comercializados. Quando o LocalDB está
 indisponível, dados demonstrativos são usados somente com `ModoMigracao` habilitado.
+O módulo administrativo de materiais também foi portado por completo, com operações
+assíncronas, autorização por papel, antiforgery e proteção contra exclusão de itens em uso.
 
 ## Próximas etapas
 

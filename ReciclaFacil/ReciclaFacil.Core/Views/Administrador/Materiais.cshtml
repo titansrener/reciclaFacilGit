@@ -1,0 +1,38 @@
+@model IReadOnlyList<MaterialListItemViewModel>
+@{
+    ViewData["Title"] = "Materiais";
+}
+
+<div class="page-heading">
+    <div><span class="eyebrow">Administração</span><h1>Materiais</h1></div>
+    <a class="button" asp-action="CriarMaterial">Novo material</a>
+</div>
+@if (TempData["Sucesso"] is string sucesso)
+{
+    <div class="success-message" role="status">@sucesso</div>
+}
+@if (Model.Count == 0)
+{
+    <div class="empty-state"><h2>Nenhum material cadastrado</h2><p>Cadastre o primeiro material reciclável.</p></div>
+}
+else
+{
+    <div class="data-table">
+        <table>
+            <thead><tr><th>Descrição</th><th>Tempo de decomposição</th><th><span class="sr-only">Ações</span></th></tr></thead>
+            <tbody>
+            @foreach (var material in Model)
+            {
+                <tr>
+                    <td><a asp-action="DetalheMaterial" asp-route-id="@material.Id">@material.Descricao</a></td>
+                    <td>@material.TempoMedioDecomposicao.ToString("N0") ano(s)</td>
+                    <td class="actions">
+                        <a asp-action="EditarMaterial" asp-route-id="@material.Id">Editar</a>
+                        <a class="danger-link" asp-action="ExcluirMaterial" asp-route-id="@material.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,16 @@
+@model MaterialEditViewModel
+@{
+    ViewData["Title"] = "Excluir material";
+}
+<section class="form-card">
+    <span class="eyebrow danger-text">Atenção</span>
+    <h1>Excluir material</h1>
+    <p>Confirma a exclusão de <strong>@Model.Descricao</strong>?</p>
+    <div asp-validation-summary="ModelOnly" class="validation-errors"></div>
+    <form asp-action="ExcluirMaterial" asp-route-id="@Model.Id" method="post">
+        <div class="form-actions">
+            <a class="button button-secondary" asp-action="Materiais">Cancelar</a>
+            <button class="button button-danger" type="submit">Excluir</button>
+        </div>
+    </form>
+</section>

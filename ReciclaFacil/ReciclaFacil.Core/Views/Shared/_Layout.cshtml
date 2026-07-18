@@ -18,6 +18,10 @@
             <a href="#buscar">Cooperativas</a>
             @if (User.Identity?.IsAuthenticated == true)
             {
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Administrador" asp-action="Materiais">Materiais</a>
+                }
                 <span class="user-name">@User.Identity.Name</span>
                 <form asp-controller="Account" asp-action="LogOut" method="post">
                     <button class="nav-button" type="submit">Sair</button>
