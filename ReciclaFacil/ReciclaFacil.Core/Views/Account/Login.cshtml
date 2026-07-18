@@ -1,0 +1,27 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<section class="auth-card">
+    <div>
+        <span class="eyebrow">Bem-vindo de volta</span>
+        <h1>Entrar</h1>
+        <p>Acesse usando as mesmas credenciais da versão anterior do Recicla Fácil.</p>
+    </div>
+    <form asp-action="Login" method="post">
+        <input asp-for="ReturnUrl" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="validation-errors"></div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" autocomplete="username" autofocus />
+        <span asp-validation-for="Email"></span>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" autocomplete="current-password" />
+        <span asp-validation-for="Password"></span>
+        <label class="checkbox">
+            <input asp-for="RememberMe" />
+            Continuar conectado
+        </label>
+        <button class="button" type="submit">Entrar</button>
+    </form>
+</section>

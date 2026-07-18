@@ -16,6 +16,17 @@
         <nav aria-label="Navegação principal">
             <a asp-controller="Home" asp-action="Index">Início</a>
             <a href="#buscar">Cooperativas</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <span class="user-name">@User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="LogOut" method="post">
+                    <button class="nav-button" type="submit">Sair</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Entrar</a>
+            }
         </nav>
     </header>
     <main id="conteudo" class="container">
