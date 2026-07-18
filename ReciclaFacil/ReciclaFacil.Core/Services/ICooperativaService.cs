@@ -4,8 +4,13 @@ namespace ReciclaFacil.Core.Services;
 
 public interface ICooperativaService
 {
-    IReadOnlyList<CooperativaResumo> Pesquisar(
+    Task<IReadOnlyList<CooperativaResumo>> PesquisarAsync(
         string? razaoSocial,
         string? cidade,
-        string? estado);
+        string? estado,
+        CancellationToken cancellationToken = default);
+
+    Task<CooperativaDetalheViewModel?> ObterAsync(
+        string id,
+        CancellationToken cancellationToken = default);
 }

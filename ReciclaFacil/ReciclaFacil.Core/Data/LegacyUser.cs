@@ -1,3 +1,5 @@
+using NetTopologySuite.Geometries;
+
 namespace ReciclaFacil.Core.Data;
 
 public sealed class LegacyUser
@@ -42,4 +44,25 @@ public sealed class Material
     public required string Descricao { get; set; }
     public int TempoMedioDecomposicao { get; set; }
     public bool Selecionado { get; set; }
+}
+
+public sealed class Cooperativa
+{
+    public required string Id { get; set; }
+    public required string Cnpj { get; set; }
+    public required string RazaoSocial { get; set; }
+    public required string Endereco { get; set; }
+    public required string Cidade { get; set; }
+    public required string Estado { get; set; }
+    public Point? EnderecoCoordenada { get; set; }
+    public ICollection<MaterialComercializado> MateriaisComercializados { get; set; } = [];
+}
+
+public sealed class MaterialComercializado
+{
+    public int MaterialId { get; set; }
+    public required string CooperativaId { get; set; }
+    public decimal? ValorRevenda { get; set; }
+    public Material? Material { get; set; }
+    public Cooperativa? Cooperativa { get; set; }
 }

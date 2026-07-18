@@ -1,0 +1,32 @@
+@model CooperativaDetalheViewModel
+@{
+    ViewData["Title"] = Model.RazaoSocial;
+}
+
+<a class="back-link" asp-controller="Home" asp-action="Index">← Voltar à pesquisa</a>
+<section class="detail-card">
+    <span class="eyebrow">Cooperativa</span>
+    <h1>@Model.RazaoSocial</h1>
+    <dl>
+        <div><dt>Endereço</dt><dd>@Model.Endereco, @Model.Cidade/@Model.Estado</dd></div>
+        <div><dt>CNPJ</dt><dd>@Model.Cnpj</dd></div>
+        <div><dt>E-mail</dt><dd>@(Model.Email ?? "Não informado")</dd></div>
+    </dl>
+    <h2>Materiais comercializados</h2>
+    @if (Model.Materiais.Count == 0)
+    {
+        <p class="empty-state">Nenhum material associado.</p>
+    }
+    else
+    {
+        <div class="materials-list">
+            @foreach (var material in Model.Materiais)
+            {
+                <div>
+                    <strong>@material.Descricao</strong>
+                    <span>@(material.ValorRevenda.HasValue ? material.ValorRevenda.Value.ToString("C") : "Consulte o valor")</span>
+                </div>
+            }
+        </div>
+    }
+</section>

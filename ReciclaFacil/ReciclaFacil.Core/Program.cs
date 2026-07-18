@@ -10,7 +10,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddControllersWithViews();
 builder.Services.AddHealthChecks();
-builder.Services.AddSingleton<ICooperativaService, CooperativaService>();
+builder.Services.AddScoped<ICooperativaService, CooperativaService>();
 builder.Services.AddScoped<ILegacyAuthenticationService, LegacyAuthenticationService>();
 builder.Services.AddDbContext<ReciclaFacilDbContext>(options =>
 {
@@ -18,7 +18,9 @@ builder.Services.AddDbContext<ReciclaFacilDbContext>(options =>
         ?? throw new InvalidOperationException("A conexão ReciclaFacil não foi configurada.");
     var databaseFile = Path.GetFullPath(Path.Combine(
         builder.Environment.ContentRootPath, "..", "ReciclaFacil", "App_Data", "ReciclaFacil_DB.mdf"));
-    options.UseSqlServer(template.Replace("{DatabaseFile}", databaseFile));
+    options.UseSqlServer(
+        template.Replace("{DatabaseFile}", databaseFile),
+        sql => sql.UseNetTopologySuite());
 });
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

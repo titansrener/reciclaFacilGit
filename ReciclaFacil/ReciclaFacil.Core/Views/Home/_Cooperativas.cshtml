@@ -12,6 +12,10 @@ else
             <article>
                 <h3>@cooperativa.Nome</h3>
                 <p>@cooperativa.Endereco · @cooperativa.Cidade/@cooperativa.Estado</p>
+                @if (!cooperativa.Id.StartsWith("demo-"))
+                {
+                    <a asp-controller="Home" asp-action="DetalheCooperativa" asp-route-id="@cooperativa.Id">Ver detalhes</a>
+                }
             </article>
         }
     </div>

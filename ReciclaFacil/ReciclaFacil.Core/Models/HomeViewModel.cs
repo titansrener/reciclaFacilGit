@@ -11,7 +11,22 @@ public sealed class HomeViewModel
 }
 
 public sealed record CooperativaResumo(
+    string Id,
     string Nome,
     string Cidade,
     string Estado,
-    string Endereco);
+    string Endereco,
+    double? Latitude = null,
+    double? Longitude = null);
+
+public sealed record CooperativaDetalheViewModel(
+    string Id,
+    string RazaoSocial,
+    string Cnpj,
+    string Endereco,
+    string Cidade,
+    string Estado,
+    string? Email,
+    IReadOnlyList<MaterialComercializadoViewModel> Materiais);
+
+public sealed record MaterialComercializadoViewModel(string Descricao, decimal? ValorRevenda);
