@@ -4,7 +4,9 @@
 }
 <div class="page-heading">
     <div><span class="eyebrow">Olá, @Model.Nome</span><h1>Minhas coletas</h1></div>
+    <a class="button" asp-action="AgendarColeta">Agendar coleta</a>
 </div>
+@if (TempData["Sucesso"] is string sucesso) { <div class="success-message" role="status">@sucesso</div> }
 @if (Model.Coletas.Count == 0)
 {
     <div class="empty-state"><h2>Nenhuma coleta agendada</h2><p>Seus próximos agendamentos aparecerão aqui.</p></div>
@@ -18,9 +20,9 @@ else
             @foreach (var coleta in Model.Coletas)
             {
                 <tr>
-                    <td>@(coleta.HorarioAgendado?.ToString("dd/MM/yyyy 'às' HH:mm") ?? "A definir")</td>
+                    <td><a asp-action="DetalheColeta" asp-route-id="@coleta.Id">@(coleta.HorarioAgendado?.ToString("dd/MM/yyyy 'às' HH:mm") ?? "A definir")</a></td>
                     <td><span class="status status-@coleta.Status.ToLowerInvariant()">@StatusColeta(coleta.Status)</span></td>
-                    <td>@coleta.QuantidadeMateriais</td>
+                    <td>@coleta.QuantidadeMateriais @if (coleta.Status == "A") { <a class="danger-link row-action" asp-action="CancelarColeta" asp-route-id="@coleta.Id">Cancelar</a> }</td>
                 </tr>
             }
             </tbody>

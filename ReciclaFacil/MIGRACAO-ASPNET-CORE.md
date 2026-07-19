@@ -18,6 +18,8 @@ assíncronas, autorização por papel, antiforgery e proteção contra exclusão
 A área de cliente já possui painel de coletas, extrato da carteira, notificações e contador
 de itens não lidos em modo somente leitura. O schema operacional correspondente é criado
 pelo script `Database/002_client_operations_schema.sql`.
+O agendamento e o cancelamento de coletas também foram portados com validação de
+disponibilidade, materiais aceitos, propriedade do cliente e transações atômicas.
 
 ## Próximas etapas
 

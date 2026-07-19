@@ -1,0 +1,20 @@
+@model ClienteColetaDetalheViewModel
+@{
+    ViewData["Title"] = "Detalhes da coleta";
+}
+<a class="back-link" asp-action="Index">← Voltar às coletas</a>
+<section class="detail-card">
+    <span class="eyebrow">Coleta #@Model.Id</span>
+    <h1>@(Model.HorarioAgendado?.ToString("dd/MM/yyyy 'às' HH:mm") ?? "Horário a definir")</h1>
+    <dl>
+        <div><dt>Situação</dt><dd>@Model.Status</dd></div>
+        <div><dt>Realizada em</dt><dd>@(Model.HorarioRealizado?.ToString("dd/MM/yyyy HH:mm") ?? "Ainda não realizada")</dd></div>
+    </dl>
+    <h2>Materiais</h2>
+    <div class="materials-list">
+    @foreach (var material in Model.Materiais)
+    {
+        <div><strong>@material.Descricao</strong><span>@(material.Quantidade?.ToString("N2") ?? "Quantidade pendente")</span></div>
+    }
+    </div>
+</section>

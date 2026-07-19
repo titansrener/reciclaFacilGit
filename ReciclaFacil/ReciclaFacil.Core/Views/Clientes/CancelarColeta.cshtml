@@ -1,0 +1,15 @@
+@model ClienteColetaDetalheViewModel
+@{
+    ViewData["Title"] = "Cancelar coleta";
+}
+<section class="form-card">
+    <span class="eyebrow danger-text">Atenção</span>
+    <h1>Cancelar agendamento</h1>
+    <p>Confirma o cancelamento da coleta de <strong>@Model.HorarioAgendado?.ToString("dd/MM/yyyy 'às' HH:mm")</strong>?</p>
+    <form asp-action="CancelarColeta" asp-route-id="@Model.Id" method="post">
+        <div class="form-actions">
+            <a class="button button-secondary" asp-action="Index">Voltar</a>
+            <button class="button button-danger" type="submit">Cancelar coleta</button>
+        </div>
+    </form>
+</section>

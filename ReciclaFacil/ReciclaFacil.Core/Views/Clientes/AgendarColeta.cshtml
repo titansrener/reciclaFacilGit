@@ -1,0 +1,53 @@
+@model AgendarColetaViewModel
+@{
+    ViewData["Title"] = "Agendar coleta";
+}
+<section class="form-card">
+    <span class="eyebrow">Cliente</span>
+    <h1>Agendar coleta</h1>
+    @if (Model.Horarios.Count == 0 || Model.Materiais.Count == 0)
+    {
+        <div class="empty-state">
+            <h2>Nenhum agendamento disponível</h2>
+            <p>A cooperativa precisa disponibilizar horários e materiais antes de você agendar.</p>
+        </div>
+        <div class="form-actions"><a class="button button-secondary" asp-action="Index">Voltar</a></div>
+    }
+    else
+    {
+        <form asp-action="AgendarColeta" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-errors"></div>
+            <label asp-for="ColetaId"></label>
+            <select asp-for="ColetaId">
+                <option value="">Selecione</option>
+                @foreach (var horario in Model.Horarios)
+                {
+                    <option value="@horario.Id">@horario.Horario.ToString("dd/MM/yyyy 'às' HH:mm")</option>
+                }
+            </select>
+            <span asp-validation-for="ColetaId"></span>
+            <fieldset>
+                <legend>Materiais para coleta</legend>
+                @foreach (var material in Model.Materiais)
+                {
+                    <label class="checkbox">
+                        @if (Model.MateriaisSelecionados.Contains(material.Id))
+                        {
+                            <input type="checkbox" name="MateriaisSelecionados" value="@material.Id" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="MateriaisSelecionados" value="@material.Id" />
+                        }
+                        @material.Descricao
+                    </label>
+                }
+            </fieldset>
+            @Html.ValidationMessageFor(x => x.MateriaisSelecionados)
+            <div class="form-actions">
+                <a class="button button-secondary" asp-action="Index">Cancelar</a>
+                <button class="button" type="submit">Confirmar agendamento</button>
+            </div>
+        </form>
+    }
+</section>
