@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
     <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
     <ProjectReference Include="..\ReciclaFacil.Application\ReciclaFacil.Application.csproj" />
     <ProjectReference Include="..\ReciclaFacil.Infrastructure\ReciclaFacil.Infrastructure.csproj" />

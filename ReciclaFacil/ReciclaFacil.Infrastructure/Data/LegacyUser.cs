@@ -20,6 +20,19 @@ public sealed class LegacyUser
     public bool? Ativo { get; set; }
     public required string Discriminator { get; set; }
     public ICollection<LegacyUserRole> UserRoles { get; set; } = [];
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
+}
+
+public sealed class RefreshToken
+{
+    public Guid Id { get; set; }
+    public required string UserId { get; set; }
+    public required string TokenHash { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+    public DateTime ExpiresAtUtc { get; set; }
+    public DateTime? RevokedAtUtc { get; set; }
+    public string? ReplacedByHash { get; set; }
+    public LegacyUser? User { get; set; }
 }
 
 public sealed class LegacyRole

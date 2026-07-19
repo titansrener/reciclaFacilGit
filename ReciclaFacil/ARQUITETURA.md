@@ -29,10 +29,31 @@ Endpoints iniciais:
 - `GET /cooperatives`
 - `GET /cooperatives/{id}`
 - `GET /materials`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/revoke`
+- `GET /auth/me` (requer bearer token)
 - `GET /health`
 - `GET /openapi/v1.json`
 
 As pesquisas de cooperativas são paginadas. `pageSize` aceita no máximo 100 registros.
+
+## Autenticação da API
+
+A API emite access tokens JWT de curta duração e refresh tokens rotativos. O refresh
+token é devolvido ao cliente uma única vez; no banco fica somente seu hash SHA-256.
+Cada renovação revoga o token anterior, e `/auth/revoke` encerra a sessão renovável.
+
+Em desenvolvimento, a chave de assinatura é criada em
+`ReciclaFacil.Api/.keys/jwt-signing-key.txt`, diretório ignorado pelo Git. Em produção,
+a inicialização exige uma chave externa com pelo menos 32 bytes:
+
+```powershell
+$env:Jwt__SigningKey = '<segredo-fornecido-pelo-ambiente>'
+```
+
+Aplicativos web, Android e iOS devem guardar refresh tokens em armazenamento seguro e
+enviar o access token no cabeçalho `Authorization: Bearer <token>`.
 
 ## Execução
 

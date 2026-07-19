@@ -30,14 +30,18 @@ transação. As senhas usam o formato Identity v2 para manter interoperabilidade
 a convivência com o projeto legado. Os papéis de referência são aplicados pelo script
 `Database/003_reference_roles.sql`.
 
+A API agora também autentica os usuários legados por `POST /api/v1/auth/login`, emite
+JWTs para web e aplicativos móveis e oferece rotação e revogação de refresh tokens.
+Somente o hash SHA-256 do refresh token é persistido. A tabela correspondente é criada
+de forma idempotente por `Database/004_refresh_tokens.sql`.
+
 ## Próximas etapas
 
-1. Migrar o `.mdf` para uma instância SQL Server versionada e gerar um backup.
-2. Completar o mapeamento EF Core das entidades, chaves compostas e relações N:N.
-3. Portar cadastro, recuperação de senha e segundo fator para ASP.NET Core.
-5. Portar os módulos Cliente, Cooperativa, Funcionário e Administrador por fatias.
-6. Substituir os tipos espaciais antigos por `NetTopologySuite`.
-7. Adicionar testes de integração antes de desativar o projeto MVC 5.
+1. Criar o frontend TypeScript independente consumindo exclusivamente a API.
+2. Ampliar os endpoints autenticados dos módulos Cliente e Cooperativa.
+3. Portar recuperação de senha e segundo fator para o fluxo da API.
+4. Automatizar testes de integração da autenticação e das regras operacionais.
+5. Preparar backup, observabilidade e configuração segura para homologação.
 
 ## Execução
 

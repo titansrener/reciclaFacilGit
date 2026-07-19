@@ -17,6 +17,7 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
     public DbSet<CarteiraMovimento> Carteiras => Set<CarteiraMovimento>();
     public DbSet<MaterialColetado> MateriaisColetados => Set<MaterialColetado>();
     public DbSet<Notificacao> Notificacoes => Set<Notificacao>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,18 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
             entity.Property(x => x.DataCadastro).HasColumnName("dataCadastro");
             entity.Property(x => x.Ativo).HasColumnName("ativo");
             entity.Property(x => x.Discriminator).HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("RefreshTokens");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.UserId).HasMaxLength(128);
+            entity.Property(x => x.TokenHash).HasMaxLength(64).IsUnicode(false);
+            entity.Property(x => x.ReplacedByHash).HasMaxLength(64).IsUnicode(false);
+            entity.HasIndex(x => x.TokenHash).IsUnique();
+            entity.HasOne(x => x.User).WithMany(x => x.RefreshTokens)
+                .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<LegacyRole>(entity =>
