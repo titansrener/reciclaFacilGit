@@ -7,6 +7,7 @@ A solução agora contém duas aplicações:
 - `ReciclaFacil`: aplicação MVC 5 original, mantida como referência funcional.
 - `ReciclaFacil.Core`: nova aplicação ASP.NET Core em .NET 10, compilável e executável.
 - `ReciclaFacil.Api`: API REST versionada para web, Android e iOS.
+- `ReciclaFacil.Web`: frontend React/TypeScript independente, sem acesso direto ao banco.
 
 O código moderno está separado em `Domain`, `Application`, `Infrastructure`, `Api` e no
 frontend Razor temporário. A solução `ReciclaFacil.Modern.slnx` compila apenas os projetos
@@ -35,9 +36,13 @@ JWTs para web e aplicativos móveis e oferece rotação e revogação de refresh
 Somente o hash SHA-256 do refresh token é persistido. A tabela correspondente é criada
 de forma idempotente por `Database/004_refresh_tokens.sql`.
 
+A primeira fatia do novo frontend já consome `GET /api/v1/cooperatives` e
+`GET /api/v1/cooperatives/{id}`. Ela oferece pesquisa paginada, filtros, estados de
+carregamento/erro/vazio, layout responsivo e detalhes dos materiais comercializados.
+
 ## Próximas etapas
 
-1. Criar o frontend TypeScript independente consumindo exclusivamente a API.
+1. Migrar autenticação e sessão para o frontend TypeScript.
 2. Ampliar os endpoints autenticados dos módulos Cliente e Cooperativa.
 3. Portar recuperação de senha e segundo fator para o fluxo da API.
 4. Automatizar testes de integração da autenticação e das regras operacionais.

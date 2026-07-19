@@ -6,6 +6,7 @@
 - `ReciclaFacil.Application`: contratos, casos de uso e DTOs.
 - `ReciclaFacil.Infrastructure`: EF Core, SQL Server e implementações dos contratos.
 - `ReciclaFacil.Api`: API HTTP versionada que será consumida pela web e pelos aplicativos.
+- `ReciclaFacil.Web`: frontend React/TypeScript independente, consumidor da API versionada.
 - `ReciclaFacil.Core`: frontend Razor temporário, mantido funcional durante a criação do frontend independente.
 - `ReciclaFacil`: aplicação ASP.NET MVC 5 original, somente para referência durante a migração.
 
@@ -19,6 +20,10 @@ Infrastructure ────┘
 
 O projeto `Infrastructure` implementa as interfaces de `Application`. A API não consulta o
 `DbContext` diretamente. Android, iOS e o novo frontend web usarão os mesmos endpoints.
+
+O frontend `ReciclaFacil.Web` não referencia `Infrastructure` nem acessa o SQL Server.
+Em desenvolvimento, o Vite encaminha `/api` para `http://localhost:5090`; em produção,
+frontend e API devem ficar atrás do mesmo proxy reverso.
 
 ## API
 
@@ -60,6 +65,9 @@ enviar o access token no cabeçalho `Authorization: Bearer <token>`.
 ```powershell
 dotnet build .\ReciclaFacil.Modern.slnx
 dotnet run --project .\ReciclaFacil.Api\ReciclaFacil.Api.csproj
+cd .\ReciclaFacil.Web
+npm ci
+npm run dev
 ```
 
 ## Transição
