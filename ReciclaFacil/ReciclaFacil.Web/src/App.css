@@ -443,6 +443,33 @@ footer p { color: var(--muted); font-size: .85rem; }
 .details-modal h2 { font-size: 2.3rem; padding-right: 35px; }
 .details-modal h3 { color: var(--ink); margin-top: 32px; }
 .details-modal a { color: var(--green); }
+.cooperative-dashboard .impact-badge strong { font-family: var(--display); font-size: 2.5rem; }
+.management-form {
+  align-items: end; background: var(--surface); border-radius: 13px; display: flex;
+  gap: 10px; margin-bottom: 20px; padding: 14px;
+}
+.management-form label { display: flex; flex: 1; flex-direction: column; gap: 6px; }
+.management-form label span { color: var(--muted); font-size: .7rem; font-weight: 750; text-transform: uppercase; }
+.management-form input, .management-form select {
+  background: white; border: 1px solid var(--line); border-radius: 9px; color: var(--ink);
+  min-width: 0; padding: 10px;
+}
+.management-form button, .row-actions button {
+  background: white; border: 1px solid var(--line); border-radius: 99px; color: var(--ink);
+  cursor: pointer; font-size: .72rem; font-weight: 750; padding: 9px 12px;
+}
+.management-form button { background: var(--green); color: white; }
+.management-form button:disabled, .row-actions button:disabled { cursor: default; opacity: .5; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.cooperative-dashboard .collection-list li { grid-template-columns: auto 1fr auto minmax(110px, auto); }
+.managed-materials { list-style: none; margin: 0; padding: 0; }
+.managed-materials li {
+  align-items: center; border-top: 1px solid var(--line); display: flex;
+  justify-content: space-between; padding: 16px 0;
+}
+.managed-materials li > div:first-child { display: flex; flex-direction: column; gap: 5px; }
+.managed-materials strong { color: var(--ink); font-size: .86rem; }
+.managed-materials small { color: var(--muted); font-size: .75rem; }
 .modal-address { color: var(--muted); margin: 13px 0 8px; }
 .modal-close {
   background: var(--surface); border: 0; border-radius: 50%; color: var(--ink);
@@ -492,6 +519,9 @@ footer p { color: var(--muted); font-size: .85rem; }
   .dashboard-panel { padding: 22px 18px; }
   .panel-heading { align-items: start; flex-direction: column; gap: 15px; }
   .collection-list li { grid-template-columns: auto 1fr; }
+  .cooperative-dashboard .collection-list li { grid-template-columns: auto 1fr; }
+  .cooperative-dashboard .row-actions { grid-column: 2; justify-content: flex-start; }
+  .management-form { align-items: stretch; flex-direction: column; }
   .collection-meta { align-items: start; text-align: left; }
   .collection-action { grid-column: 2; justify-self: start; }
   .operation-modal { padding: 34px 22px; }

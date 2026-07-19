@@ -30,6 +30,12 @@ Usuários com o papel `Cliente` são direcionados ao painel carregado por
 O mesmo painel permite consultar horários e materiais, agendar, abrir detalhes e cancelar
 coletas ainda não iniciadas.
 
+Usuários com o papel `Cooperativa` acessam um painel operacional próprio, alimentado por
+`/api/v1/cooperatives/me`. Nele é possível criar horários, consultar participantes,
+iniciar e finalizar coletas, além de associar materiais e manter seus preços de revenda.
+As regras e a autorização ficam na API, permitindo reutilizar os mesmos fluxos em
+aplicativos Android e iOS.
+
 ## Verificações
 
 ```powershell

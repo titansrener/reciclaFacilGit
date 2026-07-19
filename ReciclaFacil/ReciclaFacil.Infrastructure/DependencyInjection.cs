@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IMaterialQueries, MaterialQueries>();
         services.AddScoped<IClientQueries, ClientQueries>();
         services.AddScoped<IClientCollectionService, ClientCollectionService>();
+        services.AddScoped<ICooperativeOperations, CooperativeOperations>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IPasswordHasher<LegacyUser>>(
             new PasswordHasher<LegacyUser>(Options.Create(new PasswordHasherOptions

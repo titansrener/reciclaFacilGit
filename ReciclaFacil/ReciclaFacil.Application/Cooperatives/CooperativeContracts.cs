@@ -47,3 +47,73 @@ public interface ICooperativeQueries
         string id,
         CancellationToken cancellationToken = default);
 }
+
+public sealed record CooperativeOverview(
+    string Id,
+    string Name,
+    int ScheduledCollections,
+    int InProgressCollections,
+    int FinishedCollections,
+    int RegisteredClients,
+    IReadOnlyList<CooperativeCollectionSummary> Collections,
+    IReadOnlyList<ManagedMaterial> Materials,
+    IReadOnlyList<MaterialOption> MaterialOptions);
+
+public sealed record CooperativeCollectionSummary(
+    int Id,
+    DateTime? ScheduledAt,
+    string Status,
+    int ClientCount,
+    double? Quantity);
+
+public sealed record CooperativeCollectionDetails(
+    int Id,
+    DateTime? ScheduledAt,
+    string Status,
+    double? Quantity,
+    IReadOnlyList<CooperativeCollectionClient> Clients);
+
+public sealed record CooperativeCollectionClient(
+    string Id,
+    string Name,
+    string? Status,
+    DateTime? CollectedAt,
+    IReadOnlyList<string> Materials);
+
+public sealed record ManagedMaterial(int Id, string Description, decimal? ResalePrice);
+public sealed record MaterialOption(int Id, string Description);
+public sealed record SaveCooperativeCollection(DateTime ScheduledAt);
+public sealed record SaveManagedMaterial(int MaterialId, decimal? ResalePrice);
+
+public enum CooperativeOperationError
+{
+    None,
+    NotFound,
+    InvalidDate,
+    InvalidStatus,
+    HasClients,
+    AlreadyExists,
+    InvalidPrice,
+    MaterialInUse
+}
+
+public sealed record CooperativeOperationResult(
+    CooperativeOperationError Error = CooperativeOperationError.None,
+    int? CollectionId = null)
+{
+    public bool Succeeded => Error == CooperativeOperationError.None;
+}
+
+public interface ICooperativeOperations
+{
+    Task<CooperativeOverview?> GetOverviewAsync(string cooperativeId, CancellationToken cancellationToken = default);
+    Task<CooperativeCollectionDetails?> GetCollectionAsync(string cooperativeId, int collectionId, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> CreateCollectionAsync(string cooperativeId, SaveCooperativeCollection command, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> UpdateCollectionAsync(string cooperativeId, int collectionId, SaveCooperativeCollection command, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> DeleteCollectionAsync(string cooperativeId, int collectionId, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> StartCollectionAsync(string cooperativeId, int collectionId, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> FinishCollectionAsync(string cooperativeId, int collectionId, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> AddMaterialAsync(string cooperativeId, SaveManagedMaterial command, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> UpdateMaterialAsync(string cooperativeId, SaveManagedMaterial command, CancellationToken cancellationToken = default);
+    Task<CooperativeOperationResult> RemoveMaterialAsync(string cooperativeId, int materialId, CancellationToken cancellationToken = default);
+}

@@ -315,6 +315,109 @@ clientCollections.MapDelete("/collections/{id:int}", async (
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status409Conflict);
 
+var cooperative = api.MapGroup("/cooperatives/me")
+    .RequireAuthorization(policy => policy.RequireRole("Cooperativa"))
+    .WithTags("Cooperative Management");
+
+cooperative.MapGet("/overview", async Task<Results<Ok<CooperativeOverview>, NotFound>> (
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var overview = await operations.GetOverviewAsync(user.FindFirstValue("sub")!, cancellationToken);
+    return overview is null ? TypedResults.NotFound() : TypedResults.Ok(overview);
+})
+.WithName("CooperativeOverview");
+
+cooperative.MapGet("/collections/{id:int}", async Task<Results<Ok<CooperativeCollectionDetails>, NotFound>> (
+    int id,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var details = await operations.GetCollectionAsync(user.FindFirstValue("sub")!, id, cancellationToken);
+    return details is null ? TypedResults.NotFound() : TypedResults.Ok(details);
+})
+.WithName("CooperativeCollectionDetails");
+
+cooperative.MapPost("/collections", async (
+    SaveCooperativeCollection request,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var result = await operations.CreateCollectionAsync(
+        user.FindFirstValue("sub")!, request, cancellationToken);
+    return CooperativeHttpResults.From(
+        result, result.CollectionId is null ? null : $"/api/v1/cooperatives/me/collections/{result.CollectionId}");
+})
+.WithName("CreateCooperativeCollection");
+
+cooperative.MapPut("/collections/{id:int}", async (
+    int id,
+    SaveCooperativeCollection request,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.UpdateCollectionAsync(
+        user.FindFirstValue("sub")!, id, request, cancellationToken)))
+.WithName("UpdateCooperativeCollection");
+
+cooperative.MapDelete("/collections/{id:int}", async (
+    int id,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.DeleteCollectionAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("DeleteCooperativeCollection");
+
+cooperative.MapPost("/collections/{id:int}/start", async (
+    int id,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.StartCollectionAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("StartCooperativeCollection");
+
+cooperative.MapPost("/collections/{id:int}/finish", async (
+    int id,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.FinishCollectionAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("FinishCooperativeCollection");
+
+cooperative.MapPost("/materials", async (
+    SaveManagedMaterial request,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.AddMaterialAsync(
+        user.FindFirstValue("sub")!, request, cancellationToken)))
+.WithName("AddCooperativeMaterial");
+
+cooperative.MapPut("/materials/{id:int}", async (
+    int id,
+    UpdateManagedMaterialRequest request,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.UpdateMaterialAsync(
+        user.FindFirstValue("sub")!, new(id, request.ResalePrice), cancellationToken)))
+.WithName("UpdateCooperativeMaterial");
+
+cooperative.MapDelete("/materials/{id:int}", async (
+    int id,
+    ClaimsPrincipal user,
+    ICooperativeOperations operations,
+    CancellationToken cancellationToken) =>
+    CooperativeHttpResults.From(await operations.RemoveMaterialAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("RemoveCooperativeMaterial");
+
 app.Run();
 
 public partial class Program;
@@ -324,6 +427,7 @@ public sealed record RefreshRequest(string RefreshToken);
 public sealed record ScheduleClientCollectionRequest(
     int CollectionId,
     int[]? MaterialIds);
+public sealed record UpdateManagedMaterialRequest(decimal? ResalePrice);
 public sealed record WebSessionResponse(
     string AccessToken,
     DateTimeOffset AccessTokenExpiresAt,
