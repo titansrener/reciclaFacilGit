@@ -25,6 +25,9 @@ O login usa `/api/v1/auth/web/*`. O refresh token é mantido exclusivamente em c
 Os endpoints que devolvem refresh token no corpo permanecem disponíveis para os
 futuros aplicativos Android e iOS, não sendo usados pelo frontend web.
 
+Usuários com o papel `Cliente` são direcionados ao painel carregado por
+`GET /api/v1/clients/me/overview`, com resumo de carteira, coletas e notificações.
+
 ## Verificações
 
 ```powershell

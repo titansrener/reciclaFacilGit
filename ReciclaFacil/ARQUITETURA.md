@@ -25,6 +25,11 @@ O frontend `ReciclaFacil.Web` não referencia `Infrastructure` nem acessa o SQL 
 Em desenvolvimento, o Vite encaminha `/api` para `http://localhost:5090`; em produção,
 frontend e API devem ficar atrás do mesmo proxy reverso.
 
+O painel de Cliente obtém seu resumo por `IClientQueries`, implementado em
+`Infrastructure`. A API extrai o identificador do JWT e exige o papel `Cliente`; nenhum
+identificador de cliente é aceito pela URL, evitando acesso horizontal aos dados de outra
+conta.
+
 ## API
 
 Base local: `http://localhost:5090/api/v1`
@@ -41,6 +46,7 @@ Endpoints iniciais:
 - `POST /auth/web/login`
 - `POST /auth/web/refresh`
 - `POST /auth/web/logout`
+- `GET /clients/me/overview` (papel `Cliente`)
 - `GET /health`
 - `GET /openapi/v1.json`
 

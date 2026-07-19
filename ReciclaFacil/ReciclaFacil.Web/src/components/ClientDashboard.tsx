@@ -1,0 +1,135 @@
+import { useEffect, useState } from 'react'
+import { getClientOverview } from '../services/clients'
+import type { ClientOverview } from '../services/clients'
+
+const statusLabels: Record<string, string> = {
+  A: 'Agendada',
+  C: 'Concluída',
+  F: 'Finalizada',
+  X: 'Cancelada',
+}
+
+function formatDate(value: string | null) {
+  if (!value) return 'Data não informada'
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value))
+}
+
+export function ClientDashboard() {
+  const [overview, setOverview] = useState<ClientOverview | null>(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    getClientOverview()
+      .then((result) => {
+        if (active) setOverview(result)
+      })
+      .catch((reason) => {
+        if (active) setError(reason instanceof Error ? reason.message : 'Não foi possível carregar o painel.')
+      })
+    return () => { active = false }
+  }, [])
+
+  if (error) {
+    return <main className="client-dashboard"><div className="alert" role="alert">{error}</div></main>
+  }
+
+  if (!overview) {
+    return (
+      <main className="client-dashboard" aria-busy="true">
+        <div className="dashboard-loading">Carregando seu painel…</div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="client-dashboard">
+      <section className="dashboard-welcome">
+        <div>
+          <span className="eyebrow">Painel do cliente</span>
+          <h1>Olá, {overview.name.split(' ')[0]}.</h1>
+          <p>Sua cooperativa de referência é <strong>{overview.cooperativeName}</strong>.</p>
+        </div>
+        <div className="impact-badge" aria-label="Conta conectada">
+          <span aria-hidden="true">♻</span>
+          <small>Conta conectada</small>
+        </div>
+      </section>
+
+      <section className="dashboard-metrics" aria-label="Resumo da conta">
+        <article>
+          <span>Saldo da carteira</span>
+          <strong>{overview.walletBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
+          <small>Movimentações acumuladas</small>
+        </article>
+        <article>
+          <span>Coletas</span>
+          <strong>{overview.collections.length}</strong>
+          <small>Agendamentos no histórico</small>
+        </article>
+        <article>
+          <span>Notificações</span>
+          <strong>{overview.activeNotificationCount}</strong>
+          <small>Itens que precisam de atenção</small>
+        </article>
+      </section>
+
+      <div className="dashboard-columns">
+        <section className="dashboard-panel" aria-labelledby="collections-title">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Histórico</span>
+              <h2 id="collections-title">Minhas coletas</h2>
+            </div>
+          </div>
+          {overview.collections.length === 0 ? (
+            <div className="panel-empty">Você ainda não possui coletas agendadas.</div>
+          ) : (
+            <ul className="collection-list">
+              {overview.collections.map((collection) => (
+                <li key={collection.id}>
+                  <span className={`status-dot status-${collection.status.toLowerCase()}`} />
+                  <div>
+                    <strong>Coleta #{collection.id}</strong>
+                    <small>{formatDate(collection.scheduledAt)}</small>
+                  </div>
+                  <div className="collection-meta">
+                    <span>{statusLabels[collection.status] ?? collection.status}</span>
+                    <small>{collection.materialCount} materiais</small>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="dashboard-panel notifications-panel" aria-labelledby="notifications-title">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">Atualizações</span>
+              <h2 id="notifications-title">Notificações</h2>
+            </div>
+          </div>
+          {overview.recentNotifications.length === 0 ? (
+            <div className="panel-empty">Nenhuma notificação por enquanto.</div>
+          ) : (
+            <ul className="notification-list">
+              {overview.recentNotifications.map((notification) => (
+                <li key={notification.id}>
+                  <span className={notification.active ? 'notification-active' : ''} aria-hidden="true" />
+                  <div>
+                    <strong>{notification.description}</strong>
+                    <small>{formatDate(notification.createdAt)}</small>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+    </main>
+  )
+}

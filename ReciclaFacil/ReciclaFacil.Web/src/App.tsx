@@ -8,6 +8,7 @@ import type {
   CooperativeSearch,
 } from './services/cooperatives'
 import { LoginDialog } from './components/LoginDialog'
+import { ClientDashboard } from './components/ClientDashboard'
 import { login, logout, restoreSession } from './services/auth'
 import type { WebSession } from './services/auth'
 
@@ -107,8 +108,12 @@ function App() {
           <span>Recicla<strong>Fácil</strong></span>
         </a>
         <nav aria-label="Navegação principal">
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#cooperativas">Cooperativas</a>
+          {session?.user.role !== 'Cliente' && (
+            <>
+              <a href="#como-funciona">Como funciona</a>
+              <a href="#cooperativas">Cooperativas</a>
+            </>
+          )}
           {!sessionReady ? (
             <span className="session-loading">Verificando sessão…</span>
           ) : session ? (
@@ -122,6 +127,7 @@ function App() {
         </nav>
       </header>
 
+      {session?.user.role === 'Cliente' ? <ClientDashboard /> : (
       <main>
         <section className="hero">
           <div className="hero-copy">
@@ -249,6 +255,7 @@ function App() {
           )}
         </section>
       </main>
+      )}
 
       <footer>
         <a className="brand brand-footer" href="/">

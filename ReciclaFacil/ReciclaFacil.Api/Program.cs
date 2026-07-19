@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using ReciclaFacil.Api.Security;
 using ReciclaFacil.Application.Authentication;
+using ReciclaFacil.Application.Clients;
 using ReciclaFacil.Application.Cooperatives;
 using ReciclaFacil.Application.Materials;
 using ReciclaFacil.Infrastructure;
@@ -225,6 +226,22 @@ api.MapGet("/materials", async (
     TypedResults.Ok(await queries.ListAsync(cancellationToken)))
 .WithName("ListMaterials")
 .WithSummary("Lista materiais recicláveis.");
+
+api.MapGet("/clients/me/overview", async Task<Results<
+    Ok<ClientOverview>, NotFound>> (
+    ClaimsPrincipal user,
+    IClientQueries queries,
+    CancellationToken cancellationToken) =>
+{
+    var overview = await queries.GetOverviewAsync(
+        user.FindFirstValue("sub")!, cancellationToken);
+    return overview is null
+        ? TypedResults.NotFound()
+        : TypedResults.Ok(overview);
+})
+.RequireAuthorization(policy => policy.RequireRole("Cliente"))
+.WithName("ClientOverview")
+.WithSummary("Retorna o resumo autenticado do cliente.");
 
 app.Run();
 

@@ -45,10 +45,15 @@ aplicativos móveis e oferece um fluxo web separado que protege o refresh token 
 `HttpOnly` com rotação. O frontend mantém o access token somente em memória, restaura a
 sessão ao recarregar e revoga o token no logout.
 
+O painel autenticado de Cliente também foi migrado. O endpoint
+`GET /api/v1/clients/me/overview` consolida nome, cooperativa de referência, saldo,
+coletas e notificações, sempre usando o identificador do JWT e autorização pelo papel
+`Cliente`. O React apresenta esses dados em um painel responsivo.
+
 ## Próximas etapas
 
-1. Ampliar os endpoints autenticados dos módulos Cliente e Cooperativa.
-2. Migrar os painéis de Cliente e Cooperativa para o frontend TypeScript.
+1. Migrar agendamento, detalhe e cancelamento de coleta do Cliente para a API.
+2. Migrar o painel e as operações de Cooperativa para o frontend TypeScript.
 3. Portar recuperação de senha e segundo fator para o fluxo da API.
 4. Automatizar testes de integração da autenticação e das regras operacionais.
 5. Preparar backup, observabilidade e configuração segura para homologação.
