@@ -10,6 +10,7 @@
         <p>Acesse usando as mesmas credenciais da versão anterior do Recicla Fácil.</p>
     </div>
     <form asp-action="Login" method="post">
+        @if (TempData["ContaCriada"] is string mensagem) { <div class="success-message" role="status">@mensagem</div> }
         <input asp-for="ReturnUrl" type="hidden" />
         <div asp-validation-summary="ModelOnly" class="validation-errors"></div>
         <label asp-for="Email"></label>
@@ -23,5 +24,6 @@
             Continuar conectado
         </label>
         <button class="button" type="submit">Entrar</button>
+        <div class="register-links"><span>Ainda não possui conta?</span><a asp-action="RegisterCliente">Cadastrar cliente</a><a asp-action="RegisterCooperativa">Cadastrar cooperativa</a></div>
     </form>
 </section>

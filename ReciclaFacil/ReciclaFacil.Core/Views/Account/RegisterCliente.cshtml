@@ -1,0 +1,33 @@
+@model RegisterClienteViewModel
+@{
+    ViewData["Title"] = "Cadastrar cliente";
+}
+<section class="form-card wide-form">
+    <span class="eyebrow">Nova conta</span>
+    <h1>Cadastrar cliente</h1>
+    @if (Model.Cooperativas.Count == 0)
+    {
+        <div class="empty-state"><h2>Cadastre uma cooperativa primeiro</h2><p>Clientes precisam estar vinculados a uma cooperativa.</p><a class="button" asp-action="RegisterCooperativa">Cadastrar cooperativa</a></div>
+    }
+    else
+    {
+        <form asp-action="RegisterCliente" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-errors"></div>
+            <div class="form-grid">
+                <label asp-for="Nome"></label><input asp-for="Nome" autocomplete="name" /><span asp-validation-for="Nome"></span>
+                <label asp-for="Cpf"></label><input asp-for="Cpf" inputmode="numeric" /><span asp-validation-for="Cpf"></span>
+                <label asp-for="Tipo"></label><select asp-for="Tipo"><option value="F">Pessoa física</option><option value="V">Vendedor</option></select><span asp-validation-for="Tipo"></span>
+                <label asp-for="Sexo"></label><select asp-for="Sexo"><option value="">Selecione</option><option value="F">Feminino</option><option value="M">Masculino</option><option value="O">Outro</option></select><span asp-validation-for="Sexo"></span>
+                <label asp-for="DataNascimento"></label><input asp-for="DataNascimento" /><span asp-validation-for="DataNascimento"></span>
+                <label asp-for="Endereco"></label><input asp-for="Endereco" autocomplete="street-address" /><span asp-validation-for="Endereco"></span>
+                <label asp-for="Telefone"></label><input asp-for="Telefone" inputmode="tel" /><span asp-validation-for="Telefone"></span>
+                <label asp-for="Celular"></label><input asp-for="Celular" inputmode="tel" /><span asp-validation-for="Celular"></span>
+                <label asp-for="CooperativaId"></label><select asp-for="CooperativaId"><option value="">Selecione</option>@foreach (var coop in Model.Cooperativas) { <option value="@coop.Id">@coop.Nome — @coop.Cidade/@coop.Estado</option> }</select><span asp-validation-for="CooperativaId"></span>
+                <label asp-for="Email"></label><input asp-for="Email" autocomplete="email" /><span asp-validation-for="Email"></span>
+                <label asp-for="Password"></label><input asp-for="Password" autocomplete="new-password" /><span asp-validation-for="Password"></span>
+                <label asp-for="ConfirmPassword"></label><input asp-for="ConfirmPassword" autocomplete="new-password" /><span asp-validation-for="ConfirmPassword"></span>
+            </div>
+            <div class="form-actions"><a class="button button-secondary" asp-action="Login">Cancelar</a><button class="button" type="submit">Criar conta</button></div>
+        </form>
+    }
+</section>

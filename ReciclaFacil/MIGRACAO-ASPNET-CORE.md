@@ -20,6 +20,10 @@ de itens não lidos em modo somente leitura. O schema operacional correspondente
 pelo script `Database/002_client_operations_schema.sql`.
 O agendamento e o cancelamento de coletas também foram portados com validação de
 disponibilidade, materiais aceitos, propriedade do cliente e transações atômicas.
+Os cadastros públicos de cooperativa e cliente criam usuário, papel e perfil na mesma
+transação. As senhas usam o formato Identity v2 para manter interoperabilidade durante
+a convivência com o projeto legado. Os papéis de referência são aplicados pelo script
+`Database/003_reference_roles.sql`.
 
 ## Próximas etapas
 

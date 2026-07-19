@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using ReciclaFacil.Core.Data;
 using ReciclaFacil.Core.Services;
 
@@ -12,6 +14,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHealthChecks();
 builder.Services.AddScoped<ICooperativaService, CooperativaService>();
 builder.Services.AddScoped<ILegacyAuthenticationService, LegacyAuthenticationService>();
+builder.Services.AddSingleton<IPasswordHasher<LegacyUser>>(
+    new PasswordHasher<LegacyUser>(Options.Create(new PasswordHasherOptions
+    {
+        CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV2
+    })));
 builder.Services.AddDbContext<ReciclaFacilDbContext>(options =>
 {
     var template = builder.Configuration.GetConnectionString("ReciclaFacil")
