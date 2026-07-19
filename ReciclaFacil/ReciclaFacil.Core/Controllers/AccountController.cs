@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ReciclaFacil.Core.Data;
+using ReciclaFacil.Infrastructure.Data;
 using ReciclaFacil.Core.Models;
 using ReciclaFacil.Core.Services;
 

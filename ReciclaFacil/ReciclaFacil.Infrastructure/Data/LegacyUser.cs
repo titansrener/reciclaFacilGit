@@ -1,6 +1,6 @@
 using NetTopologySuite.Geometries;
 
-namespace ReciclaFacil.Core.Data;
+namespace ReciclaFacil.Infrastructure.Data;
 
 public sealed class LegacyUser
 {

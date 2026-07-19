@@ -6,6 +6,11 @@ A solução agora contém duas aplicações:
 
 - `ReciclaFacil`: aplicação MVC 5 original, mantida como referência funcional.
 - `ReciclaFacil.Core`: nova aplicação ASP.NET Core em .NET 10, compilável e executável.
+- `ReciclaFacil.Api`: API REST versionada para web, Android e iOS.
+
+O código moderno está separado em `Domain`, `Application`, `Infrastructure`, `Api` e no
+frontend Razor temporário. A solução `ReciclaFacil.Modern.slnx` compila apenas os projetos
+modernos e não depende dos targets antigos do Visual Studio.
 
 A experiência pública e a pesquisa de cooperativas já foram portadas para controllers,
 Razor Views, injeção de dependência, arquivos estáticos e health check do ASP.NET Core.

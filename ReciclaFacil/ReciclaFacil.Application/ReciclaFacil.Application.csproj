@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReciclaFacil.Infrastructure\ReciclaFacil.Infrastructure.csproj" />
+    <ProjectReference Include="..\ReciclaFacil.Domain\ReciclaFacil.Domain.csproj" />
   </ItemGroup>
 </Project>

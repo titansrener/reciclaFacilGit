@@ -3,9 +3,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+    <ProjectReference Include="..\ReciclaFacil.Application\ReciclaFacil.Application.csproj" />
     <ProjectReference Include="..\ReciclaFacil.Infrastructure\ReciclaFacil.Infrastructure.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
   </ItemGroup>
 </Project>

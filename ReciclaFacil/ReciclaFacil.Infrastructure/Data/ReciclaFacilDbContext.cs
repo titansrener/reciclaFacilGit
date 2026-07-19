@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ReciclaFacil.Core.Data;
+namespace ReciclaFacil.Infrastructure.Data;
 
 public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext> options)
     : DbContext(options)

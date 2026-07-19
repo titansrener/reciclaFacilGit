@@ -1,4 +1,4 @@
-using ReciclaFacil.Core.Data;
+using ReciclaFacil.Infrastructure.Data;
 
 namespace ReciclaFacil.Core.Services;
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ReciclaFacil.Core.Data;
+using ReciclaFacil.Infrastructure.Data;
 using ReciclaFacil.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);

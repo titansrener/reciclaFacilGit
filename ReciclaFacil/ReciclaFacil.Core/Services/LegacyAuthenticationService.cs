@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ReciclaFacil.Core.Data;
+using ReciclaFacil.Infrastructure.Data;
 
 namespace ReciclaFacil.Core.Services;
 
