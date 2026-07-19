@@ -27,6 +27,8 @@ futuros aplicativos Android e iOS, não sendo usados pelo frontend web.
 
 Usuários com o papel `Cliente` são direcionados ao painel carregado por
 `GET /api/v1/clients/me/overview`, com resumo de carteira, coletas e notificações.
+O mesmo painel permite consultar horários e materiais, agendar, abrir detalhes e cancelar
+coletas ainda não iniciadas.
 
 ## Verificações
 

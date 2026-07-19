@@ -30,6 +30,12 @@ O painel de Cliente obtém seu resumo por `IClientQueries`, implementado em
 identificador de cliente é aceito pela URL, evitando acesso horizontal aos dados de outra
 conta.
 
+Agendamento e cancelamento são implementados por `IClientCollectionService`. O serviço
+usa transações serializáveis e revalida, no momento da escrita, a cooperativa vinculada,
+o horário futuro, o status, a duplicidade e todos os materiais selecionados. Detalhes e
+cancelamentos também usam o identificador do JWT, sem aceitar um cliente informado pelo
+consumidor.
+
 ## API
 
 Base local: `http://localhost:5090/api/v1`
@@ -47,6 +53,10 @@ Endpoints iniciais:
 - `POST /auth/web/refresh`
 - `POST /auth/web/logout`
 - `GET /clients/me/overview` (papel `Cliente`)
+- `GET /clients/me/collection-options` (papel `Cliente`)
+- `GET /clients/me/collections/{id}` (papel `Cliente`)
+- `POST /clients/me/collections` (papel `Cliente`)
+- `DELETE /clients/me/collections/{id}` (papel `Cliente`)
 - `GET /health`
 - `GET /openapi/v1.json`
 

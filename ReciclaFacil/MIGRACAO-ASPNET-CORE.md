@@ -50,10 +50,15 @@ O painel autenticado de Cliente também foi migrado. O endpoint
 coletas e notificações, sempre usando o identificador do JWT e autorização pelo papel
 `Cliente`. O React apresenta esses dados em um painel responsivo.
 
+Agendamento, detalhe e cancelamento de coletas agora também estão disponíveis na API e
+no React. As escritas usam transações serializáveis, validam novamente disponibilidade,
+propriedade, duplicidade e materiais aceitos, e retornam respostas HTTP distintas para
+validação, ausência e conflito.
+
 ## Próximas etapas
 
-1. Migrar agendamento, detalhe e cancelamento de coleta do Cliente para a API.
-2. Migrar o painel e as operações de Cooperativa para o frontend TypeScript.
+1. Migrar o painel e as operações de Cooperativa para o frontend TypeScript.
+2. Migrar os fluxos administrativos restantes para API e React.
 3. Portar recuperação de senha e segundo fator para o fluxo da API.
 4. Automatizar testes de integração da autenticação e das regras operacionais.
 5. Preparar backup, observabilidade e configuração segura para homologação.

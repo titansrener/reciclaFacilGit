@@ -28,3 +28,72 @@ public interface IClientQueries
         string userId,
         CancellationToken cancellationToken = default);
 }
+
+public sealed record ClientCollectionOptions(
+    IReadOnlyList<ClientCollectionSlot> Slots,
+    IReadOnlyList<ClientAcceptedMaterial> Materials);
+
+public sealed record ClientCollectionSlot(int Id, DateTime ScheduledAt);
+public sealed record ClientAcceptedMaterial(int Id, string Description);
+
+public sealed record ClientCollectionDetails(
+    int Id,
+    DateTime? ScheduledAt,
+    DateTime? CollectedAt,
+    string Status,
+    IReadOnlyList<ClientCollectionMaterial> Materials);
+
+public sealed record ClientCollectionMaterial(
+    int Id,
+    string Description,
+    double? Quantity,
+    decimal? Value);
+
+public sealed record ScheduleClientCollection(
+    int CollectionId,
+    IReadOnlyList<int> MaterialIds);
+
+public enum ClientCollectionError
+{
+    None,
+    ClientNotFound,
+    CollectionNotFound,
+    CollectionUnavailable,
+    AlreadyScheduled,
+    NoMaterials,
+    MaterialNotAccepted,
+    CannotCancel
+}
+
+public sealed record ClientCollectionResult(
+    bool Success,
+    ClientCollectionError Error = ClientCollectionError.None,
+    string? Message = null)
+{
+    public static ClientCollectionResult Completed() => new(true);
+    public static ClientCollectionResult Failed(
+        ClientCollectionError error,
+        string message) => new(false, error, message);
+}
+
+public interface IClientCollectionService
+{
+    Task<ClientCollectionOptions?> GetOptionsAsync(
+        string userId,
+        CancellationToken cancellationToken = default);
+
+    Task<ClientCollectionDetails?> GetDetailsAsync(
+        string userId,
+        int collectionId,
+        CancellationToken cancellationToken = default);
+
+    Task<ClientCollectionResult> ScheduleAsync(
+        string userId,
+        ScheduleClientCollection command,
+        CancellationToken cancellationToken = default);
+
+    Task<ClientCollectionResult> CancelAsync(
+        string userId,
+        int collectionId,
+        CancellationToken cancellationToken = default);
+}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getClientOverview } from '../services/clients'
 import type { ClientOverview } from '../services/clients'
+import { CollectionDetailsDialog } from './CollectionDetailsDialog'
+import { ScheduleCollectionDialog } from './ScheduleCollectionDialog'
 
 const statusLabels: Record<string, string> = {
   A: 'Agendada',
@@ -20,6 +22,9 @@ function formatDate(value: string | null) {
 export function ClientDashboard() {
   const [overview, setOverview] = useState<ClientOverview | null>(null)
   const [error, setError] = useState('')
+  const [version, setVersion] = useState(0)
+  const [scheduling, setScheduling] = useState(false)
+  const [selectedCollection, setSelectedCollection] = useState<number | null>(null)
 
   useEffect(() => {
     let active = true
@@ -31,7 +36,12 @@ export function ClientDashboard() {
         if (active) setError(reason instanceof Error ? reason.message : 'Não foi possível carregar o painel.')
       })
     return () => { active = false }
-  }, [])
+  }, [version])
+
+  function refresh() {
+    setOverview(null)
+    setVersion((current) => current + 1)
+  }
 
   if (error) {
     return <main className="client-dashboard"><div className="alert" role="alert">{error}</div></main>
@@ -84,6 +94,9 @@ export function ClientDashboard() {
               <span className="eyebrow">Histórico</span>
               <h2 id="collections-title">Minhas coletas</h2>
             </div>
+            <button className="panel-action" type="button" onClick={() => setScheduling(true)}>
+              Agendar coleta
+            </button>
           </div>
           {overview.collections.length === 0 ? (
             <div className="panel-empty">Você ainda não possui coletas agendadas.</div>
@@ -100,6 +113,10 @@ export function ClientDashboard() {
                     <span>{statusLabels[collection.status] ?? collection.status}</span>
                     <small>{collection.materialCount} materiais</small>
                   </div>
+                  <button className="collection-action" type="button"
+                    onClick={() => setSelectedCollection(collection.id)}>
+                    Ver detalhes
+                  </button>
                 </li>
               ))}
             </ul>
@@ -130,6 +147,13 @@ export function ClientDashboard() {
           )}
         </section>
       </div>
+      {scheduling && (
+        <ScheduleCollectionDialog onClose={() => setScheduling(false)} onScheduled={refresh} />
+      )}
+      {selectedCollection !== null && (
+        <CollectionDetailsDialog collectionId={selectedCollection}
+          onClose={() => setSelectedCollection(null)} onChanged={refresh} />
+      )}
     </main>
   )
 }

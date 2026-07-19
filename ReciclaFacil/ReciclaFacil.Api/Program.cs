@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 using ReciclaFacil.Api.Security;
+using ReciclaFacil.Api;
 using ReciclaFacil.Application.Authentication;
 using ReciclaFacil.Application.Clients;
 using ReciclaFacil.Application.Cooperatives;
@@ -243,12 +244,86 @@ api.MapGet("/clients/me/overview", async Task<Results<
 .WithName("ClientOverview")
 .WithSummary("Retorna o resumo autenticado do cliente.");
 
+var clientCollections = api.MapGroup("/clients/me")
+    .RequireAuthorization(policy => policy.RequireRole("Cliente"))
+    .WithTags("Client Collections");
+
+clientCollections.MapGet("/collection-options", async Task<Results<
+    Ok<ClientCollectionOptions>, NotFound>> (
+    ClaimsPrincipal user,
+    IClientCollectionService collections,
+    CancellationToken cancellationToken) =>
+{
+    var options = await collections.GetOptionsAsync(
+        user.FindFirstValue("sub")!, cancellationToken);
+    return options is null
+        ? TypedResults.NotFound()
+        : TypedResults.Ok(options);
+})
+.WithName("ClientCollectionOptions")
+.WithSummary("Lista horários e materiais disponíveis para o cliente.");
+
+clientCollections.MapGet("/collections/{id:int}", async Task<Results<
+    Ok<ClientCollectionDetails>, NotFound>> (
+    int id,
+    ClaimsPrincipal user,
+    IClientCollectionService collections,
+    CancellationToken cancellationToken) =>
+{
+    var details = await collections.GetDetailsAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken);
+    return details is null
+        ? TypedResults.NotFound()
+        : TypedResults.Ok(details);
+})
+.WithName("ClientCollectionDetails")
+.WithSummary("Retorna uma coleta pertencente ao cliente autenticado.");
+
+clientCollections.MapPost("/collections", async (
+    ScheduleClientCollectionRequest request,
+    ClaimsPrincipal user,
+    IClientCollectionService collections,
+    CancellationToken cancellationToken) =>
+{
+    var result = await collections.ScheduleAsync(
+        user.FindFirstValue("sub")!,
+        new(request.CollectionId, request.MaterialIds ?? []),
+        cancellationToken);
+    return ClientCollectionHttpResults.From(
+        result, $"/api/v1/clients/me/collections/{request.CollectionId}");
+})
+.WithName("ScheduleClientCollection")
+.WithSummary("Agenda uma coleta com os materiais selecionados.")
+.Produces(StatusCodes.Status201Created)
+.ProducesProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status409Conflict);
+
+clientCollections.MapDelete("/collections/{id:int}", async (
+    int id,
+    ClaimsPrincipal user,
+    IClientCollectionService collections,
+    CancellationToken cancellationToken) =>
+{
+    var result = await collections.CancelAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken);
+    return ClientCollectionHttpResults.From(result);
+})
+.WithName("CancelClientCollection")
+.WithSummary("Cancela uma coleta ainda não iniciada.")
+.Produces(StatusCodes.Status204NoContent)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status409Conflict);
+
 app.Run();
 
 public partial class Program;
 
 public sealed record LoginRequest(string Email, string Password);
 public sealed record RefreshRequest(string RefreshToken);
+public sealed record ScheduleClientCollectionRequest(
+    int CollectionId,
+    int[]? MaterialIds);
 public sealed record WebSessionResponse(
     string AccessToken,
     DateTimeOffset AccessTokenExpiresAt,
