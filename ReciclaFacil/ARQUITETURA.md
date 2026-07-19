@@ -38,6 +38,9 @@ Endpoints iniciais:
 - `POST /auth/refresh`
 - `POST /auth/revoke`
 - `GET /auth/me` (requer bearer token)
+- `POST /auth/web/login`
+- `POST /auth/web/refresh`
+- `POST /auth/web/logout`
 - `GET /health`
 - `GET /openapi/v1.json`
 
@@ -59,6 +62,13 @@ $env:Jwt__SigningKey = '<segredo-fornecido-pelo-ambiente>'
 
 Aplicativos web, Android e iOS devem guardar refresh tokens em armazenamento seguro e
 enviar o access token no cabeçalho `Authorization: Bearer <token>`.
+
+Para Android e iOS, os endpoints gerais devolvem o par de tokens para armazenamento
+seguro do dispositivo. O frontend web usa os endpoints `/auth/web/*`: o refresh token
+fica em cookie `HttpOnly`, `SameSite=Strict`, restrito ao caminho da autenticação e nunca
+é incluído no JSON. O access token permanece apenas em memória e é restaurado por rotação
+do cookie após um recarregamento. As chamadas web também exigem o cabeçalho
+`X-ReciclaFacil-Web: 1`.
 
 ## Execução
 

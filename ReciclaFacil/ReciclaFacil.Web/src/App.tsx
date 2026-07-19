@@ -7,6 +7,9 @@ import type {
   CooperativeListItem,
   CooperativeSearch,
 } from './services/cooperatives'
+import { LoginDialog } from './components/LoginDialog'
+import { login, logout, restoreSession } from './services/auth'
+import type { WebSession } from './services/auth'
 
 const initialSearch: CooperativeSearch = {
   name: '',
@@ -25,6 +28,24 @@ function App() {
   const [error, setError] = useState('')
   const [selected, setSelected] = useState<CooperativeDetails | null>(null)
   const [detailsLoading, setDetailsLoading] = useState(false)
+  const [session, setSession] = useState<WebSession | null>(null)
+  const [sessionReady, setSessionReady] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    restoreSession()
+      .then((restored) => {
+        if (active) setSession(restored)
+      })
+      .catch(() => {
+        if (active) setSession(null)
+      })
+      .finally(() => {
+        if (active) setSessionReady(true)
+      })
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -65,6 +86,17 @@ function App() {
     }
   }
 
+  async function handleLogin(email: string, password: string) {
+    const authenticated = await login(email, password)
+    setSession(authenticated)
+    return authenticated
+  }
+
+  async function handleLogout() {
+    await logout()
+    setSession(null)
+  }
+
   const totalPages = Math.max(1, Math.ceil(total / query.pageSize))
 
   return (
@@ -77,7 +109,16 @@ function App() {
         <nav aria-label="Navegação principal">
           <a href="#como-funciona">Como funciona</a>
           <a href="#cooperativas">Cooperativas</a>
-          <span className="nav-login">Área do usuário em breve</span>
+          {!sessionReady ? (
+            <span className="session-loading">Verificando sessão…</span>
+          ) : session ? (
+            <div className="user-session">
+              <span><strong>{session.user.email}</strong><small>{session.user.role}</small></span>
+              <button type="button" onClick={handleLogout}>Sair</button>
+            </div>
+          ) : (
+            <button className="nav-login" type="button" onClick={() => setLoginOpen(true)}>Entrar</button>
+          )}
         </nav>
       </header>
 
@@ -254,6 +295,9 @@ function App() {
             )}
           </section>
         </div>
+      )}
+      {loginOpen && (
+        <LoginDialog onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
       )}
     </div>
   )

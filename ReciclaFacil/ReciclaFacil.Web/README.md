@@ -18,6 +18,13 @@ npm run dev
 O frontend responde em `http://localhost:5173`. Durante o desenvolvimento, o
 Vite encaminha `/api` para a API local.
 
+## Sessão web
+
+O login usa `/api/v1/auth/web/*`. O refresh token é mantido exclusivamente em cookie
+`HttpOnly`, com rotação a cada restauração; o access token fica somente em memória.
+Os endpoints que devolvem refresh token no corpo permanecem disponíveis para os
+futuros aplicativos Android e iOS, não sendo usados pelo frontend web.
+
 ## Verificações
 
 ```powershell

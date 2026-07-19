@@ -1,4 +1,4 @@
-const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '/api/v1').replace(/\/$/, '')
+export const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '/api/v1').replace(/\/$/, '')
 
 export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`, {

@@ -40,10 +40,15 @@ A primeira fatia do novo frontend já consome `GET /api/v1/cooperatives` e
 `GET /api/v1/cooperatives/{id}`. Ela oferece pesquisa paginada, filtros, estados de
 carregamento/erro/vazio, layout responsivo e detalhes dos materiais comercializados.
 
+O login também foi migrado para o React. A API mantém os contratos de token para
+aplicativos móveis e oferece um fluxo web separado que protege o refresh token em cookie
+`HttpOnly` com rotação. O frontend mantém o access token somente em memória, restaura a
+sessão ao recarregar e revoga o token no logout.
+
 ## Próximas etapas
 
-1. Migrar autenticação e sessão para o frontend TypeScript.
-2. Ampliar os endpoints autenticados dos módulos Cliente e Cooperativa.
+1. Ampliar os endpoints autenticados dos módulos Cliente e Cooperativa.
+2. Migrar os painéis de Cliente e Cooperativa para o frontend TypeScript.
 3. Portar recuperação de senha e segundo fator para o fluxo da API.
 4. Automatizar testes de integração da autenticação e das regras operacionais.
 5. Preparar backup, observabilidade e configuração segura para homologação.

@@ -44,7 +44,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("web", policy =>
         policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [])
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 builder.Services.AddReciclaFacilInfrastructure(builder.Configuration);
 
@@ -121,6 +122,72 @@ auth.MapGet("/me", (ClaimsPrincipal user) => TypedResults.Ok(new
 .WithName("CurrentUser")
 .WithSummary("Retorna os dados do usuário autenticado.");
 
+var webAuth = auth.MapGroup("/web").WithTags("Web Authentication");
+
+webAuth.MapPost("/login", async Task<Results<
+    Ok<WebSessionResponse>, UnauthorizedHttpResult, BadRequest>> (
+    LoginRequest request,
+    HttpContext context,
+    IWebHostEnvironment environment,
+    IApiAuthenticationService authentication,
+    CancellationToken cancellationToken) =>
+{
+    if (!WebSessionCookie.IsWebClient(context.Request))
+        return TypedResults.BadRequest();
+    var result = await authentication.LoginAsync(
+        new(request.Email, request.Password), cancellationToken);
+    if (result is null)
+        return TypedResults.Unauthorized();
+    WebSessionCookie.Write(context.Response, result, !environment.IsDevelopment());
+    context.Response.Headers.CacheControl = "no-store";
+    return TypedResults.Ok(WebSessionResponse.From(result));
+})
+.WithName("WebLogin")
+.WithSummary("Autentica o frontend web e grava o refresh token em cookie HttpOnly.");
+
+webAuth.MapPost("/refresh", async Task<Results<
+    Ok<WebSessionResponse>, UnauthorizedHttpResult, BadRequest>> (
+    HttpContext context,
+    IWebHostEnvironment environment,
+    IApiAuthenticationService authentication,
+    CancellationToken cancellationToken) =>
+{
+    if (!WebSessionCookie.IsWebClient(context.Request))
+        return TypedResults.BadRequest();
+    var refreshToken = WebSessionCookie.Read(context.Request);
+    if (string.IsNullOrWhiteSpace(refreshToken))
+        return TypedResults.Unauthorized();
+    var result = await authentication.RefreshAsync(
+        new(refreshToken), cancellationToken);
+    if (result is null)
+    {
+        WebSessionCookie.Delete(context.Response, !environment.IsDevelopment());
+        return TypedResults.Unauthorized();
+    }
+    WebSessionCookie.Write(context.Response, result, !environment.IsDevelopment());
+    context.Response.Headers.CacheControl = "no-store";
+    return TypedResults.Ok(WebSessionResponse.From(result));
+})
+.WithName("WebRefresh")
+.WithSummary("Rotaciona o refresh cookie e restaura a sessão web.");
+
+webAuth.MapPost("/logout", async Task<Results<NoContent, BadRequest>> (
+    HttpContext context,
+    IWebHostEnvironment environment,
+    IApiAuthenticationService authentication,
+    CancellationToken cancellationToken) =>
+{
+    if (!WebSessionCookie.IsWebClient(context.Request))
+        return TypedResults.BadRequest();
+    var refreshToken = WebSessionCookie.Read(context.Request);
+    if (!string.IsNullOrWhiteSpace(refreshToken))
+        await authentication.RevokeAsync(refreshToken, cancellationToken);
+    WebSessionCookie.Delete(context.Response, !environment.IsDevelopment());
+    return TypedResults.NoContent();
+})
+.WithName("WebLogout")
+.WithSummary("Revoga o refresh token e encerra a sessão web.");
+
 api.MapGet("/cooperatives", async (
     string? name,
     string? city,
@@ -165,3 +232,11 @@ public partial class Program;
 
 public sealed record LoginRequest(string Email, string Password);
 public sealed record RefreshRequest(string RefreshToken);
+public sealed record WebSessionResponse(
+    string AccessToken,
+    DateTimeOffset AccessTokenExpiresAt,
+    AuthenticatedUser User)
+{
+    public static WebSessionResponse From(TokenPair pair) =>
+        new(pair.AccessToken, pair.AccessTokenExpiresAt, pair.User);
+}
