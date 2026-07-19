@@ -1,0 +1,26 @@
+@model CarteiraViewModel
+@{
+    ViewData["Title"] = "Minha carteira";
+}
+<div class="page-heading"><div><span class="eyebrow">Cliente</span><h1>Minha carteira</h1></div></div>
+<section class="balance-card">
+    <span>Saldo atual</span>
+    <strong>@Model.Saldo.ToString("C")</strong>
+    <small>Somatório dos créditos registrados</small>
+</section>
+@if (Model.Movimentos.Count == 0)
+{
+    <div class="empty-state"><h2>Nenhuma movimentação</h2><p>Os créditos de coletas finalizadas aparecerão aqui.</p></div>
+}
+else
+{
+    <div class="data-table"><table>
+        <thead><tr><th>Data</th><th>Crédito</th></tr></thead>
+        <tbody>
+        @foreach (var movimento in Model.Movimentos)
+        {
+            <tr><td>@(movimento.Data?.ToString("dd/MM/yyyy HH:mm") ?? "Não informada")</td><td>@movimento.Valor.ToString("C")</td></tr>
+        }
+        </tbody>
+    </table></div>
+}

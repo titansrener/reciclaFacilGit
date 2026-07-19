@@ -15,6 +15,9 @@ real, incluindo coordenadas espaciais e materiais comercializados. Quando o Loca
 indisponível, dados demonstrativos são usados somente com `ModoMigracao` habilitado.
 O módulo administrativo de materiais também foi portado por completo, com operações
 assíncronas, autorização por papel, antiforgery e proteção contra exclusão de itens em uso.
+A área de cliente já possui painel de coletas, extrato da carteira, notificações e contador
+de itens não lidos em modo somente leitura. O schema operacional correspondente é criado
+pelo script `Database/002_client_operations_schema.sql`.
 
 ## Próximas etapas
 

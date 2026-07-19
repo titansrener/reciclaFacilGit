@@ -11,6 +11,12 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
     public DbSet<Material> Materiais => Set<Material>();
     public DbSet<Cooperativa> Cooperativas => Set<Cooperativa>();
     public DbSet<MaterialComercializado> MateriaisComercializados => Set<MaterialComercializado>();
+    public DbSet<Cliente> Clientes => Set<Cliente>();
+    public DbSet<Coleta> Coletas => Set<Coleta>();
+    public DbSet<ClienteColeta> ClientesColetas => Set<ClienteColeta>();
+    public DbSet<CarteiraMovimento> Carteiras => Set<CarteiraMovimento>();
+    public DbSet<MaterialColetado> MateriaisColetados => Set<MaterialColetado>();
+    public DbSet<Notificacao> Notificacoes => Set<Notificacao>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,6 +87,97 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
                 .HasForeignKey(x => x.MaterialId).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(x => x.Cooperativa).WithMany(x => x.MateriaisComercializados)
                 .HasForeignKey(x => x.CooperativaId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Cliente>(entity =>
+        {
+            entity.ToTable("Clientes");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("clienteId").HasMaxLength(128);
+            entity.Property(x => x.Cpf).HasColumnName("cpf").HasMaxLength(11).IsUnicode(false);
+            entity.Property(x => x.Tipo).HasColumnName("tipo").HasMaxLength(1).IsFixedLength().IsUnicode(false);
+            entity.Property(x => x.Nome).HasColumnName("nome").HasMaxLength(75).IsUnicode(false);
+            entity.Property(x => x.Endereco).HasColumnName("endereco").HasMaxLength(100).IsUnicode(false);
+            entity.Property(x => x.EnderecoCoordenada).HasColumnName("enderecoCoordenada").HasColumnType("geometry");
+            entity.Property(x => x.Email).HasColumnName("email").HasMaxLength(45).IsUnicode(false);
+            entity.Property(x => x.Sexo).HasColumnName("sexo").HasMaxLength(1).IsFixedLength().IsUnicode(false);
+            entity.Property(x => x.DataNascimento).HasColumnName("dataNascimento");
+            entity.Property(x => x.Telefone).HasColumnName("telefone").HasMaxLength(11).IsUnicode(false);
+            entity.Property(x => x.Celular).HasColumnName("celular").HasMaxLength(11).IsUnicode(false);
+            entity.Property(x => x.CooperativaId).HasColumnName("cooperativaId").HasMaxLength(128);
+            entity.HasOne(x => x.Cooperativa).WithMany()
+                .HasForeignKey(x => x.CooperativaId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Coleta>(entity =>
+        {
+            entity.ToTable("Coletas");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("coletaId");
+            entity.Property(x => x.HoraAgendada).HasColumnName("horaAgendada");
+            entity.Property(x => x.Quantidade).HasColumnName("quantidade");
+            entity.Property(x => x.Status).HasColumnName("coletado").HasMaxLength(1).IsFixedLength().IsUnicode(false);
+            entity.Property(x => x.CooperativaId).HasColumnName("cooperativaId").HasMaxLength(128);
+            entity.HasOne(x => x.Cooperativa).WithMany()
+                .HasForeignKey(x => x.CooperativaId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<ClienteColeta>(entity =>
+        {
+            entity.ToTable("ClientesColetas");
+            entity.HasKey(x => new { x.ColetaId, x.ClienteId });
+            entity.Property(x => x.ColetaId).HasColumnName("coletaId");
+            entity.Property(x => x.ClienteId).HasColumnName("clienteId").HasMaxLength(128);
+            entity.Property(x => x.HoraDaColeta).HasColumnName("horaDaColeta");
+            entity.Property(x => x.Status).HasColumnName("coletado").HasMaxLength(1).IsFixedLength().IsUnicode(false);
+            entity.HasOne(x => x.Cliente).WithMany(x => x.Coletas)
+                .HasForeignKey(x => x.ClienteId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(x => x.Coleta).WithMany(x => x.Clientes)
+                .HasForeignKey(x => x.ColetaId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<CarteiraMovimento>(entity =>
+        {
+            entity.ToTable("Carteiras");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("carteiraId");
+            entity.Property(x => x.Saldo).HasColumnName("saldo").HasPrecision(8, 2);
+            entity.Property(x => x.DataUltimaMovimentacao).HasColumnName("dataUltimaMovimentacao");
+            entity.Property(x => x.ClienteId).HasColumnName("clienteId").HasMaxLength(128);
+            entity.HasOne(x => x.Cliente).WithMany(x => x.Carteira)
+                .HasForeignKey(x => x.ClienteId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<MaterialColetado>(entity =>
+        {
+            entity.ToTable("MateriaisColetados");
+            entity.HasKey(x => new { x.MaterialId, x.ColetaId, x.ClienteId });
+            entity.Property(x => x.MaterialId).HasColumnName("materialId");
+            entity.Property(x => x.ColetaId).HasColumnName("coletaId");
+            entity.Property(x => x.ClienteId).HasColumnName("clienteId").HasMaxLength(128);
+            entity.Property(x => x.Quantidade).HasColumnName("quantidade");
+            entity.Property(x => x.ValorCompra).HasColumnName("valorCompra").HasPrecision(18, 0);
+            entity.Property(x => x.Status).HasColumnName("coletado").HasMaxLength(1).IsFixedLength().IsUnicode(false);
+            entity.HasOne(x => x.Material).WithMany()
+                .HasForeignKey(x => x.MaterialId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(x => x.ClienteColeta).WithMany(x => x.Materiais)
+                .HasForeignKey(x => new { x.ColetaId, x.ClienteId }).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Notificacao>(entity =>
+        {
+            entity.ToTable("Notificacoes");
+            entity.HasKey(x => new { x.Id, x.ClienteId });
+            entity.Property(x => x.Id).HasColumnName("notificacaoId").ValueGeneratedOnAdd();
+            entity.Property(x => x.ClienteId).HasColumnName("clienteId").HasMaxLength(128);
+            entity.Property(x => x.ColetaId).HasColumnName("coletaId");
+            entity.Property(x => x.CooperativaId).HasColumnName("cooperativaId").HasMaxLength(128);
+            entity.Property(x => x.DataHorario).HasColumnName("dataHorario");
+            entity.Property(x => x.Ativa).HasColumnName("ativa");
+            entity.Property(x => x.Descricao).HasColumnName("descricao").HasMaxLength(150).IsUnicode(false);
+            entity.Property(x => x.Tipo).HasColumnName("tipo").HasMaxLength(1).IsFixedLength().IsUnicode(false);
+            entity.HasOne(x => x.Cliente).WithMany(x => x.Notificacoes)
+                .HasForeignKey(x => x.ClienteId).OnDelete(DeleteBehavior.NoAction);
         });
     }
 }

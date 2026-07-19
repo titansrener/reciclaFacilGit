@@ -1,0 +1,38 @@
+@model ClienteDashboardViewModel
+@{
+    ViewData["Title"] = "Minhas coletas";
+}
+<div class="page-heading">
+    <div><span class="eyebrow">Olá, @Model.Nome</span><h1>Minhas coletas</h1></div>
+</div>
+@if (Model.Coletas.Count == 0)
+{
+    <div class="empty-state"><h2>Nenhuma coleta agendada</h2><p>Seus próximos agendamentos aparecerão aqui.</p></div>
+}
+else
+{
+    <div class="data-table">
+        <table>
+            <thead><tr><th>Data e horário</th><th>Situação</th><th>Materiais</th></tr></thead>
+            <tbody>
+            @foreach (var coleta in Model.Coletas)
+            {
+                <tr>
+                    <td>@(coleta.HorarioAgendado?.ToString("dd/MM/yyyy 'às' HH:mm") ?? "A definir")</td>
+                    <td><span class="status status-@coleta.Status.ToLowerInvariant()">@StatusColeta(coleta.Status)</span></td>
+                    <td>@coleta.QuantidadeMateriais</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+@functions {
+    private static string StatusColeta(string status) => status switch
+    {
+        "A" => "Aguardando",
+        "I" => "Em andamento",
+        "F" => "Finalizada",
+        _ => "Não informado"
+    };
+}

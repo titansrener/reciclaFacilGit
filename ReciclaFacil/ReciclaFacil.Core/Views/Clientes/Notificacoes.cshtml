@@ -1,0 +1,21 @@
+@model IReadOnlyList<NotificacaoViewModel>
+@{
+    ViewData["Title"] = "Notificações";
+}
+<div class="page-heading"><div><span class="eyebrow">Cliente</span><h1>Notificações</h1></div></div>
+@if (Model.Count == 0)
+{
+    <div class="empty-state"><h2>Tudo em dia</h2><p>Você ainda não possui notificações.</p></div>
+}
+else
+{
+    <div class="notification-list">
+    @foreach (var item in Model)
+    {
+        <article class="@(item.Ativa ? "unread" : null)">
+            <div><strong>@item.Descricao</strong><small>@(item.Data?.ToString("dd/MM/yyyy HH:mm") ?? "")</small></div>
+            @if (item.Ativa) { <span class="unread-dot" title="Não lida"></span> }
+        </article>
+    }
+    </div>
+}

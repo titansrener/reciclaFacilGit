@@ -22,6 +22,12 @@
                 {
                     <a asp-controller="Administrador" asp-action="Materiais">Materiais</a>
                 }
+                @if (User.IsInRole("Cliente"))
+                {
+                    <a asp-controller="Clientes" asp-action="Index">Coletas</a>
+                    <a asp-controller="Clientes" asp-action="Carteira">Carteira</a>
+                    <a asp-controller="Clientes" asp-action="Notificacoes">Notificações</a>
+                }
                 <span class="user-name">@User.Identity.Name</span>
                 <form asp-controller="Account" asp-action="LogOut" method="post">
                     <button class="nav-button" type="submit">Sair</button>
