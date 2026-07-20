@@ -9,6 +9,7 @@ using ReciclaFacil.Application.Authentication;
 using ReciclaFacil.Application.Clients;
 using ReciclaFacil.Application.Cooperatives;
 using ReciclaFacil.Application.Materials;
+using ReciclaFacil.Application.Employees;
 using ReciclaFacil.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -507,6 +508,56 @@ cooperative.MapDelete("/collections/{collectionId:int}/employees/{employeeId}", 
     CooperativeResourceHttpResults.From(await resources.AssignEmployeeAsync(
         user.FindFirstValue("sub")!, collectionId, employeeId, false, cancellationToken)))
 .WithName("UnassignEmployee");
+
+var employee = api.MapGroup("/employees/me")
+    .RequireAuthorization(policy => policy.RequireRole("Funcionario"))
+    .WithTags("Employee Operations");
+
+employee.MapGet("/overview", async Task<Results<Ok<EmployeeOverview>, NotFound>> (
+    ClaimsPrincipal user,
+    IEmployeeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var result = await operations.GetOverviewAsync(user.FindFirstValue("sub")!, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.WithName("EmployeeOverview");
+
+employee.MapGet("/collections/{id:int}", async Task<Results<Ok<EmployeeCollectionDetails>, NotFound>> (
+    int id,
+    ClaimsPrincipal user,
+    IEmployeeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var result = await operations.GetCollectionAsync(user.FindFirstValue("sub")!, id, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.WithName("EmployeeCollectionDetails");
+
+employee.MapGet("/collections/{collectionId:int}/clients/{clientId}", async Task<Results<
+    Ok<EmployeeClientDetails>, NotFound>> (
+    int collectionId,
+    string clientId,
+    ClaimsPrincipal user,
+    IEmployeeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var result = await operations.GetClientAsync(
+        user.FindFirstValue("sub")!, collectionId, clientId, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.WithName("EmployeeClientDetails");
+
+employee.MapPut("/collections/{collectionId:int}/clients/{clientId}/materials", async (
+    int collectionId,
+    string clientId,
+    RecordCollectedMaterials request,
+    ClaimsPrincipal user,
+    IEmployeeOperations operations,
+    CancellationToken cancellationToken) =>
+    EmployeeHttpResults.From(await operations.RecordAsync(
+        user.FindFirstValue("sub")!, collectionId, clientId, request, cancellationToken)))
+.WithName("RecordCollectedMaterials");
 
 app.Run();
 

@@ -5,6 +5,7 @@ using ReciclaFacil.Application.Cooperatives;
 using ReciclaFacil.Application.Materials;
 using ReciclaFacil.Application.Authentication;
 using ReciclaFacil.Application.Clients;
+using ReciclaFacil.Application.Employees;
 using ReciclaFacil.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IClientCollectionService, ClientCollectionService>();
         services.AddScoped<ICooperativeOperations, CooperativeOperations>();
         services.AddScoped<ICooperativeResourceService, CooperativeResourceService>();
+        services.AddScoped<IEmployeeOperations, EmployeeOperations>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IPasswordHasher<LegacyUser>>(
             new PasswordHasher<LegacyUser>(Options.Create(new PasswordHasherOptions

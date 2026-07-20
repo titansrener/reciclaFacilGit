@@ -173,7 +173,7 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
             entity.Property(x => x.ColetaId).HasColumnName("coletaId");
             entity.Property(x => x.ClienteId).HasColumnName("clienteId").HasMaxLength(128);
             entity.Property(x => x.Quantidade).HasColumnName("quantidade");
-            entity.Property(x => x.ValorCompra).HasColumnName("valorCompra").HasPrecision(18, 0);
+            entity.Property(x => x.ValorCompra).HasColumnName("valorCompra").HasPrecision(18, 2);
             entity.Property(x => x.Status).HasColumnName("coletado").HasMaxLength(1).IsFixedLength().IsUnicode(false);
             entity.HasOne(x => x.Material).WithMany()
                 .HasForeignKey(x => x.MaterialId).OnDelete(DeleteBehavior.NoAction);

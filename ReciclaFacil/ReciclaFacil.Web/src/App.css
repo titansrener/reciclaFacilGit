@@ -476,6 +476,34 @@ footer p { color: var(--muted); font-size: .85rem; }
 .employee-form { align-items: stretch; display: grid; grid-template-columns: 1fr 1fr; }
 .employee-form button { grid-column: 1 / -1; }
 .assignment-grid { display: grid; gap: 7px; grid-template-columns: 1fr 1fr; }
+.employee-dashboard .dashboard-panel { min-height: 360px; }
+.employee-collection-modal > p { color: var(--muted); line-height: 1.6; }
+.employee-client-list { list-style: none; margin: 0; padding: 0; }
+.employee-client-list li {
+  align-items: center; border-top: 1px solid var(--line); display: grid; gap: 12px;
+  grid-template-columns: 1fr auto auto; padding: 15px 0;
+}
+.employee-client-list li > div { display: flex; flex-direction: column; gap: 5px; }
+.employee-client-list strong { color: var(--ink); font-size: .86rem; }
+.employee-client-list small { color: var(--muted); font-size: .74rem; }
+.employee-client-list li > span { color: var(--green); font-size: .72rem; font-weight: 750; }
+.employee-client-list button {
+  background: white; border: 1px solid var(--line); border-radius: 99px; color: var(--ink);
+  cursor: pointer; font-size: .72rem; font-weight: 750; padding: 8px 11px;
+}
+.employee-client-list button:disabled { cursor: default; opacity: .45; }
+.nested-modal { z-index: 12; }
+.material-quantity-list { display: flex; flex-direction: column; gap: 9px; margin: 20px 0 25px; }
+.material-quantity-list label {
+  align-items: center; background: var(--surface); border-radius: 11px; display: flex;
+  justify-content: space-between; padding: 12px 14px;
+}
+.material-quantity-list label > span { color: var(--ink); font-size: .85rem; font-weight: 700; }
+.material-quantity-list label > div { align-items: center; display: flex; gap: 7px; }
+.material-quantity-list input {
+  background: white; border: 1px solid var(--line); border-radius: 8px; padding: 9px; width: 105px;
+}
+.material-quantity-list small { color: var(--muted); }
 .modal-address { color: var(--muted); margin: 13px 0 8px; }
 .modal-close {
   background: var(--surface); border: 0; border-radius: 50%; color: var(--ink);
@@ -530,6 +558,8 @@ footer p { color: var(--muted); font-size: .85rem; }
   .cooperative-dashboard .row-actions { grid-column: 2; justify-content: flex-start; }
   .management-form { align-items: stretch; flex-direction: column; }
   .employee-form, .assignment-grid { display: flex; flex-direction: column; }
+  .employee-client-list li { grid-template-columns: 1fr auto; }
+  .employee-client-list button { grid-column: 1 / -1; justify-self: start; }
   .collection-meta { align-items: start; text-align: left; }
   .collection-action { grid-column: 2; justify-self: start; }
   .operation-modal { padding: 34px 22px; }

@@ -41,6 +41,13 @@ cadastrados e vinculados às coletas; cada funcionário recebe uma conta com o p
 `Funcionario`. O esquema correspondente é criado pelo script idempotente
 `database/005_cooperative_resources.sql`.
 
+Usuários com o papel `Funcionario` têm um painel próprio em
+`/api/v1/employees/me`: consultam apenas as coletas às quais estão atribuídos, veem
+clientes e caminhões e registram os pesos recebidos. Para vendedores, a API calcula o
+valor a receber com o preço definido pela cooperativa, atualiza todos os estados numa
+transação e cria a notificação do cliente. O script
+`database/006_purchase_value_precision.sql` preserva os centavos desses valores.
+
 ## Verificações
 
 ```powershell
