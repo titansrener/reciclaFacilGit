@@ -18,3 +18,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Apply-Database.ps
 O executor exige autenticação integrada do Windows, confia no certificado local,
 valida que a sequência não possui lacunas e interrompe na primeira falha. O script
 `001` cria o banco quando necessário; os demais evoluem o schema sem apagar dados.
+
+## Backup
+
+Para criar um backup operacional antes de uma implantação:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Backup-Database.ps1
+```
+
+O arquivo recebe data e hora UTC e é gravado no diretório padrão de backups da
+instância, onde a conta do serviço SQL Server já possui acesso. O comando usa
+`COPY_ONLY` para não interferir em uma futura cadeia de backups, habilita checksum e
+executa `RESTORE VERIFYONLY` antes de informar o caminho do arquivo.
+
+Outra instância ou banco pode ser informado com `-ServerInstance` e `-DatabaseName`.
+O parâmetro do banco aceita somente letras, números e sublinhado para impedir injeção
+em comandos administrativos.

@@ -93,3 +93,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Apply-Database.ps
 
 O comando localiza o `sqlcmd`, valida a sequência dos scripts e para na primeira
 falha. Todos os scripts podem ser reaplicados sem apagar os dados existentes.
+
+Antes de uma publicação, gere e verifique um backup independente com:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Backup-Database.ps1
+```
+
+O backup usa o diretório padrão da instância e somente é reportado como concluído
+depois de `RESTORE VERIFYONLY` com checksum.
