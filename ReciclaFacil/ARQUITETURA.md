@@ -95,11 +95,17 @@ do cookie após um recarregamento. As chamadas web também exigem o cabeçalho
 
 ```powershell
 dotnet build .\ReciclaFacil.Modern.slnx
+dotnet test .\ReciclaFacil.Api.IntegrationTests\ReciclaFacil.Api.IntegrationTests.csproj
 dotnet run --project .\ReciclaFacil.Api\ReciclaFacil.Api.csproj
 cd .\ReciclaFacil.Web
 npm ci
 npm run dev
 ```
+
+Os testes de integração executam a API em memória e validam as fronteiras de
+autorização, a validação inicial do login, a proteção específica da sessão web e a
+diferença entre vivacidade e prontidão quando o banco está indisponível. Eles não
+alteram o banco de desenvolvimento.
 
 ## Transição
 

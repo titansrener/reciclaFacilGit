@@ -57,7 +57,7 @@ validação, ausência e conflito.
 
 ## Próximas etapas
 
-1. Automatizar testes de integração da autenticação e das regras operacionais.
+1. Expandir os testes de integração para regras operacionais com banco isolado.
 2. Preparar backup e configuração segura para homologação.
 3. Definir a estratégia de segundo fator para web e aplicativos móveis.
 
@@ -65,6 +65,9 @@ Os painéis de Cliente, Cooperativa, Funcionário, Empresa e Administração, as
 cadastros públicos e recuperação de senha, já usam a API e o frontend React. A API
 expõe `/health/live` para vivacidade e `/health/ready` para prontidão com verificação
 do SQL Server; `/health` preserva compatibilidade e também verifica o banco.
+O projeto `ReciclaFacil.Api.IntegrationTests` cobre automaticamente as sondagens,
+fronteiras de autorização e validações de entrada que devem ocorrer antes do acesso
+ao banco.
 
 ## Execução
 
