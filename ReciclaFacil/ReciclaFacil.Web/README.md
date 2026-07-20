@@ -39,7 +39,9 @@ evitando cargas grandes tanto na web quanto nos futuros aplicativos móveis.
 
 Usuários com o papel `Cooperativa` acessam um painel operacional próprio, alimentado por
 `/api/v1/cooperatives/me`. Nele é possível criar horários, consultar participantes,
-iniciar e finalizar coletas, além de associar materiais e manter seus preços de revenda.
+reagendar horários ainda abertos, iniciar e finalizar coletas, além de associar materiais
+e manter seus preços de revenda. O formulário envia o valor de `datetime-local` como
+hora local de negócio, evitando deslocamentos de fuso ao persistir no schema legado.
 As regras e a autorização ficam na API, permitindo reutilizar os mesmos fluxos em
 aplicativos Android e iOS.
 

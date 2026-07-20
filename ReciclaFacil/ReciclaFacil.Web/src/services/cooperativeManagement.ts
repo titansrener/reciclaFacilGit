@@ -78,6 +78,15 @@ export async function createCollection(scheduledAt: string) {
   await parseError(response)
 }
 
+export async function updateCollection(id: number, scheduledAt: string) {
+  const response = await authorizedFetch(`/cooperatives/me/collections/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ scheduledAt }),
+  })
+  await parseError(response)
+}
+
 export async function collectionAction(id: number, action: 'start' | 'finish' | 'delete') {
   const path = action === 'delete'
     ? `/cooperatives/me/collections/${id}`

@@ -13,12 +13,14 @@ import {
   getManagedCollection,
   removeManagedMaterial,
   setCollectionResource,
+  updateCollection,
   updateEmployee,
   updateManagedMaterial,
   updateTruck,
 } from '../services/cooperativeManagement'
 import type {
   CooperativeCollectionDetails,
+  CooperativeCollection,
   CooperativeOverview,
   CooperativeResources,
   Employee,
@@ -32,12 +34,19 @@ const money = (value: number | null) => value == null
 const dateTime = (value: string | null) => value
   ? new Date(value).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
   : 'A definir'
+const dateTimeInput = (value: string | null) => {
+  if (!value) return ''
+  const date = new Date(value)
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+  return local.toISOString().slice(0, 16)
+}
 
 export function CooperativeDashboard() {
   const [overview, setOverview] = useState<CooperativeOverview | null>(null)
   const [details, setDetails] = useState<CooperativeCollectionDetails | null>(null)
   const [resources, setResources] = useState<CooperativeResources | null>(null)
   const [scheduledAt, setScheduledAt] = useState('')
+  const [editingCollection, setEditingCollection] = useState<CooperativeCollection | null>(null)
   const [materialId, setMaterialId] = useState('')
   const [resalePrice, setResalePrice] = useState('')
   const [truckDescription, setTruckDescription] = useState('')
@@ -80,10 +89,27 @@ export function CooperativeDashboard() {
 
   function submitCollection(event: FormEvent) {
     event.preventDefault()
+    const value = new FormData(event.currentTarget as HTMLFormElement)
+      .get('scheduledAt')?.toString() ?? ''
     run(async () => {
-      await createCollection(new Date(scheduledAt).toISOString())
+      if (editingCollection) {
+        await updateCollection(editingCollection.id, value)
+      } else {
+        await createCollection(value)
+      }
       setScheduledAt('')
+      setEditingCollection(null)
     })
+  }
+
+  function editCollection(collection: CooperativeCollection) {
+    setEditingCollection(collection)
+    setScheduledAt(dateTimeInput(collection.scheduledAt))
+  }
+
+  function cancelCollectionEdit() {
+    setEditingCollection(null)
+    setScheduledAt('')
   }
 
   function submitMaterial(event: FormEvent) {
@@ -179,9 +205,12 @@ export function CooperativeDashboard() {
         <section className="dashboard-panel">
           <div className="panel-heading"><div><span className="eyebrow">Operação</span><h2>Agenda de coletas</h2></div></div>
           <form className="management-form" onSubmit={submitCollection}>
-            <label><span>Nova data e hora</span><input type="datetime-local" required value={scheduledAt}
+            <label><span>{editingCollection ? 'Nova data e hora' : 'Data e hora'}</span>
+              <input name="scheduledAt" type="datetime-local" required value={scheduledAt}
               onChange={(event) => setScheduledAt(event.target.value)} /></label>
-            <button disabled={busy}>Criar horário</button>
+            <button disabled={busy}>{editingCollection ? 'Salvar horário' : 'Criar horário'}</button>
+            {editingCollection && <button className="secondary-form-action" type="button"
+              disabled={busy} onClick={cancelCollectionEdit}>Cancelar</button>}
           </form>
           {overview.collections.length === 0 ? <p className="panel-empty">Nenhuma coleta cadastrada.</p> : (
             <ul className="collection-list">
@@ -192,6 +221,8 @@ export function CooperativeDashboard() {
                   <div className="collection-meta"><span>{statusLabel[collection.status]}</span></div>
                   <div className="row-actions">
                     <button onClick={() => openDetails(collection.id)}>Detalhes</button>
+                    {collection.status === 'A' && <button disabled={busy}
+                      onClick={() => editCollection(collection)}>Editar</button>}
                     {collection.status === 'A' && <button disabled={busy}
                       onClick={() => run(() => collectionAction(collection.id, 'start'))}>Iniciar</button>}
                     {collection.status === 'A' && collection.clientCount === 0 && <button disabled={busy}
