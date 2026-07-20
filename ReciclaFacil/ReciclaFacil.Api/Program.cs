@@ -389,6 +389,38 @@ api.MapGet("/clients/me/overview", async Task<Results<
 .WithName("ClientOverview")
 .WithSummary("Retorna o resumo autenticado do cliente.");
 
+api.MapGet("/clients/me/notifications", async Task<Results<
+    Ok<ClientNotificationPage>, NotFound>> (
+    int? page,
+    int? pageSize,
+    ClaimsPrincipal user,
+    IClientQueries queries,
+    CancellationToken cancellationToken) =>
+{
+    var result = await queries.GetNotificationsAsync(
+        user.FindFirstValue("sub")!, page ?? 1, pageSize ?? 20, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.RequireAuthorization(policy => policy.RequireRole("Cliente"))
+.WithName("ClientNotifications")
+.WithSummary("Lista o histórico paginado de notificações do cliente.");
+
+api.MapGet("/clients/me/wallet", async Task<Results<
+    Ok<ClientWalletPage>, NotFound>> (
+    int? page,
+    int? pageSize,
+    ClaimsPrincipal user,
+    IClientQueries queries,
+    CancellationToken cancellationToken) =>
+{
+    var result = await queries.GetWalletAsync(
+        user.FindFirstValue("sub")!, page ?? 1, pageSize ?? 20, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.RequireAuthorization(policy => policy.RequireRole("Cliente"))
+.WithName("ClientWallet")
+.WithSummary("Lista o extrato paginado da carteira do cliente.");
+
 var clientCollections = api.MapGroup("/clients/me")
     .RequireAuthorization(policy => policy.RequireRole("Cliente"))
     .WithTags("Client Collections");

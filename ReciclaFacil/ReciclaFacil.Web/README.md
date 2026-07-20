@@ -30,6 +30,13 @@ Usuários com o papel `Cliente` são direcionados ao painel carregado por
 O mesmo painel permite consultar horários e materiais, agendar, abrir detalhes e cancelar
 coletas ainda não iniciadas.
 
+O histórico completo deixou de depender das páginas MVC. Notificações são consultadas
+por `GET /api/v1/clients/me/notifications` e movimentações por
+`GET /api/v1/clients/me/wallet`, ambos com `page` e `pageSize`. O extrato devolve
+também o saldo total, e o histórico de notificações preserva as ações de leitura e de
+aceite ou recusa de propostas. A paginação limita cada resposta a no máximo 50 itens,
+evitando cargas grandes tanto na web quanto nos futuros aplicativos móveis.
+
 Usuários com o papel `Cooperativa` acessam um painel operacional próprio, alimentado por
 `/api/v1/cooperatives/me`. Nele é possível criar horários, consultar participantes,
 iniciar e finalizar coletas, além de associar materiais e manter seus preços de revenda.

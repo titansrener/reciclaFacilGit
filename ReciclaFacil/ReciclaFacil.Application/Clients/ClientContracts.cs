@@ -25,10 +25,38 @@ public sealed record ClientNotificationSummary(
     bool RequiresValueDecision,
     decimal? OfferedValue);
 
+public sealed record ClientNotificationPage(
+    IReadOnlyList<ClientNotificationSummary> Items,
+    int Page,
+    int PageSize,
+    int Total);
+
+public sealed record ClientWalletPage(
+    decimal Balance,
+    IReadOnlyList<ClientWalletEntry> Items,
+    int Page,
+    int PageSize,
+    int Total);
+
+public sealed record ClientWalletEntry(
+    int Id,
+    DateTime? CreatedAt,
+    decimal Value);
+
 public interface IClientQueries
 {
     Task<ClientOverview?> GetOverviewAsync(
         string userId,
+        CancellationToken cancellationToken = default);
+    Task<ClientNotificationPage?> GetNotificationsAsync(
+        string userId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+    Task<ClientWalletPage?> GetWalletAsync(
+        string userId,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default);
 }
 

@@ -28,6 +28,21 @@ export interface ClientOverview {
   recentNotifications: ClientNotificationSummary[]
 }
 
+export interface ClientNotificationPage {
+  items: ClientNotificationSummary[]
+  page: number
+  pageSize: number
+  total: number
+}
+
+export interface ClientWalletPage {
+  balance: number
+  items: Array<{ id: number; createdAt: string | null; value: number }>
+  page: number
+  pageSize: number
+  total: number
+}
+
 export interface ClientCollectionOptions {
   slots: Array<{ id: number, scheduledAt: string }>
   materials: Array<{ id: number, description: string }>
@@ -60,6 +75,20 @@ export async function getClientOverview(): Promise<ClientOverview> {
   if (response.status === 403) throw new Error('Este painel é exclusivo para clientes.')
   if (!response.ok) throw new Error('Não foi possível carregar o painel.')
   return response.json() as Promise<ClientOverview>
+}
+
+export async function getClientNotifications(page = 1, pageSize = 20): Promise<ClientNotificationPage> {
+  const response = await authorizedFetch(
+    `/clients/me/notifications?page=${page}&pageSize=${pageSize}`,
+  )
+  if (!response.ok) throw new Error('Não foi possível carregar as notificações.')
+  return response.json() as Promise<ClientNotificationPage>
+}
+
+export async function getClientWallet(page = 1, pageSize = 20): Promise<ClientWalletPage> {
+  const response = await authorizedFetch(`/clients/me/wallet?page=${page}&pageSize=${pageSize}`)
+  if (!response.ok) throw new Error('Não foi possível carregar o extrato.')
+  return response.json() as Promise<ClientWalletPage>
 }
 
 export async function getCollectionOptions(currentCollectionId?: number): Promise<ClientCollectionOptions> {

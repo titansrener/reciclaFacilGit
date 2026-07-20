@@ -64,4 +64,59 @@ public sealed class ClientQueries(ReciclaFacilDbContext database) : IClientQueri
             collections,
             notifications);
     }
+
+    public async Task<ClientNotificationPage?> GetNotificationsAsync(
+        string userId, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        if (!await database.Clientes.AsNoTracking()
+                .AnyAsync(x => x.Id == userId, cancellationToken))
+            return null;
+        (page, pageSize) = NormalizePage(page, pageSize);
+        var query = database.Notificacoes.AsNoTracking()
+            .Where(x => x.ClienteId == userId);
+        var total = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderByDescending(x => x.DataHorario)
+            .ThenByDescending(x => x.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new ClientNotificationSummary(
+                x.Id,
+                x.ColetaId,
+                x.DataHorario,
+                x.Descricao,
+                x.Tipo,
+                x.Ativa == true,
+                x.Ativa == true && database.ClientesColetas.Any(c =>
+                    c.ClienteId == userId && c.ColetaId == x.ColetaId && c.Status == "P"),
+                database.MateriaisColetados
+                    .Where(m => m.ClienteId == userId && m.ColetaId == x.ColetaId)
+                    .Sum(m => (decimal?)m.ValorCompra)))
+            .ToArrayAsync(cancellationToken);
+        return new(items, page, pageSize, total);
+    }
+
+    public async Task<ClientWalletPage?> GetWalletAsync(
+        string userId, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        if (!await database.Clientes.AsNoTracking()
+                .AnyAsync(x => x.Id == userId, cancellationToken))
+            return null;
+        (page, pageSize) = NormalizePage(page, pageSize);
+        var query = database.Carteiras.AsNoTracking()
+            .Where(x => x.ClienteId == userId);
+        var total = await query.CountAsync(cancellationToken);
+        var balance = await query.SumAsync(x => (decimal?)x.Saldo, cancellationToken) ?? 0;
+        var items = await query
+            .OrderByDescending(x => x.DataUltimaMovimentacao)
+            .ThenByDescending(x => x.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new ClientWalletEntry(x.Id, x.DataUltimaMovimentacao, x.Saldo))
+            .ToArrayAsync(cancellationToken);
+        return new(balance, items, page, pageSize, total);
+    }
+
+    private static (int Page, int PageSize) NormalizePage(int page, int pageSize) =>
+        (Math.Max(1, page), Math.Clamp(pageSize, 1, 50));
 }

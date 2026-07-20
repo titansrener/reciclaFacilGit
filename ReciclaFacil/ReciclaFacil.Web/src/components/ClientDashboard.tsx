@@ -4,6 +4,8 @@ import type { ClientOverview } from '../services/clients'
 import { CollectionDetailsDialog } from './CollectionDetailsDialog'
 import { ScheduleCollectionDialog } from './ScheduleCollectionDialog'
 import { EditCollectionDialog } from './EditCollectionDialog'
+import { NotificationsDialog } from './NotificationsDialog'
+import { WalletDialog } from './WalletDialog'
 
 const statusLabels: Record<string, string> = {
   A: 'Agendada',
@@ -32,6 +34,8 @@ export function ClientDashboard() {
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null)
   const [editingCollection, setEditingCollection] = useState<number | null>(null)
   const [busyNotification, setBusyNotification] = useState<number | null>(null)
+  const [showingWallet, setShowingWallet] = useState(false)
+  const [showingNotifications, setShowingNotifications] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -106,6 +110,7 @@ export function ClientDashboard() {
           <span>Saldo da carteira</span>
           <strong>{overview.walletBalance.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
           <small>Movimentações acumuladas</small>
+          <button className="metric-action" onClick={() => setShowingWallet(true)}>Ver extrato</button>
         </article>
         <article>
           <span>Coletas</span>
@@ -161,6 +166,8 @@ export function ClientDashboard() {
               <span className="eyebrow">Atualizações</span>
               <h2 id="notifications-title">Notificações</h2>
             </div>
+            <button className="panel-action" type="button"
+              onClick={() => setShowingNotifications(true)}>Ver todas</button>
           </div>
           {overview.recentNotifications.length === 0 ? (
             <div className="panel-empty">Nenhuma notificação por enquanto.</div>
@@ -219,6 +226,10 @@ export function ClientDashboard() {
           onClose={() => setEditingCollection(null)}
           onUpdated={refresh}
         />
+      )}
+      {showingWallet && <WalletDialog onClose={() => setShowingWallet(false)} />}
+      {showingNotifications && (
+        <NotificationsDialog onClose={() => setShowingNotifications(false)} onChanged={refresh} />
       )}
     </main>
   )
