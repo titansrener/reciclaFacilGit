@@ -11,6 +11,7 @@ import { LoginDialog } from './components/LoginDialog'
 import { ClientDashboard } from './components/ClientDashboard'
 import { CooperativeDashboard } from './components/CooperativeDashboard'
 import { EmployeeDashboard } from './components/EmployeeDashboard'
+import { AdminDashboard } from './components/AdminDashboard'
 import { login, logout, restoreSession } from './services/auth'
 import type { WebSession } from './services/auth'
 
@@ -132,6 +133,7 @@ function App() {
       {session?.user.role === 'Cliente' ? <ClientDashboard /> :
        session?.user.role === 'Cooperativa' ? <CooperativeDashboard /> : (
        session?.user.role === 'Funcionario' ? <EmployeeDashboard /> : (
+       session?.user.role === 'Admin' ? <AdminDashboard /> : (
       <main>
         <section className="hero">
           <div className="hero-copy">
@@ -259,7 +261,7 @@ function App() {
           )}
         </section>
       </main>
-      ))}
+      )))}
 
       <footer>
         <a className="brand brand-footer" href="/">

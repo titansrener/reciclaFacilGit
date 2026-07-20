@@ -588,6 +588,44 @@ employee.MapPut("/collections/{collectionId:int}/clients/{clientId}/materials", 
         user.FindFirstValue("sub")!, collectionId, clientId, request, cancellationToken)))
 .WithName("RecordCollectedMaterials");
 
+var administration = api.MapGroup("/admin")
+    .RequireAuthorization(policy => policy.RequireRole("Admin"))
+    .WithTags("Administration");
+
+administration.MapGet("/materials", async (
+    IMaterialQueries queries,
+    CancellationToken cancellationToken) =>
+    TypedResults.Ok(await queries.ListAsync(cancellationToken)))
+.WithName("AdminListMaterials");
+
+administration.MapPost("/materials", async (
+    SaveMaterial request,
+    IMaterialManagementService management,
+    CancellationToken cancellationToken) =>
+{
+    var result = await management.CreateAsync(request, cancellationToken);
+    return MaterialManagementHttpResults.From(
+        result, result.Id is null ? null : $"/api/v1/admin/materials/{result.Id}");
+})
+.WithName("AdminCreateMaterial");
+
+administration.MapPut("/materials/{id:int}", async (
+    int id,
+    SaveMaterial request,
+    IMaterialManagementService management,
+    CancellationToken cancellationToken) =>
+    MaterialManagementHttpResults.From(
+        await management.UpdateAsync(id, request, cancellationToken)))
+.WithName("AdminUpdateMaterial");
+
+administration.MapDelete("/materials/{id:int}", async (
+    int id,
+    IMaterialManagementService management,
+    CancellationToken cancellationToken) =>
+    MaterialManagementHttpResults.From(
+        await management.DeleteAsync(id, cancellationToken)))
+.WithName("AdminDeleteMaterial");
+
 app.Run();
 
 public partial class Program;

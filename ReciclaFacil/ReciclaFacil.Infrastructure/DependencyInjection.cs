@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<ICooperativeResourceService, CooperativeResourceService>();
         services.AddScoped<IEmployeeOperations, EmployeeOperations>();
         services.AddScoped<IClientFinancialService, ClientFinancialService>();
+        services.AddScoped<IMaterialManagementService, MaterialManagementService>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IPasswordHasher<LegacyUser>>(
             new PasswordHasher<LegacyUser>(Options.Create(new PasswordHasherOptions

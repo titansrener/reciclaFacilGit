@@ -54,6 +54,11 @@ movimentação na carteira — ou recusar, devolvendo materiais e atendimento ao
 As operações são serializáveis, idempotentes por estado e desativam as notificações
 respondidas.
 
+Usuários `Admin` acessam um painel exclusivo para o catálogo global de materiais.
+Criação, edição e exclusão usam `/api/v1/admin/materials`; descrições duplicadas são
+bloqueadas e materiais já utilizados por cooperativas ou coletas não podem ser
+apagados.
+
 ## Verificações
 
 ```powershell
