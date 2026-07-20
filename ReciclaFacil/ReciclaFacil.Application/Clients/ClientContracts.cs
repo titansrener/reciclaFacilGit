@@ -17,10 +17,13 @@ public sealed record ClientCollectionSummary(
 
 public sealed record ClientNotificationSummary(
     int Id,
+    int CollectionId,
     DateTime? CreatedAt,
     string Description,
     string Type,
-    bool Active);
+    bool Active,
+    bool RequiresValueDecision,
+    decimal? OfferedValue);
 
 public interface IClientQueries
 {
@@ -96,4 +99,28 @@ public interface IClientCollectionService
         string userId,
         int collectionId,
         CancellationToken cancellationToken = default);
+}
+
+public enum ClientFinancialError
+{
+    None,
+    NotFound,
+    NoPendingOffer
+}
+
+public sealed record ClientFinancialResult(
+    ClientFinancialError Error = ClientFinancialError.None,
+    decimal Value = 0)
+{
+    public bool Succeeded => Error == ClientFinancialError.None;
+}
+
+public interface IClientFinancialService
+{
+    Task<ClientFinancialResult> AcceptOfferAsync(
+        string clientId, int collectionId, CancellationToken cancellationToken = default);
+    Task<ClientFinancialResult> RejectOfferAsync(
+        string clientId, int collectionId, CancellationToken cancellationToken = default);
+    Task<ClientFinancialResult> ReadNotificationAsync(
+        string clientId, int notificationId, CancellationToken cancellationToken = default);
 }

@@ -10,10 +10,13 @@ export interface ClientCollectionSummary {
 
 export interface ClientNotificationSummary {
   id: number
+  collectionId: number
   createdAt: string | null
   description: string
   type: string
   active: boolean
+  requiresValueDecision: boolean
+  offeredValue: number | null
 }
 
 export interface ClientOverview {
@@ -89,5 +92,24 @@ export async function cancelCollection(id: number) {
   })
   if (!response.ok) {
     throw new Error(await problemMessage(response, 'Não foi possível cancelar a coleta.'))
+  }
+}
+
+export async function decideCollectionOffer(id: number, decision: 'accept' | 'reject') {
+  const response = await authorizedFetch(`/clients/me/collections/${id}/offer/${decision}`, {
+    method: 'PUT',
+  })
+  if (!response.ok) {
+    throw new Error(await problemMessage(response, 'Não foi possível responder à oferta.'))
+  }
+  return response.json() as Promise<{ value: number }>
+}
+
+export async function readNotification(id: number) {
+  const response = await authorizedFetch(`/clients/me/notifications/${id}/read`, {
+    method: 'PUT',
+  })
+  if (!response.ok) {
+    throw new Error(await problemMessage(response, 'Não foi possível atualizar a notificação.'))
   }
 }

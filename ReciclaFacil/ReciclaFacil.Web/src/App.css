@@ -346,6 +346,18 @@ footer p { color: var(--muted); font-size: .85rem; }
   width: 8px;
 }
 .notification-list li > .notification-active { background: var(--lime); box-shadow: 0 0 0 4px #f2f7d8; }
+.notification-offer {
+  align-items: center; background: var(--soft-green); border-radius: 10px; display: flex;
+  flex-direction: row !important; justify-content: space-between; margin-top: 7px; padding: 10px;
+}
+.notification-offer > span { color: var(--green); font-size: .78rem; font-weight: 800; }
+.notification-offer > div { display: flex; gap: 6px; }
+.notification-offer button, .notification-read {
+  background: white; border: 1px solid var(--line); border-radius: 99px; color: var(--ink);
+  cursor: pointer; font-size: .68rem; font-weight: 750; padding: 7px 10px;
+}
+.notification-offer button:disabled, .notification-read:disabled { cursor: default; opacity: .5; }
+.notification-read { align-self: start; margin-top: 6px; }
 .operation-modal {
   background: white;
   border-radius: 22px;

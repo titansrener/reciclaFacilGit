@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getClientOverview } from '../services/clients'
+import { decideCollectionOffer, getClientOverview, readNotification } from '../services/clients'
 import type { ClientOverview } from '../services/clients'
 import { CollectionDetailsDialog } from './CollectionDetailsDialog'
 import { ScheduleCollectionDialog } from './ScheduleCollectionDialog'
@@ -8,6 +8,10 @@ const statusLabels: Record<string, string> = {
   A: 'Agendada',
   C: 'Concluída',
   F: 'Finalizada',
+  I: 'Em andamento',
+  N: 'NÃ£o coletada',
+  P: 'Aguardando sua decisÃ£o',
+  S: 'ConcluÃ­da',
   X: 'Cancelada',
 }
 
@@ -25,6 +29,7 @@ export function ClientDashboard() {
   const [version, setVersion] = useState(0)
   const [scheduling, setScheduling] = useState(false)
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null)
+  const [busyNotification, setBusyNotification] = useState<number | null>(null)
 
   useEffect(() => {
     let active = true
@@ -41,6 +46,31 @@ export function ClientDashboard() {
   function refresh() {
     setOverview(null)
     setVersion((current) => current + 1)
+  }
+
+  async function decide(notificationId: number, collectionId: number, decision: 'accept' | 'reject') {
+    setBusyNotification(notificationId)
+    setError('')
+    try {
+      await decideCollectionOffer(collectionId, decision)
+      refresh()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'NÃ£o foi possÃ­vel responder Ã  oferta.')
+    } finally {
+      setBusyNotification(null)
+    }
+  }
+
+  async function markRead(notificationId: number) {
+    setBusyNotification(notificationId)
+    try {
+      await readNotification(notificationId)
+      refresh()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'NÃ£o foi possÃ­vel atualizar a notificaÃ§Ã£o.')
+    } finally {
+      setBusyNotification(null)
+    }
   }
 
   if (error) {
@@ -140,6 +170,28 @@ export function ClientDashboard() {
                   <div>
                     <strong>{notification.description}</strong>
                     <small>{formatDate(notification.createdAt)}</small>
+                    {notification.requiresValueDecision && (
+                      <div className="notification-offer">
+                        <span>
+                          Oferta: {(notification.offeredValue ?? 0).toLocaleString(
+                            'pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </span>
+                        <div>
+                          <button disabled={busyNotification === notification.id}
+                            onClick={() => decide(notification.id, notification.collectionId, 'accept')}>
+                            Aceitar
+                          </button>
+                          <button disabled={busyNotification === notification.id}
+                            onClick={() => decide(notification.id, notification.collectionId, 'reject')}>
+                            Recusar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {notification.active && !notification.requiresValueDecision && (
+                      <button className="notification-read" disabled={busyNotification === notification.id}
+                        onClick={() => markRead(notification.id)}>Marcar como lida</button>
+                    )}
                   </div>
                 </li>
               ))}

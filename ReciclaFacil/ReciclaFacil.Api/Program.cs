@@ -316,6 +316,35 @@ clientCollections.MapDelete("/collections/{id:int}", async (
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status409Conflict);
 
+clientCollections.MapPut("/collections/{id:int}/offer/accept", async (
+    int id,
+    ClaimsPrincipal user,
+    IClientFinancialService financial,
+    CancellationToken cancellationToken) =>
+    ClientFinancialHttpResults.From(await financial.AcceptOfferAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("AcceptCollectionOffer")
+.WithSummary("Aceita o valor calculado e credita a carteira.");
+
+clientCollections.MapPut("/collections/{id:int}/offer/reject", async (
+    int id,
+    ClaimsPrincipal user,
+    IClientFinancialService financial,
+    CancellationToken cancellationToken) =>
+    ClientFinancialHttpResults.From(await financial.RejectOfferAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("RejectCollectionOffer")
+.WithSummary("Recusa o valor e devolve o atendimento ao funcionário.");
+
+clientCollections.MapPut("/notifications/{id:int}/read", async (
+    int id,
+    ClaimsPrincipal user,
+    IClientFinancialService financial,
+    CancellationToken cancellationToken) =>
+    ClientFinancialHttpResults.From(await financial.ReadNotificationAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("ReadClientNotification");
+
 var cooperative = api.MapGroup("/cooperatives/me")
     .RequireAuthorization(policy => policy.RequireRole("Cooperativa"))
     .WithTags("Cooperative Management");

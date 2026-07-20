@@ -43,7 +43,17 @@ public sealed class ClientQueries(ReciclaFacilDbContext database) : IClientQueri
             .OrderByDescending(x => x.DataHorario)
             .Take(5)
             .Select(x => new ClientNotificationSummary(
-                x.Id, x.DataHorario, x.Descricao, x.Tipo, x.Ativa == true))
+                x.Id,
+                x.ColetaId,
+                x.DataHorario,
+                x.Descricao,
+                x.Tipo,
+                x.Ativa == true,
+                x.Ativa == true && database.ClientesColetas.Any(c =>
+                    c.ClienteId == userId && c.ColetaId == x.ColetaId && c.Status == "P"),
+                database.MateriaisColetados
+                    .Where(m => m.ClienteId == userId && m.ColetaId == x.ColetaId)
+                    .Sum(m => (decimal?)m.ValorCompra)))
             .ToListAsync(cancellationToken);
 
         return new(

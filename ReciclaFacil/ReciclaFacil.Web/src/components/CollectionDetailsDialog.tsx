@@ -59,14 +59,23 @@ export function CollectionDetailsDialog({ collectionId, onClose, onChanged }: Pr
           <>
             <dl className="collection-details">
               <div><dt>Agendada para</dt><dd>{formatDate(details.scheduledAt)}</dd></div>
-              <div><dt>Status</dt><dd>{details.status === 'A' ? 'Agendada' : details.status}</dd></div>
+              <div><dt>Status</dt><dd>{
+                details.status === 'A' ? 'Agendada' :
+                details.status === 'P' ? 'Aguardando sua decisão' :
+                details.status === 'S' ? 'Concluída' : details.status
+              }</dd></div>
             </dl>
             <h3>Materiais</h3>
             <ul className="material-list">
               {details.materials.map((material) => (
                 <li key={material.id}>
                   <span>{material.description}</span>
-                  <strong>{material.quantity == null ? 'Quantidade pendente' : `${material.quantity} kg`}</strong>
+                  <strong>{material.quantity == null
+                    ? 'Quantidade pendente'
+                    : `${material.quantity} kg${material.value == null
+                      ? '' : ` · ${material.value.toLocaleString(
+                        'pt-BR', { style: 'currency', currency: 'BRL' })}`}`}
+                  </strong>
                 </li>
               ))}
             </ul>

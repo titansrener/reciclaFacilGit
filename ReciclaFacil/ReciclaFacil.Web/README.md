@@ -48,6 +48,12 @@ valor a receber com o preço definido pela cooperativa, atualiza todos os estado
 transação e cria a notificação do cliente. O script
 `database/006_purchase_value_precision.sql` preserva os centavos desses valores.
 
+Quando o cliente vendedor recebe uma proposta, a coleta entra no estado de decisão
+pendente (`P`). O painel permite aceitar — concluindo a coleta e criando uma única
+movimentação na carteira — ou recusar, devolvendo materiais e atendimento ao funcionário.
+As operações são serializáveis, idempotentes por estado e desativam as notificações
+respondidas.
+
 ## Verificações
 
 ```powershell

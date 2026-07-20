@@ -118,9 +118,11 @@ public sealed class EmployeeOperations(ReciclaFacilDbContext database) : IEmploy
                 : 0;
             total += material.ValorCompra ?? 0;
         }
-        link.Status = submitted.Any(x => x.Quantity > 0) ? "S" : "N";
+        link.Status = submitted.Any(x => x.Quantity > 0)
+            ? link.Cliente.Tipo == "V" ? "P" : "S"
+            : "N";
         link.HoraDaColeta = DateTime.Now;
-        if (link.Cliente.Tipo == "V" && link.Status == "S")
+        if (link.Cliente.Tipo == "V" && link.Status == "P")
             database.Notificacoes.Add(new()
             {
                 ClienteId = link.ClienteId,
