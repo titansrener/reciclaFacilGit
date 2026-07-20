@@ -78,6 +78,11 @@ public sealed record CooperativeCollectionDetails(
 public sealed record CooperativeCollectionClient(
     string Id,
     string Name,
+    string Type,
+    string Address,
+    string Email,
+    string? Phone,
+    string Mobile,
     string? Status,
     DateTime? CollectedAt,
     IReadOnlyList<string> Materials);

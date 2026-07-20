@@ -54,7 +54,9 @@ public sealed class CooperativeOperations(ReciclaFacilDbContext database) : ICoo
             collection.Id, collection.HoraAgendada, collection.Status, collection.Quantidade,
             collection.Clientes.OrderBy(x => x.Cliente!.Nome)
                 .Select(x => new CooperativeCollectionClient(
-                    x.ClienteId, x.Cliente!.Nome, x.Status, x.HoraDaColeta,
+                    x.ClienteId, x.Cliente!.Nome, x.Cliente.Tipo, x.Cliente.Endereco,
+                    x.Cliente.Email, x.Cliente.Telefone, x.Cliente.Celular,
+                    x.Status, x.HoraDaColeta,
                     x.Materiais.Where(m => m.Material is not null)
                         .OrderBy(m => m.Material!.Descricao)
                         .Select(m => m.Material!.Descricao).ToArray()))

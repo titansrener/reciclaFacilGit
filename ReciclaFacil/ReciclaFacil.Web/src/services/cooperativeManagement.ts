@@ -39,6 +39,11 @@ export interface CooperativeCollectionDetails {
   clients: Array<{
     id: string
     name: string
+    type: string
+    address: string
+    email: string
+    phone: string | null
+    mobile: string
     status: string | null
     collectedAt: string | null
     materials: string[]

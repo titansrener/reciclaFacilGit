@@ -331,8 +331,15 @@ export function CooperativeDashboard() {
             <h3>Clientes agendados</h3>
             {details.clients.length === 0 ? <p className="operation-empty">Nenhum cliente agendado.</p> : (
               <ul className="managed-materials">
-                {details.clients.map((client) => <li key={client.id}><div><strong>{client.name}</strong>
-                  <small>{client.materials.join(', ') || 'Sem materiais'}</small></div></li>)}
+                {details.clients.map((client) => <li className="collection-client-details" key={client.id}>
+                  <div>
+                    <strong>{client.name}</strong>
+                    <small>{client.type === 'V' ? 'Vendedor' : 'Doador'} · {client.address}</small>
+                    <small>{client.email} · {client.mobile}
+                      {client.phone ? ` · ${client.phone}` : ''}</small>
+                    <small>Materiais: {client.materials.join(', ') || 'nenhum'}</small>
+                  </div>
+                </li>)}
               </ul>
             )}
             <h3>Frota</h3>

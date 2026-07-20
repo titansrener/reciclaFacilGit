@@ -45,6 +45,11 @@ hora local de negócio, evitando deslocamentos de fuso ao persistir no schema le
 As regras e a autorização ficam na API, permitindo reutilizar os mesmos fluxos em
 aplicativos Android e iOS.
 
+Nos detalhes de uma coleta, a cooperativa recebe também tipo, endereço, e-mail,
+telefone e celular de cada cliente agendado, além dos materiais. Esses dados são
+expostos somente pelo endpoint autenticado da cooperativa proprietária; uma cooperativa
+diferente não consegue consultar a coleta.
+
 O mesmo painel administra a frota e a equipe. Caminhões e funcionários podem ser
 cadastrados, editados e vinculados às coletas; cada funcionário recebe uma conta com
 o papel `Funcionario`. A edição do funcionário preserva o e-mail usado para entrar e

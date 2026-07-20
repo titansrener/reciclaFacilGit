@@ -581,6 +581,7 @@ footer p { color: var(--muted); font-size: .85rem; }
 .managed-materials li > div:first-child { display: flex; flex-direction: column; gap: 5px; }
 .managed-materials strong { color: var(--ink); font-size: .86rem; }
 .managed-materials small { color: var(--muted); font-size: .75rem; }
+.collection-client-details small { line-height: 1.45; overflow-wrap: anywhere; }
 .resource-columns {
   display: grid; gap: 18px; grid-template-columns: 1fr 1fr; margin-top: 18px;
 }
