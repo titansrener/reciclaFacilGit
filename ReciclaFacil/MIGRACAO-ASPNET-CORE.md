@@ -2,103 +2,93 @@
 
 ## Estado atual
 
-A solução agora contém duas aplicações:
+A base funcional foi migrada para uma arquitetura independente e reutilizável:
 
-- `ReciclaFacil`: aplicação MVC 5 original, mantida como referência funcional.
-- `ReciclaFacil.Core`: nova aplicação ASP.NET Core em .NET 10, compilável e executável.
-- `ReciclaFacil.Api`: API REST versionada para web, Android e iOS.
-- `ReciclaFacil.Web`: frontend React/TypeScript independente, sem acesso direto ao banco.
+- `ReciclaFacil.Api`: ASP.NET Core Web API versionada em .NET 10;
+- `ReciclaFacil.Web`: frontend React/TypeScript, sem acesso direto ao banco;
+- `ReciclaFacil.Domain`, `Application` e `Infrastructure`: regras, contratos e EF Core;
+- `ReciclaFacilWeb`: banco SQL Server criado por scripts numerados e idempotentes;
+- `ReciclaFacil.Api.IntegrationTests`: testes HTTP e de persistência com banco isolado.
 
-O código moderno está separado em `Domain`, `Application`, `Infrastructure`, `Api` e no
-frontend Razor temporário. A solução `ReciclaFacil.Modern.slnx` compila apenas os projetos
-modernos e não depende dos targets antigos do Visual Studio.
+`ReciclaFacil.Modern.slnx` não inclui MVC 5 nem o Razor intermediário. Os projetos
+`ReciclaFacil` e `ReciclaFacil.Core` permanecem no repositório somente como referência
+histórica e funcional; não participam do build nem da implantação moderna.
 
-A experiência pública e a pesquisa de cooperativas já foram portadas para controllers,
-Razor Views, injeção de dependência, arquivos estáticos e health check do ASP.NET Core.
-O login já lê as tabelas `Usuarios` e `UsuarioRole` por EF Core e mantém compatibilidade
-com os hashes de senha do ASP.NET Identity 2. A pesquisa de cooperativas consulta o banco
-real, incluindo coordenadas espaciais e materiais comercializados. Quando o LocalDB está
-indisponível, dados demonstrativos são usados somente com `ModoMigracao` habilitado.
-O módulo administrativo de materiais também foi portado por completo, com operações
-assíncronas, autorização por papel, antiforgery e proteção contra exclusão de itens em uso.
-A área de cliente já possui painel de coletas, extrato da carteira, notificações e contador
-de itens não lidos em modo somente leitura. O schema operacional correspondente é criado
-pelo script `Database/002_client_operations_schema.sql`.
-O agendamento e o cancelamento de coletas também foram portados com validação de
-disponibilidade, materiais aceitos, propriedade do cliente e transações atômicas.
-Os cadastros públicos de cooperativa e cliente criam usuário, papel e perfil na mesma
-transação. As senhas usam o formato Identity v2 para manter interoperabilidade durante
-a convivência com o projeto legado. Os papéis de referência são aplicados pelo script
-`Database/003_reference_roles.sql`.
+## Paridade funcional
 
-A API agora também autentica os usuários legados por `POST /api/v1/auth/login`, emite
-JWTs para web e aplicativos móveis e oferece rotação e revogação de refresh tokens.
-Somente o hash SHA-256 do refresh token é persistido. A tabela correspondente é criada
-de forma idempotente por `Database/004_refresh_tokens.sql`.
+O frontend React e a API cobrem:
 
-A primeira fatia do novo frontend já consome `GET /api/v1/cooperatives` e
-`GET /api/v1/cooperatives/{id}`. Ela oferece pesquisa paginada, filtros, estados de
-carregamento/erro/vazio, layout responsivo e detalhes dos materiais comercializados.
+- pesquisa pública paginada e detalhes de cooperativas;
+- cadastro de Cliente, Cooperativa e Empresa;
+- login web, login para aplicativos, rotação/revogação de refresh token e logout;
+- recuperação e alteração de senha com revogação das sessões;
+- painel do Cliente, agendamento, edição, cancelamento, notificações, carteira e decisão de proposta;
+- painel da Cooperativa, horários, materiais, frota, equipe, associações e dados do cliente atendido;
+- painel do Funcionário, coletas atribuídas, roteiro e registro de materiais/pesos;
+- painel da Empresa;
+- administração do catálogo global de materiais.
 
-O login também foi migrado para o React. A API mantém os contratos de token para
-aplicativos móveis e oferece um fluxo web separado que protege o refresh token em cookie
-`HttpOnly` com rotação. O frontend mantém o access token somente em memória, restaura a
-sessão ao recarregar e revoga o token no logout.
+Os hashes Identity v2 continuam aceitos para interoperabilidade com as contas legadas.
+Os contratos gerais de autenticação e negócio podem ser consumidos por Android e iOS;
+somente a sessão web usa cookie `HttpOnly` específico.
 
-O painel autenticado de Cliente também foi migrado. O endpoint
-`GET /api/v1/clients/me/overview` consolida nome, cooperativa de referência, saldo,
-coletas e notificações, sempre usando o identificador do JWT e autorização pelo papel
-`Cliente`. O React apresenta esses dados em um painel responsivo.
+As telas scaffoldadas de login externo, SMS e segundo fator não foram consideradas
+paridade operacional: os provedores externos estavam comentados e os serviços de e-mail
+e SMS do MVC legado não enviavam mensagens. Uma futura estratégia de segundo fator deve
+ser definida como produto novo para web e aplicativos móveis.
 
-Agendamento, detalhe e cancelamento de coletas agora também estão disponíveis na API e
-no React. As escritas usam transações serializáveis, validam novamente disponibilidade,
-propriedade, duplicidade e materiais aceitos, e retornam respostas HTTP distintas para
-validação, ausência e conflito.
+## Segurança e operação
 
-## Próximas etapas
-
-1. Expandir os testes de integração para regras operacionais com banco isolado.
-2. Preparar backup e configuração segura para homologação.
-3. Definir a estratégia de segundo fator para web e aplicativos móveis.
-
-Os painéis de Cliente, Cooperativa, Funcionário, Empresa e Administração, assim como
-cadastros públicos e recuperação de senha, já usam a API e o frontend React. A API
-expõe `/health/live` para vivacidade e `/health/ready` para prontidão com verificação
-do SQL Server; `/health` preserva compatibilidade e também verifica o banco.
-O projeto `ReciclaFacil.Api.IntegrationTests` cobre automaticamente as sondagens,
-fronteiras de autorização e validações de entrada que devem ocorrer antes do acesso
-ao banco. Ele também cria um banco temporário isolado no SQL Server Express, aplica os
-nove scripts e comprova cadastro, persistência, papel, login e bloqueio de duplicidade,
-removendo o banco temporário ao finalizar.
+- JWT de curta duração e refresh tokens rotativos persistidos somente por hash SHA-256;
+- autorização por papel e identificação do proprietário extraída do token;
+- cookie web `HttpOnly`, `SameSite=Strict` e marcador obrigatório do cliente web;
+- limitação por IP em login, recuperação de senha e cadastros públicos;
+- proxies encaminhados aceitos somente quando configurados como confiáveis;
+- `/health/live` para vivacidade e `/health/ready` para prontidão com SQL Server;
+- chave JWT externa obrigatória fora de Development;
+- backup `COPY_ONLY` com checksum e `RESTORE VERIFYONLY`.
 
 ## Execução
 
 ```powershell
-dotnet run --project .\ReciclaFacil.Core\ReciclaFacil.Core.csproj
+dotnet build .\ReciclaFacil.Modern.slnx
+dotnet test .\ReciclaFacil.Api.IntegrationTests\ReciclaFacil.Api.IntegrationTests.csproj
+dotnet run --project .\ReciclaFacil.Api\ReciclaFacil.Api.csproj
+
+cd .\ReciclaFacil.Web
+npm ci
+npm run dev
 ```
 
-A aplicação responde em `http://localhost:5080` e o health check em `/health`.
+A API local usa `http://localhost:5090`; o Vite usa `http://localhost:5173` e encaminha
+`/api` para a API. Em produção, os dois devem ficar atrás do mesmo proxy reverso.
 
 ## Banco de desenvolvimento
 
-O banco vazio `ReciclaFacilWeb` é criado na instância `.\SQLEXPRESS` pelo script
-`Database/001_initial_core_schema.sql`. O script é idempotente e pode ser executado
-novamente sem apagar tabelas ou dados.
-
-Para criar ou atualizar todo o schema em ordem, use:
+Para criar ou atualizar o `ReciclaFacilWeb` em `.\SQLEXPRESS`:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Apply-Database.ps1
 ```
 
-O comando localiza o `sqlcmd`, valida a sequência dos scripts e para na primeira
-falha. Todos os scripts podem ser reaplicados sem apagar os dados existentes.
+O comando localiza o `sqlcmd`, valida a sequência dos nove scripts e para na primeira
+falha. Todos os scripts podem ser reaplicados sem apagar dados existentes.
 
-Antes de uma publicação, gere e verifique um backup independente com:
+Antes de uma publicação, gere e verifique um backup independente:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Backup-Database.ps1
 ```
 
-O backup usa o diretório padrão da instância e somente é reportado como concluído
-depois de `RESTORE VERIFYONLY` com checksum.
+O backup usa o diretório padrão da instância e somente é reportado como concluído após
+`RESTORE VERIFYONLY` com checksum.
+
+## Validação
+
+A suíte automatizada cobre sondagens, autorização anônima, validações de autenticação,
+rate limiting e cadastro/login real de cooperativa. Para persistência, cria um banco
+`ReciclaFacilWebTests_<processo>`, aplica os mesmos nove scripts e o remove ao final,
+sem alterar o banco de desenvolvimento.
+
+Antes de homologar, ainda é necessário fornecer valores próprios do ambiente para
+conexão SQL, chave JWT, origens CORS, proxy confiável, URL pública e SMTP.

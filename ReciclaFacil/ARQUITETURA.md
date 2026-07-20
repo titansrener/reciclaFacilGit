@@ -7,8 +7,8 @@
 - `ReciclaFacil.Infrastructure`: EF Core, SQL Server e implementações dos contratos.
 - `ReciclaFacil.Api`: API HTTP versionada que será consumida pela web e pelos aplicativos.
 - `ReciclaFacil.Web`: frontend React/TypeScript independente, consumidor da API versionada.
-- `ReciclaFacil.Core`: frontend Razor temporário, mantido funcional durante a criação do frontend independente.
-- `ReciclaFacil`: aplicação ASP.NET MVC 5 original, somente para referência durante a migração.
+- `ReciclaFacil.Core`: etapa intermediária Razor, preservada no repositório como referência e fora da solução moderna.
+- `ReciclaFacil`: aplicação ASP.NET MVC 5 original, preservada somente como referência.
 
 As dependências seguem para dentro:
 
@@ -117,8 +117,10 @@ alteram o banco de desenvolvimento. A cobertura de persistência cria um banco
 de cooperativa, duplicidade, papel e login, e elimina esse banco ao final. Essa parte da
 suíte requer a instância local `.\SQLEXPRESS`.
 
-## Transição
+## Limite da solução moderna
 
-O frontend Razor continua disponível enquanto suas telas são recriadas no frontend
-TypeScript. Novas regras devem entrar em `Application` e `Domain`, nunca em controllers.
-O projeto MVC 5 não recebe novas funcionalidades.
+`ReciclaFacil.Modern.slnx` contém somente API, camadas de domínio/aplicação/infraestrutura
+e testes. O frontend oficial é `ReciclaFacil.Web`, compilado pelo Node/Vite. Os projetos
+MVC 5 e Razor intermediário permanecem no branch apenas para rastreabilidade e não fazem
+parte do build, da execução ou da implantação moderna. Novas regras entram em
+`Application` e `Domain`, nunca nos projetos de referência.

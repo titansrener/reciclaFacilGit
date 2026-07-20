@@ -2,7 +2,6 @@
   <Project Path="ReciclaFacil.Api/ReciclaFacil.Api.csproj" />
   <Project Path="ReciclaFacil.Api.IntegrationTests/ReciclaFacil.Api.IntegrationTests.csproj" />
   <Project Path="ReciclaFacil.Application/ReciclaFacil.Application.csproj" />
-  <Project Path="ReciclaFacil.Core/ReciclaFacil.Core.csproj" />
   <Project Path="ReciclaFacil.Domain/ReciclaFacil.Domain.csproj" />
   <Project Path="ReciclaFacil.Infrastructure/ReciclaFacil.Infrastructure.csproj" />
 </Solution>
