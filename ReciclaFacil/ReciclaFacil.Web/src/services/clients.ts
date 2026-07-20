@@ -62,10 +62,26 @@ export async function getClientOverview(): Promise<ClientOverview> {
   return response.json() as Promise<ClientOverview>
 }
 
-export async function getCollectionOptions(): Promise<ClientCollectionOptions> {
-  const response = await authorizedFetch('/clients/me/collection-options')
+export async function getCollectionOptions(currentCollectionId?: number): Promise<ClientCollectionOptions> {
+  const query = currentCollectionId == null ? '' : `?currentCollectionId=${currentCollectionId}`
+  const response = await authorizedFetch(`/clients/me/collection-options${query}`)
   if (!response.ok) throw new Error('Não foi possível carregar os horários disponíveis.')
   return response.json() as Promise<ClientCollectionOptions>
+}
+
+export async function updateCollection(
+  id: number,
+  collectionId: number,
+  materialIds: number[],
+) {
+  const response = await authorizedFetch(`/clients/me/collections/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ collectionId, materialIds }),
+  })
+  if (!response.ok) {
+    throw new Error(await problemMessage(response, 'Não foi possível alterar a coleta.'))
+  }
 }
 
 export async function scheduleCollection(collectionId: number, materialIds: number[]) {

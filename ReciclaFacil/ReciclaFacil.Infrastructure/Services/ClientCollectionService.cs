@@ -11,6 +11,7 @@ public sealed class ClientCollectionService(ReciclaFacilDbContext database)
 {
     public async Task<ClientCollectionOptions?> GetOptionsAsync(
         string userId,
+        int? currentCollectionId = null,
         CancellationToken cancellationToken = default)
     {
         var cooperativeId = await database.Clientes.AsNoTracking()
@@ -21,7 +22,8 @@ public sealed class ClientCollectionService(ReciclaFacilDbContext database)
             return null;
 
         var scheduledIds = database.ClientesColetas.AsNoTracking()
-            .Where(x => x.ClienteId == userId)
+            .Where(x => x.ClienteId == userId &&
+                        x.ColetaId != currentCollectionId)
             .Select(x => x.ColetaId);
         var slots = await database.Coletas.AsNoTracking()
             .Where(x => x.CooperativaId == cooperativeId &&
@@ -164,6 +166,99 @@ public sealed class ClientCollectionService(ReciclaFacilDbContext database)
 
         database.MateriaisColetados.RemoveRange(collection.Materiais);
         database.ClientesColetas.Remove(collection);
+        await database.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return ClientCollectionResult.Completed();
+    }
+
+    public async Task<ClientCollectionResult> UpdateAsync(
+        string userId,
+        int collectionId,
+        ScheduleClientCollection command,
+        CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await database.Database.BeginTransactionAsync(
+            IsolationLevel.Serializable, cancellationToken);
+        var current = await database.ClientesColetas
+            .Include(x => x.Coleta)
+            .Include(x => x.Materiais)
+            .SingleOrDefaultAsync(
+                x => x.ClienteId == userId && x.ColetaId == collectionId,
+                cancellationToken);
+        if (current is null)
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.CollectionNotFound, "Coleta não encontrada.");
+        if (current.Status != "A" ||
+            current.Coleta?.Status != "A" ||
+            current.Coleta.HoraAgendada <= DateTime.Now)
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.CannotUpdate,
+                "A coleta já foi iniciada, finalizada ou venceu e não pode ser alterada.");
+
+        var cooperativeId = await database.Clientes
+            .Where(x => x.Id == userId)
+            .Select(x => x.CooperativaId)
+            .SingleAsync(cancellationToken);
+        var target = await database.Coletas.SingleOrDefaultAsync(
+            x => x.Id == command.CollectionId &&
+                 x.CooperativaId == cooperativeId,
+            cancellationToken);
+        if (target is null)
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.CollectionNotFound, "Horário não encontrado.");
+        if (target.Status != "A" || target.HoraAgendada <= DateTime.Now)
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.CollectionUnavailable,
+                "O horário selecionado não está mais disponível.");
+        if (collectionId != command.CollectionId &&
+            await database.ClientesColetas.AnyAsync(
+                x => x.ClienteId == userId &&
+                     x.ColetaId == command.CollectionId,
+                cancellationToken))
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.AlreadyScheduled,
+                "Você já está associado a essa coleta.");
+
+        var selectedIds = command.MaterialIds.Distinct().ToArray();
+        if (selectedIds.Length == 0)
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.NoMaterials,
+                "Selecione pelo menos um material.");
+        var acceptedCount = await database.MateriaisComercializados.CountAsync(
+            x => x.CooperativaId == cooperativeId &&
+                 selectedIds.Contains(x.MaterialId),
+            cancellationToken);
+        if (acceptedCount != selectedIds.Length)
+            return ClientCollectionResult.Failed(
+                ClientCollectionError.MaterialNotAccepted,
+                "Um dos materiais selecionados não é aceito pela cooperativa.");
+
+        database.MateriaisColetados.RemoveRange(current.Materiais);
+        if (collectionId != command.CollectionId)
+            database.ClientesColetas.Remove(current);
+        await database.SaveChangesAsync(cancellationToken);
+
+        if (collectionId != command.CollectionId)
+        {
+            database.ClientesColetas.Add(new ClienteColeta
+            {
+                ClienteId = userId,
+                ColetaId = command.CollectionId,
+                Status = "A"
+            });
+            await database.SaveChangesAsync(cancellationToken);
+        }
+
+        foreach (var materialId in selectedIds)
+        {
+            database.MateriaisColetados.Add(new MaterialColetado
+            {
+                MaterialId = materialId,
+                ColetaId = command.CollectionId,
+                ClienteId = userId,
+                Status = "A"
+            });
+        }
         await database.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return ClientCollectionResult.Completed();

@@ -503,6 +503,14 @@ footer p { color: var(--muted); font-size: .85rem; }
   margin-top: 25px;
   padding: 11px 17px;
 }
+.collection-detail-actions {
+  display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
+}
+.collection-detail-actions .cancel-button { margin-top: 0; }
+.edit-button {
+  background: var(--green); border: 0; border-radius: 99px; color: white;
+  cursor: pointer; font-weight: 750; padding: 12px 18px;
+}
 .cancel-confirmation {
   background: #fff4f2;
   border: 1px solid #edc3bd;

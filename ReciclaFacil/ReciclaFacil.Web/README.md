@@ -71,6 +71,11 @@ por meio de `/api/v1/companies/me/overview`. O schema idempotente correspondente
 em `database/008_companies_schema.sql`, e o serviço impede que um mesmo CNPJ seja
 usado por empresa e cooperativa.
 
+Clientes podem alterar horário e materiais de uma coleta ainda agendada pelo fluxo
+`PUT /api/v1/clients/me/collections/{id}`. A operação revalida disponibilidade,
+propriedade e materiais dentro de uma transação serializável; coletas iniciadas,
+finalizadas ou vencidas são protegidas contra edição.
+
 ## Verificações
 
 ```powershell

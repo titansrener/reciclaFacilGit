@@ -3,15 +3,16 @@ import { decideCollectionOffer, getClientOverview, readNotification } from '../s
 import type { ClientOverview } from '../services/clients'
 import { CollectionDetailsDialog } from './CollectionDetailsDialog'
 import { ScheduleCollectionDialog } from './ScheduleCollectionDialog'
+import { EditCollectionDialog } from './EditCollectionDialog'
 
 const statusLabels: Record<string, string> = {
   A: 'Agendada',
   C: 'Concluída',
   F: 'Finalizada',
   I: 'Em andamento',
-  N: 'NÃ£o coletada',
-  P: 'Aguardando sua decisÃ£o',
-  S: 'ConcluÃ­da',
+  N: 'Não coletada',
+  P: 'Aguardando sua decisão',
+  S: 'Concluída',
   X: 'Cancelada',
 }
 
@@ -29,6 +30,7 @@ export function ClientDashboard() {
   const [version, setVersion] = useState(0)
   const [scheduling, setScheduling] = useState(false)
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null)
+  const [editingCollection, setEditingCollection] = useState<number | null>(null)
   const [busyNotification, setBusyNotification] = useState<number | null>(null)
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export function ClientDashboard() {
       await decideCollectionOffer(collectionId, decision)
       refresh()
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'NÃ£o foi possÃ­vel responder Ã  oferta.')
+      setError(reason instanceof Error ? reason.message : 'Não foi possível responder à oferta.')
     } finally {
       setBusyNotification(null)
     }
@@ -67,7 +69,7 @@ export function ClientDashboard() {
       await readNotification(notificationId)
       refresh()
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'NÃ£o foi possÃ­vel atualizar a notificaÃ§Ã£o.')
+      setError(reason instanceof Error ? reason.message : 'Não foi possível atualizar a notificação.')
     } finally {
       setBusyNotification(null)
     }
@@ -204,7 +206,19 @@ export function ClientDashboard() {
       )}
       {selectedCollection !== null && (
         <CollectionDetailsDialog collectionId={selectedCollection}
-          onClose={() => setSelectedCollection(null)} onChanged={refresh} />
+          onClose={() => setSelectedCollection(null)}
+          onChanged={refresh}
+          onEdit={() => {
+            setEditingCollection(selectedCollection)
+            setSelectedCollection(null)
+          }} />
+      )}
+      {editingCollection !== null && (
+        <EditCollectionDialog
+          collectionId={editingCollection}
+          onClose={() => setEditingCollection(null)}
+          onUpdated={refresh}
+        />
       )}
     </main>
   )

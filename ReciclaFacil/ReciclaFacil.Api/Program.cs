@@ -325,12 +325,13 @@ var clientCollections = api.MapGroup("/clients/me")
 
 clientCollections.MapGet("/collection-options", async Task<Results<
     Ok<ClientCollectionOptions>, NotFound>> (
+    int? currentCollectionId,
     ClaimsPrincipal user,
     IClientCollectionService collections,
     CancellationToken cancellationToken) =>
 {
     var options = await collections.GetOptionsAsync(
-        user.FindFirstValue("sub")!, cancellationToken);
+        user.FindFirstValue("sub")!, currentCollectionId, cancellationToken);
     return options is null
         ? TypedResults.NotFound()
         : TypedResults.Ok(options);
@@ -387,6 +388,27 @@ clientCollections.MapDelete("/collections/{id:int}", async (
 .WithName("CancelClientCollection")
 .WithSummary("Cancela uma coleta ainda não iniciada.")
 .Produces(StatusCodes.Status204NoContent)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status409Conflict);
+
+clientCollections.MapPut("/collections/{id:int}", async (
+    int id,
+    ScheduleClientCollectionRequest request,
+    ClaimsPrincipal user,
+    IClientCollectionService collections,
+    CancellationToken cancellationToken) =>
+{
+    var result = await collections.UpdateAsync(
+        user.FindFirstValue("sub")!,
+        id,
+        new(request.CollectionId, request.MaterialIds ?? []),
+        cancellationToken);
+    return ClientCollectionHttpResults.From(result);
+})
+.WithName("UpdateClientCollection")
+.WithSummary("Altera o horário e os materiais de uma coleta ainda agendada.")
+.Produces(StatusCodes.Status204NoContent)
+.ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status409Conflict);
 

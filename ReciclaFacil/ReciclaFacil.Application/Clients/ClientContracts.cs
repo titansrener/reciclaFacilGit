@@ -65,7 +65,8 @@ public enum ClientCollectionError
     AlreadyScheduled,
     NoMaterials,
     MaterialNotAccepted,
-    CannotCancel
+    CannotCancel,
+    CannotUpdate
 }
 
 public sealed record ClientCollectionResult(
@@ -83,6 +84,7 @@ public interface IClientCollectionService
 {
     Task<ClientCollectionOptions?> GetOptionsAsync(
         string userId,
+        int? currentCollectionId = null,
         CancellationToken cancellationToken = default);
 
     Task<ClientCollectionDetails?> GetDetailsAsync(
@@ -98,6 +100,12 @@ public interface IClientCollectionService
     Task<ClientCollectionResult> CancelAsync(
         string userId,
         int collectionId,
+        CancellationToken cancellationToken = default);
+
+    Task<ClientCollectionResult> UpdateAsync(
+        string userId,
+        int collectionId,
+        ScheduleClientCollection command,
         CancellationToken cancellationToken = default);
 }
 

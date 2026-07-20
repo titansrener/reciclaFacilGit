@@ -9,6 +9,7 @@ interface Props {
   collectionId: number
   onClose: () => void
   onChanged: () => void
+  onEdit: () => void
 }
 
 function formatDate(value: string | null) {
@@ -19,7 +20,7 @@ function formatDate(value: string | null) {
   }).format(new Date(value))
 }
 
-export function CollectionDetailsDialog({ collectionId, onClose, onChanged }: Props) {
+export function CollectionDetailsDialog({ collectionId, onClose, onChanged, onEdit }: Props) {
   const [details, setDetails] = useState<ClientCollectionDetails | null>(null)
   const [error, setError] = useState('')
   const [confirming, setConfirming] = useState(false)
@@ -92,9 +93,14 @@ export function CollectionDetailsDialog({ collectionId, onClose, onChanged }: Pr
                   </div>
                 </div>
               ) : (
-                <button className="cancel-button" type="button" onClick={() => setConfirming(true)}>
-                  Cancelar coleta
-                </button>
+                <div className="collection-detail-actions">
+                  <button className="edit-button" type="button" onClick={onEdit}>
+                    Editar coleta
+                  </button>
+                  <button className="cancel-button" type="button" onClick={() => setConfirming(true)}>
+                    Cancelar coleta
+                  </button>
+                </div>
               )
             )}
           </>
