@@ -18,6 +18,10 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
     public DbSet<MaterialColetado> MateriaisColetados => Set<MaterialColetado>();
     public DbSet<Notificacao> Notificacoes => Set<Notificacao>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Caminhao> Caminhoes => Set<Caminhao>();
+    public DbSet<Funcionario> Funcionarios => Set<Funcionario>();
+    public DbSet<CaminhaoColeta> CaminhoesColetas => Set<CaminhaoColeta>();
+    public DbSet<FuncionarioColeta> FuncionariosColetas => Set<FuncionarioColeta>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -191,6 +195,57 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
             entity.Property(x => x.Tipo).HasColumnName("tipo").HasMaxLength(1).IsFixedLength().IsUnicode(false);
             entity.HasOne(x => x.Cliente).WithMany(x => x.Notificacoes)
                 .HasForeignKey(x => x.ClienteId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Caminhao>(entity =>
+        {
+            entity.ToTable("Caminhoes");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("caminhaoId");
+            entity.Property(x => x.Descricao).HasColumnName("descricao").HasMaxLength(45).IsUnicode(false);
+            entity.Property(x => x.Placa).HasColumnName("placa").HasMaxLength(8).IsUnicode(false);
+            entity.Property(x => x.CooperativaId).HasColumnName("cooperativaId").HasMaxLength(128);
+            entity.HasIndex(x => x.Placa).IsUnique();
+            entity.HasOne(x => x.Cooperativa).WithMany(x => x.Caminhoes)
+                .HasForeignKey(x => x.CooperativaId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Funcionario>(entity =>
+        {
+            entity.ToTable("Funcionarios");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("funcionarioId").HasMaxLength(128);
+            entity.Property(x => x.Nome).HasColumnName("nome").HasMaxLength(45).IsUnicode(false);
+            entity.Property(x => x.DataNascimento).HasColumnName("dataNascimento").HasColumnType("date");
+            entity.Property(x => x.CooperativaId).HasColumnName("cooperativaId").HasMaxLength(128);
+            entity.HasOne(x => x.Cooperativa).WithMany(x => x.Funcionarios)
+                .HasForeignKey(x => x.CooperativaId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(x => x.Usuario).WithOne()
+                .HasForeignKey<Funcionario>(x => x.Id).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<CaminhaoColeta>(entity =>
+        {
+            entity.ToTable("CaminhoesColetas");
+            entity.HasKey(x => new { x.CaminhaoId, x.ColetaId });
+            entity.Property(x => x.CaminhaoId).HasColumnName("caminhaoId");
+            entity.Property(x => x.ColetaId).HasColumnName("coletaId");
+            entity.HasOne(x => x.Caminhao).WithMany(x => x.Coletas)
+                .HasForeignKey(x => x.CaminhaoId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(x => x.Coleta).WithMany(x => x.Caminhoes)
+                .HasForeignKey(x => x.ColetaId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<FuncionarioColeta>(entity =>
+        {
+            entity.ToTable("FuncionariosColetas");
+            entity.HasKey(x => new { x.ColetaId, x.FuncionarioId });
+            entity.Property(x => x.ColetaId).HasColumnName("coletaId");
+            entity.Property(x => x.FuncionarioId).HasColumnName("funcionarioId").HasMaxLength(128);
+            entity.HasOne(x => x.Coleta).WithMany(x => x.Funcionarios)
+                .HasForeignKey(x => x.ColetaId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(x => x.Funcionario).WithMany(x => x.Coletas)
+                .HasForeignKey(x => x.FuncionarioId).OnDelete(DeleteBehavior.NoAction);
         });
     }
 }

@@ -71,7 +71,9 @@ public sealed record CooperativeCollectionDetails(
     DateTime? ScheduledAt,
     string Status,
     double? Quantity,
-    IReadOnlyList<CooperativeCollectionClient> Clients);
+    IReadOnlyList<CooperativeCollectionClient> Clients,
+    IReadOnlyList<TruckSummary> Trucks,
+    IReadOnlyList<EmployeeSummary> Employees);
 
 public sealed record CooperativeCollectionClient(
     string Id,
@@ -116,4 +118,45 @@ public interface ICooperativeOperations
     Task<CooperativeOperationResult> AddMaterialAsync(string cooperativeId, SaveManagedMaterial command, CancellationToken cancellationToken = default);
     Task<CooperativeOperationResult> UpdateMaterialAsync(string cooperativeId, SaveManagedMaterial command, CancellationToken cancellationToken = default);
     Task<CooperativeOperationResult> RemoveMaterialAsync(string cooperativeId, int materialId, CancellationToken cancellationToken = default);
+}
+
+public sealed record CooperativeResources(
+    IReadOnlyList<TruckSummary> Trucks,
+    IReadOnlyList<EmployeeSummary> Employees);
+public sealed record TruckSummary(int Id, string Description, string Plate);
+public sealed record EmployeeSummary(string Id, string Name, DateTime BirthDate, string Email);
+public sealed record SaveTruck(string Description, string Plate);
+public sealed record CreateEmployee(string Name, DateTime BirthDate, string Email, string Password);
+public sealed record UpdateEmployee(string Name, DateTime BirthDate);
+
+public enum CooperativeResourceError
+{
+    None,
+    NotFound,
+    InvalidInput,
+    PlateExists,
+    EmailExists,
+    AlreadyAssigned,
+    NotAssigned
+}
+
+public sealed record CooperativeResourceResult(
+    CooperativeResourceError Error = CooperativeResourceError.None,
+    int? TruckId = null,
+    string? EmployeeId = null)
+{
+    public bool Succeeded => Error == CooperativeResourceError.None;
+}
+
+public interface ICooperativeResourceService
+{
+    Task<CooperativeResources?> ListAsync(string cooperativeId, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> CreateTruckAsync(string cooperativeId, SaveTruck command, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> UpdateTruckAsync(string cooperativeId, int truckId, SaveTruck command, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> DeleteTruckAsync(string cooperativeId, int truckId, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> CreateEmployeeAsync(string cooperativeId, CreateEmployee command, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> UpdateEmployeeAsync(string cooperativeId, string employeeId, UpdateEmployee command, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> DeleteEmployeeAsync(string cooperativeId, string employeeId, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> AssignTruckAsync(string cooperativeId, int collectionId, int truckId, bool assign, CancellationToken cancellationToken = default);
+    Task<CooperativeResourceResult> AssignEmployeeAsync(string cooperativeId, int collectionId, string employeeId, bool assign, CancellationToken cancellationToken = default);
 }

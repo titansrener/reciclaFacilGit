@@ -3,15 +3,22 @@ import type { FormEvent } from 'react'
 import {
   addManagedMaterial,
   collectionAction,
+  createEmployee,
   createCollection,
+  createTruck,
+  deleteEmployee,
+  deleteTruck,
   getCooperativeOverview,
+  getCooperativeResources,
   getManagedCollection,
   removeManagedMaterial,
+  setCollectionResource,
   updateManagedMaterial,
 } from '../services/cooperativeManagement'
 import type {
   CooperativeCollectionDetails,
   CooperativeOverview,
+  CooperativeResources,
 } from '../services/cooperativeManagement'
 
 const statusLabel: Record<string, string> = { A: 'Agendada', I: 'Em andamento', F: 'Finalizada' }
@@ -25,14 +32,25 @@ const dateTime = (value: string | null) => value
 export function CooperativeDashboard() {
   const [overview, setOverview] = useState<CooperativeOverview | null>(null)
   const [details, setDetails] = useState<CooperativeCollectionDetails | null>(null)
+  const [resources, setResources] = useState<CooperativeResources | null>(null)
   const [scheduledAt, setScheduledAt] = useState('')
   const [materialId, setMaterialId] = useState('')
   const [resalePrice, setResalePrice] = useState('')
+  const [truckDescription, setTruckDescription] = useState('')
+  const [truckPlate, setTruckPlate] = useState('')
+  const [employeeName, setEmployeeName] = useState('')
+  const [employeeBirthDate, setEmployeeBirthDate] = useState('')
+  const [employeeEmail, setEmployeeEmail] = useState('')
+  const [employeePassword, setEmployeePassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
   async function refresh() {
-    setOverview(await getCooperativeOverview())
+    const [nextOverview, nextResources] = await Promise.all([
+      getCooperativeOverview(), getCooperativeResources(),
+    ])
+    setOverview(nextOverview)
+    setResources(nextResources)
   }
 
   useEffect(() => { refresh().catch(showError) }, [])
@@ -68,6 +86,26 @@ export function CooperativeDashboard() {
       await addManagedMaterial(Number(materialId), resalePrice === '' ? null : Number(resalePrice))
       setMaterialId('')
       setResalePrice('')
+    })
+  }
+
+  function submitTruck(event: FormEvent) {
+    event.preventDefault()
+    run(async () => {
+      await createTruck(truckDescription, truckPlate)
+      setTruckDescription('')
+      setTruckPlate('')
+    })
+  }
+
+  function submitEmployee(event: FormEvent) {
+    event.preventDefault()
+    run(async () => {
+      await createEmployee(employeeName, employeeBirthDate, employeeEmail, employeePassword)
+      setEmployeeName('')
+      setEmployeeBirthDate('')
+      setEmployeeEmail('')
+      setEmployeePassword('')
     })
   }
 
@@ -157,6 +195,48 @@ export function CooperativeDashboard() {
         </section>
       </div>
 
+      <div className="resource-columns">
+        <section className="dashboard-panel">
+          <div className="panel-heading"><div><span className="eyebrow">Frota</span><h2>Caminhões</h2></div></div>
+          <form className="management-form" onSubmit={submitTruck}>
+            <label><span>Descrição</span><input required maxLength={45} value={truckDescription}
+              onChange={(event) => setTruckDescription(event.target.value)} placeholder="Ex.: Caminhão leve" /></label>
+            <label><span>Placa</span><input required maxLength={8} value={truckPlate}
+              onChange={(event) => setTruckPlate(event.target.value.toUpperCase())} placeholder="ABC1D23" /></label>
+            <button disabled={busy}>Cadastrar</button>
+          </form>
+          <ul className="managed-materials">
+            {resources?.trucks.map((truck) => <li key={truck.id}>
+              <div><strong>{truck.plate}</strong><small>{truck.description}</small></div>
+              <div className="row-actions"><button disabled={busy}
+                onClick={() => run(() => deleteTruck(truck.id))}>Excluir</button></div>
+            </li>)}
+          </ul>
+        </section>
+
+        <section className="dashboard-panel">
+          <div className="panel-heading"><div><span className="eyebrow">Equipe</span><h2>Funcionários</h2></div></div>
+          <form className="management-form employee-form" onSubmit={submitEmployee}>
+            <label><span>Nome</span><input required maxLength={45} value={employeeName}
+              onChange={(event) => setEmployeeName(event.target.value)} /></label>
+            <label><span>Nascimento</span><input required type="date" value={employeeBirthDate}
+              onChange={(event) => setEmployeeBirthDate(event.target.value)} /></label>
+            <label><span>E-mail</span><input required type="email" value={employeeEmail}
+              onChange={(event) => setEmployeeEmail(event.target.value)} /></label>
+            <label><span>Senha inicial</span><input required type="password" minLength={8} value={employeePassword}
+              onChange={(event) => setEmployeePassword(event.target.value)} /></label>
+            <button disabled={busy}>Cadastrar</button>
+          </form>
+          <ul className="managed-materials">
+            {resources?.employees.map((employee) => <li key={employee.id}>
+              <div><strong>{employee.name}</strong><small>{employee.email}</small></div>
+              <div className="row-actions"><button disabled={busy}
+                onClick={() => run(() => deleteEmployee(employee.id))}>Excluir</button></div>
+            </li>)}
+          </ul>
+        </section>
+      </div>
+
       {details && (
         <div className="modal-backdrop" onMouseDown={() => setDetails(null)}>
           <section className="operation-modal" role="dialog" aria-modal="true"
@@ -171,6 +251,34 @@ export function CooperativeDashboard() {
                   <small>{client.materials.join(', ') || 'Sem materiais'}</small></div></li>)}
               </ul>
             )}
+            <h3>Frota</h3>
+            <div className="assignment-grid">
+              {resources?.trucks.map((truck) => {
+                const assigned = details.trucks.some((item) => item.id === truck.id)
+                return <label className="choice-row" key={truck.id}>
+                  <input type="checkbox" checked={assigned} disabled={busy}
+                    onChange={() => run(async () => {
+                      await setCollectionResource(details.id, 'trucks', truck.id, !assigned)
+                      setDetails(await getManagedCollection(details.id))
+                    })} />
+                  <span>{truck.plate} · {truck.description}</span>
+                </label>
+              })}
+            </div>
+            <h3>Equipe</h3>
+            <div className="assignment-grid">
+              {resources?.employees.map((employee) => {
+                const assigned = details.employees.some((item) => item.id === employee.id)
+                return <label className="choice-row" key={employee.id}>
+                  <input type="checkbox" checked={assigned} disabled={busy}
+                    onChange={() => run(async () => {
+                      await setCollectionResource(details.id, 'employees', employee.id, !assigned)
+                      setDetails(await getManagedCollection(details.id))
+                    })} />
+                  <span>{employee.name}</span>
+                </label>
+              })}
+            </div>
           </section>
         </div>
       )}

@@ -47,6 +47,8 @@ public sealed class CooperativeOperations(ReciclaFacilDbContext database) : ICoo
         var collection = await database.Coletas.AsNoTracking()
             .Include(x => x.Clientes).ThenInclude(x => x.Cliente)
             .Include(x => x.Clientes).ThenInclude(x => x.Materiais).ThenInclude(x => x.Material)
+            .Include(x => x.Caminhoes).ThenInclude(x => x.Caminhao)
+            .Include(x => x.Funcionarios).ThenInclude(x => x.Funcionario).ThenInclude(x => x!.Usuario)
             .SingleOrDefaultAsync(x => x.Id == collectionId && x.CooperativaId == cooperativeId, cancellationToken);
         return collection is null ? null : new(
             collection.Id, collection.HoraAgendada, collection.Status, collection.Quantidade,
@@ -56,7 +58,15 @@ public sealed class CooperativeOperations(ReciclaFacilDbContext database) : ICoo
                     x.Materiais.Where(m => m.Material is not null)
                         .OrderBy(m => m.Material!.Descricao)
                         .Select(m => m.Material!.Descricao).ToArray()))
-                .ToArray());
+                .ToArray(),
+            collection.Caminhoes.Where(x => x.Caminhao is not null)
+                .Select(x => new TruckSummary(x.CaminhaoId, x.Caminhao!.Descricao, x.Caminhao.Placa))
+                .OrderBy(x => x.Plate).ToArray(),
+            collection.Funcionarios.Where(x => x.Funcionario is not null)
+                .Select(x => new EmployeeSummary(
+                    x.FuncionarioId, x.Funcionario!.Nome, x.Funcionario.DataNascimento,
+                    x.Funcionario.Usuario!.Email ?? string.Empty))
+                .OrderBy(x => x.Name).ToArray());
     }
 
     public async Task<CooperativeOperationResult> CreateCollectionAsync(

@@ -36,6 +36,11 @@ iniciar e finalizar coletas, além de associar materiais e manter seus preços d
 As regras e a autorização ficam na API, permitindo reutilizar os mesmos fluxos em
 aplicativos Android e iOS.
 
+O mesmo painel administra a frota e a equipe. Caminhões e funcionários podem ser
+cadastrados e vinculados às coletas; cada funcionário recebe uma conta com o papel
+`Funcionario`. O esquema correspondente é criado pelo script idempotente
+`database/005_cooperative_resources.sql`.
+
 ## Verificações
 
 ```powershell

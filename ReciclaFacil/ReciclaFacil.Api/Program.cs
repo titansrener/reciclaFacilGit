@@ -418,6 +418,96 @@ cooperative.MapDelete("/materials/{id:int}", async (
         user.FindFirstValue("sub")!, id, cancellationToken)))
 .WithName("RemoveCooperativeMaterial");
 
+cooperative.MapGet("/resources", async Task<Results<Ok<CooperativeResources>, NotFound>> (
+    ClaimsPrincipal user,
+    ICooperativeResourceService resources,
+    CancellationToken cancellationToken) =>
+{
+    var result = await resources.ListAsync(user.FindFirstValue("sub")!, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.WithName("CooperativeResources");
+
+cooperative.MapPost("/trucks", async (
+    SaveTruck request,
+    ClaimsPrincipal user,
+    ICooperativeResourceService resources,
+    CancellationToken cancellationToken) =>
+{
+    var result = await resources.CreateTruckAsync(user.FindFirstValue("sub")!, request, cancellationToken);
+    return CooperativeResourceHttpResults.From(
+        result, result.TruckId is null ? null : $"/api/v1/cooperatives/me/trucks/{result.TruckId}");
+})
+.WithName("CreateTruck");
+
+cooperative.MapPut("/trucks/{id:int}", async (
+    int id, SaveTruck request, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.UpdateTruckAsync(
+        user.FindFirstValue("sub")!, id, request, cancellationToken)))
+.WithName("UpdateTruck");
+
+cooperative.MapDelete("/trucks/{id:int}", async (
+    int id, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.DeleteTruckAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("DeleteTruck");
+
+cooperative.MapPost("/employees", async (
+    CreateEmployee request,
+    ClaimsPrincipal user,
+    ICooperativeResourceService resources,
+    CancellationToken cancellationToken) =>
+{
+    var result = await resources.CreateEmployeeAsync(user.FindFirstValue("sub")!, request, cancellationToken);
+    return CooperativeResourceHttpResults.From(
+        result, result.EmployeeId is null ? null : $"/api/v1/cooperatives/me/employees/{result.EmployeeId}");
+})
+.WithName("CreateEmployee");
+
+cooperative.MapPut("/employees/{id}", async (
+    string id, UpdateEmployee request, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.UpdateEmployeeAsync(
+        user.FindFirstValue("sub")!, id, request, cancellationToken)))
+.WithName("UpdateEmployee");
+
+cooperative.MapDelete("/employees/{id}", async (
+    string id, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.DeleteEmployeeAsync(
+        user.FindFirstValue("sub")!, id, cancellationToken)))
+.WithName("DeleteEmployee");
+
+cooperative.MapPut("/collections/{collectionId:int}/trucks/{truckId:int}", async (
+    int collectionId, int truckId, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.AssignTruckAsync(
+        user.FindFirstValue("sub")!, collectionId, truckId, true, cancellationToken)))
+.WithName("AssignTruck");
+
+cooperative.MapDelete("/collections/{collectionId:int}/trucks/{truckId:int}", async (
+    int collectionId, int truckId, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.AssignTruckAsync(
+        user.FindFirstValue("sub")!, collectionId, truckId, false, cancellationToken)))
+.WithName("UnassignTruck");
+
+cooperative.MapPut("/collections/{collectionId:int}/employees/{employeeId}", async (
+    int collectionId, string employeeId, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.AssignEmployeeAsync(
+        user.FindFirstValue("sub")!, collectionId, employeeId, true, cancellationToken)))
+.WithName("AssignEmployee");
+
+cooperative.MapDelete("/collections/{collectionId:int}/employees/{employeeId}", async (
+    int collectionId, string employeeId, ClaimsPrincipal user,
+    ICooperativeResourceService resources, CancellationToken cancellationToken) =>
+    CooperativeResourceHttpResults.From(await resources.AssignEmployeeAsync(
+        user.FindFirstValue("sub")!, collectionId, employeeId, false, cancellationToken)))
+.WithName("UnassignEmployee");
+
 app.Run();
 
 public partial class Program;

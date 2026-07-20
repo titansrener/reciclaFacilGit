@@ -43,7 +43,13 @@ export interface CooperativeCollectionDetails {
     collectedAt: string | null
     materials: string[]
   }>
+  trucks: Truck[]
+  employees: Employee[]
 }
+
+export interface Truck { id: number; description: string; plate: string }
+export interface Employee { id: string; name: string; birthDate: string; email: string }
+export interface CooperativeResources { trucks: Truck[]; employees: Employee[] }
 
 async function parseError(response: Response) {
   if (response.ok) return
@@ -100,5 +106,49 @@ export async function updateManagedMaterial(materialId: number, resalePrice: num
 
 export async function removeManagedMaterial(materialId: number) {
   const response = await authorizedFetch(`/cooperatives/me/materials/${materialId}`, { method: 'DELETE' })
+  await parseError(response)
+}
+
+export async function getCooperativeResources(): Promise<CooperativeResources> {
+  const response = await authorizedFetch('/cooperatives/me/resources')
+  await parseError(response)
+  return response.json() as Promise<CooperativeResources>
+}
+
+export async function createTruck(description: string, plate: string) {
+  const response = await authorizedFetch('/cooperatives/me/trucks', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description, plate }),
+  })
+  await parseError(response)
+}
+
+export async function deleteTruck(id: number) {
+  const response = await authorizedFetch(`/cooperatives/me/trucks/${id}`, { method: 'DELETE' })
+  await parseError(response)
+}
+
+export async function createEmployee(
+  name: string, birthDate: string, email: string, password: string,
+) {
+  const response = await authorizedFetch('/cooperatives/me/employees', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, birthDate, email, password }),
+  })
+  await parseError(response)
+}
+
+export async function deleteEmployee(id: string) {
+  const response = await authorizedFetch(`/cooperatives/me/employees/${id}`, { method: 'DELETE' })
+  await parseError(response)
+}
+
+export async function setCollectionResource(
+  collectionId: number, resource: 'trucks' | 'employees', id: number | string, assign: boolean,
+) {
+  const response = await authorizedFetch(
+    `/cooperatives/me/collections/${collectionId}/${resource}/${id}`,
+    { method: assign ? 'PUT' : 'DELETE' },
+  )
   await parseError(response)
 }

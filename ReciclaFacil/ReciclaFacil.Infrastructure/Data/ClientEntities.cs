@@ -31,6 +31,8 @@ public sealed class Coleta
     public required string CooperativaId { get; set; }
     public Cooperativa? Cooperativa { get; set; }
     public ICollection<ClienteColeta> Clientes { get; set; } = [];
+    public ICollection<CaminhaoColeta> Caminhoes { get; set; } = [];
+    public ICollection<FuncionarioColeta> Funcionarios { get; set; } = [];
 }
 
 public sealed class ClienteColeta

@@ -470,6 +470,12 @@ footer p { color: var(--muted); font-size: .85rem; }
 .managed-materials li > div:first-child { display: flex; flex-direction: column; gap: 5px; }
 .managed-materials strong { color: var(--ink); font-size: .86rem; }
 .managed-materials small { color: var(--muted); font-size: .75rem; }
+.resource-columns {
+  display: grid; gap: 18px; grid-template-columns: 1fr 1fr; margin-top: 18px;
+}
+.employee-form { align-items: stretch; display: grid; grid-template-columns: 1fr 1fr; }
+.employee-form button { grid-column: 1 / -1; }
+.assignment-grid { display: grid; gap: 7px; grid-template-columns: 1fr 1fr; }
 .modal-address { color: var(--muted); margin: 13px 0 8px; }
 .modal-close {
   background: var(--surface); border: 0; border-radius: 50%; color: var(--ink);
@@ -492,6 +498,7 @@ footer p { color: var(--muted); font-size: .85rem; }
   .search-form button { grid-column: 1 / -1; }
   .card-grid { grid-template-columns: 1fr 1fr; }
   .dashboard-columns { grid-template-columns: 1fr; }
+  .resource-columns { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
   .site-header { padding: 18px 20px; }
@@ -522,6 +529,7 @@ footer p { color: var(--muted); font-size: .85rem; }
   .cooperative-dashboard .collection-list li { grid-template-columns: auto 1fr; }
   .cooperative-dashboard .row-actions { grid-column: 2; justify-content: flex-start; }
   .management-form { align-items: stretch; flex-direction: column; }
+  .employee-form, .assignment-grid { display: flex; flex-direction: column; }
   .collection-meta { align-items: start; text-align: left; }
   .collection-action { grid-column: 2; justify-self: start; }
   .operation-modal { padding: 34px 22px; }

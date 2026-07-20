@@ -69,6 +69,8 @@ public sealed class Cooperativa
     public required string Estado { get; set; }
     public Point? EnderecoCoordenada { get; set; }
     public ICollection<MaterialComercializado> MateriaisComercializados { get; set; } = [];
+    public ICollection<Caminhao> Caminhoes { get; set; } = [];
+    public ICollection<Funcionario> Funcionarios { get; set; } = [];
 }
 
 public sealed class MaterialComercializado
