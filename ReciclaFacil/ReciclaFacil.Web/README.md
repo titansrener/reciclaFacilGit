@@ -37,8 +37,9 @@ As regras e a autorização ficam na API, permitindo reutilizar os mesmos fluxos
 aplicativos Android e iOS.
 
 O mesmo painel administra a frota e a equipe. Caminhões e funcionários podem ser
-cadastrados e vinculados às coletas; cada funcionário recebe uma conta com o papel
-`Funcionario`. O esquema correspondente é criado pelo script idempotente
+cadastrados, editados e vinculados às coletas; cada funcionário recebe uma conta com
+o papel `Funcionario`. A edição do funcionário preserva o e-mail usado para entrar e
+altera somente nome e nascimento. O esquema correspondente é criado pelo script idempotente
 `database/005_cooperative_resources.sql`.
 
 Usuários com o papel `Funcionario` têm um painel próprio em

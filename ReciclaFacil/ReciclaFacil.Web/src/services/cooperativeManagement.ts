@@ -123,6 +123,14 @@ export async function createTruck(description: string, plate: string) {
   await parseError(response)
 }
 
+export async function updateTruck(id: number, description: string, plate: string) {
+  const response = await authorizedFetch(`/cooperatives/me/trucks/${id}`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description, plate }),
+  })
+  await parseError(response)
+}
+
 export async function deleteTruck(id: number) {
   const response = await authorizedFetch(`/cooperatives/me/trucks/${id}`, { method: 'DELETE' })
   await parseError(response)
@@ -134,6 +142,14 @@ export async function createEmployee(
   const response = await authorizedFetch('/cooperatives/me/employees', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, birthDate, email, password }),
+  })
+  await parseError(response)
+}
+
+export async function updateEmployee(id: string, name: string, birthDate: string) {
+  const response = await authorizedFetch(`/cooperatives/me/employees/${id}`, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, birthDate }),
   })
   await parseError(response)
 }

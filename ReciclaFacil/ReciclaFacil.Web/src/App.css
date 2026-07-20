@@ -562,6 +562,9 @@ footer p { color: var(--muted); font-size: .85rem; }
   cursor: pointer; font-size: .72rem; font-weight: 750; padding: 9px 12px;
 }
 .management-form button { background: var(--green); color: white; }
+.management-form .secondary-form-action {
+  background: white; border: 1px solid var(--line); color: var(--ink);
+}
 .management-form button:disabled, .row-actions button:disabled { cursor: default; opacity: .5; }
 .row-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 .cooperative-dashboard .collection-list li { grid-template-columns: auto 1fr auto minmax(110px, auto); }
@@ -578,6 +581,9 @@ footer p { color: var(--muted); font-size: .85rem; }
 }
 .employee-form { align-items: stretch; display: grid; grid-template-columns: 1fr 1fr; }
 .employee-form button { grid-column: 1 / -1; }
+.editing-resource-email {
+  align-self: center; color: var(--muted); font-size: .75rem; overflow-wrap: anywhere;
+}
 .assignment-grid { display: grid; gap: 7px; grid-template-columns: 1fr 1fr; }
 .employee-dashboard .dashboard-panel { min-height: 360px; }
 .employee-collection-modal > p { color: var(--muted); line-height: 1.6; }

@@ -13,12 +13,16 @@ import {
   getManagedCollection,
   removeManagedMaterial,
   setCollectionResource,
+  updateEmployee,
   updateManagedMaterial,
+  updateTruck,
 } from '../services/cooperativeManagement'
 import type {
   CooperativeCollectionDetails,
   CooperativeOverview,
   CooperativeResources,
+  Employee,
+  Truck,
 } from '../services/cooperativeManagement'
 
 const statusLabel: Record<string, string> = { A: 'Agendada', I: 'Em andamento', F: 'Finalizada' }
@@ -38,10 +42,12 @@ export function CooperativeDashboard() {
   const [resalePrice, setResalePrice] = useState('')
   const [truckDescription, setTruckDescription] = useState('')
   const [truckPlate, setTruckPlate] = useState('')
+  const [editingTruck, setEditingTruck] = useState<Truck | null>(null)
   const [employeeName, setEmployeeName] = useState('')
   const [employeeBirthDate, setEmployeeBirthDate] = useState('')
   const [employeeEmail, setEmployeeEmail] = useState('')
   const [employeePassword, setEmployeePassword] = useState('')
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -92,21 +98,56 @@ export function CooperativeDashboard() {
   function submitTruck(event: FormEvent) {
     event.preventDefault()
     run(async () => {
-      await createTruck(truckDescription, truckPlate)
+      if (editingTruck) await updateTruck(editingTruck.id, truckDescription, truckPlate)
+      else await createTruck(truckDescription, truckPlate)
       setTruckDescription('')
       setTruckPlate('')
+      setEditingTruck(null)
     })
   }
 
   function submitEmployee(event: FormEvent) {
     event.preventDefault()
     run(async () => {
-      await createEmployee(employeeName, employeeBirthDate, employeeEmail, employeePassword)
+      if (editingEmployee) {
+        await updateEmployee(editingEmployee.id, employeeName, employeeBirthDate)
+      } else {
+        await createEmployee(employeeName, employeeBirthDate, employeeEmail, employeePassword)
+      }
       setEmployeeName('')
       setEmployeeBirthDate('')
       setEmployeeEmail('')
       setEmployeePassword('')
+      setEditingEmployee(null)
     })
+  }
+
+  function editTruck(truck: Truck) {
+    setEditingTruck(truck)
+    setTruckDescription(truck.description)
+    setTruckPlate(truck.plate)
+  }
+
+  function cancelTruckEdit() {
+    setEditingTruck(null)
+    setTruckDescription('')
+    setTruckPlate('')
+  }
+
+  function editEmployee(employee: Employee) {
+    setEditingEmployee(employee)
+    setEmployeeName(employee.name)
+    setEmployeeBirthDate(employee.birthDate.slice(0, 10))
+    setEmployeeEmail('')
+    setEmployeePassword('')
+  }
+
+  function cancelEmployeeEdit() {
+    setEditingEmployee(null)
+    setEmployeeName('')
+    setEmployeeBirthDate('')
+    setEmployeeEmail('')
+    setEmployeePassword('')
   }
 
   async function openDetails(id: number) {
@@ -203,12 +244,15 @@ export function CooperativeDashboard() {
               onChange={(event) => setTruckDescription(event.target.value)} placeholder="Ex.: Caminhão leve" /></label>
             <label><span>Placa</span><input required maxLength={8} value={truckPlate}
               onChange={(event) => setTruckPlate(event.target.value.toUpperCase())} placeholder="ABC1D23" /></label>
-            <button disabled={busy}>Cadastrar</button>
+            <button disabled={busy}>{editingTruck ? 'Salvar' : 'Cadastrar'}</button>
+            {editingTruck && <button className="secondary-form-action" type="button"
+              disabled={busy} onClick={cancelTruckEdit}>Cancelar</button>}
           </form>
           <ul className="managed-materials">
             {resources?.trucks.map((truck) => <li key={truck.id}>
               <div><strong>{truck.plate}</strong><small>{truck.description}</small></div>
               <div className="row-actions"><button disabled={busy}
+                onClick={() => editTruck(truck)}>Editar</button><button disabled={busy}
                 onClick={() => run(() => deleteTruck(truck.id))}>Excluir</button></div>
             </li>)}
           </ul>
@@ -221,16 +265,25 @@ export function CooperativeDashboard() {
               onChange={(event) => setEmployeeName(event.target.value)} /></label>
             <label><span>Nascimento</span><input required type="date" value={employeeBirthDate}
               onChange={(event) => setEmployeeBirthDate(event.target.value)} /></label>
-            <label><span>E-mail</span><input required type="email" value={employeeEmail}
-              onChange={(event) => setEmployeeEmail(event.target.value)} /></label>
-            <label><span>Senha inicial</span><input required type="password" minLength={8} value={employeePassword}
-              onChange={(event) => setEmployeePassword(event.target.value)} /></label>
-            <button disabled={busy}>Cadastrar</button>
+            {editingEmployee ? (
+              <p className="editing-resource-email">Conta: <strong>{editingEmployee.email}</strong></p>
+            ) : (
+              <>
+                <label><span>E-mail</span><input required type="email" value={employeeEmail}
+                  onChange={(event) => setEmployeeEmail(event.target.value)} /></label>
+                <label><span>Senha inicial</span><input required type="password" minLength={8} value={employeePassword}
+                  onChange={(event) => setEmployeePassword(event.target.value)} /></label>
+              </>
+            )}
+            <button disabled={busy}>{editingEmployee ? 'Salvar' : 'Cadastrar'}</button>
+            {editingEmployee && <button className="secondary-form-action" type="button"
+              disabled={busy} onClick={cancelEmployeeEdit}>Cancelar</button>}
           </form>
           <ul className="managed-materials">
             {resources?.employees.map((employee) => <li key={employee.id}>
               <div><strong>{employee.name}</strong><small>{employee.email}</small></div>
               <div className="row-actions"><button disabled={busy}
+                onClick={() => editEmployee(employee)}>Editar</button><button disabled={busy}
                 onClick={() => run(() => deleteEmployee(employee.id))}>Excluir</button></div>
             </li>)}
           </ul>
