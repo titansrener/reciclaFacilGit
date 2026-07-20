@@ -82,3 +82,12 @@ A aplicação responde em `http://localhost:5080` e o health check em `/health`.
 O banco vazio `ReciclaFacilWeb` é criado na instância `.\SQLEXPRESS` pelo script
 `Database/001_initial_core_schema.sql`. O script é idempotente e pode ser executado
 novamente sem apagar tabelas ou dados.
+
+Para criar ou atualizar todo o schema em ordem, use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Database\Apply-Database.ps1
+```
+
+O comando localiza o `sqlcmd`, valida a sequência dos scripts e para na primeira
+falha. Todos os scripts podem ser reaplicados sem apagar os dados existentes.
