@@ -1,8 +1,12 @@
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using ReciclaFacil.Infrastructure.Data;
 using Xunit;
 
 namespace ReciclaFacil.Api.IntegrationTests;
@@ -49,21 +53,36 @@ public sealed class HealthEndpointsTests :
 public sealed class UnavailableDatabaseApiFactory :
     WebApplicationFactory<Program>
 {
+    private const string UnavailableConnection =
+        "Server=127.0.0.1,1;Database=Indisponivel;" +
+        "Integrated Security=True;Encrypt=False;" +
+        "TrustServerCertificate=True;Connect Timeout=1";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
         builder.ConfigureLogging(logging => logging.ClearProviders());
+        builder.ConfigureServices(services =>
+            ReplaceDatabase(services, UnavailableConnection));
         builder.ConfigureAppConfiguration((_, configuration) =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:ReciclaFacil"] =
-                    "Server=127.0.0.1,1;Database=Indisponivel;" +
-                    "Integrated Security=True;Encrypt=False;" +
-                    "TrustServerCertificate=True;Connect Timeout=1",
                 ["Jwt:SigningKey"] =
                     "integration-tests-only-signing-key-32-bytes"
             });
         });
+    }
+
+    internal static void ReplaceDatabase(
+        IServiceCollection services,
+        string connectionString)
+    {
+        services.RemoveAll<DbContextOptions<ReciclaFacilDbContext>>();
+        services.RemoveAll<ReciclaFacilDbContext>();
+        services.AddDbContext<ReciclaFacilDbContext>(options =>
+            options.UseSqlServer(
+                connectionString,
+                sql => sql.UseNetTopologySuite()));
     }
 }

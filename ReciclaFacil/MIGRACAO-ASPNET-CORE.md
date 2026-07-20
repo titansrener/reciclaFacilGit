@@ -67,7 +67,9 @@ expõe `/health/live` para vivacidade e `/health/ready` para prontidão com veri
 do SQL Server; `/health` preserva compatibilidade e também verifica o banco.
 O projeto `ReciclaFacil.Api.IntegrationTests` cobre automaticamente as sondagens,
 fronteiras de autorização e validações de entrada que devem ocorrer antes do acesso
-ao banco.
+ao banco. Ele também cria um banco temporário isolado no SQL Server Express, aplica os
+nove scripts e comprova cadastro, persistência, papel, login e bloqueio de duplicidade,
+removendo o banco temporário ao finalizar.
 
 ## Execução
 

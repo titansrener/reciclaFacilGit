@@ -105,7 +105,10 @@ npm run dev
 Os testes de integração executam a API em memória e validam as fronteiras de
 autorização, a validação inicial do login, a proteção específica da sessão web e a
 diferença entre vivacidade e prontidão quando o banco está indisponível. Eles não
-alteram o banco de desenvolvimento.
+alteram o banco de desenvolvimento. A cobertura de persistência cria um banco
+`ReciclaFacilWebTests_<processo>`, aplica os mesmos scripts versionados, valida cadastro
+de cooperativa, duplicidade, papel e login, e elimina esse banco ao final. Essa parte da
+suíte requer a instância local `.\SQLEXPRESS`.
 
 ## Transição
 
