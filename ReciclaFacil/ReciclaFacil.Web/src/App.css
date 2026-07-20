@@ -595,6 +595,39 @@ footer p { color: var(--muted); font-size: .85rem; }
   cursor: pointer; font-size: .72rem; font-weight: 750; padding: 8px 11px;
 }
 .employee-client-list button:disabled { cursor: default; opacity: .45; }
+.route-open-button {
+  margin: 18px 0 8px; border: 1px solid var(--green); border-radius: 999px;
+  padding: 10px 18px; background: transparent; color: var(--green);
+  font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer;
+}
+.route-open-button:disabled { cursor: default; opacity: .45; }
+.route-origin {
+  display: flex; flex-direction: column; gap: 4px; margin: 22px 0;
+  padding: 16px 18px; border-radius: 16px; background: var(--mint);
+}
+.route-origin span {
+  color: var(--green); font-size: .66rem; font-weight: 850; text-transform: uppercase;
+}
+.route-origin small { color: var(--muted); }
+.route-stop-list {
+  display: flex; flex-direction: column; gap: 10px; padding: 0; list-style: none;
+}
+.route-stop-list li {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center;
+  padding: 13px 0; border-bottom: 1px solid var(--line);
+}
+.route-stop-list li > span {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--green); color: white; font-size: .75rem; font-weight: 850;
+}
+.route-stop-list li > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.route-stop-list small { color: var(--muted); }
+.route-stop-list em { color: #9a6518; font-size: .68rem; font-style: normal; }
+.route-stop-list a { color: var(--green); font-size: .74rem; font-weight: 800; }
+.route-warning { color: #835719 !important; font-size: .75rem; }
+.route-navigation {
+  display: block; margin-top: 20px; text-align: center; text-decoration: none;
+}
 .nested-modal { z-index: 12; }
 .material-quantity-list { display: flex; flex-direction: column; gap: 9px; margin: 20px 0 25px; }
 .material-quantity-list label {

@@ -30,6 +30,23 @@ export interface EmployeeCollectionDetails {
   trucks: Array<{ id: number; plate: string; description: string }>
   clients: EmployeeClientSummary[]
 }
+export interface EmployeeCollectionRoute {
+  collectionId: number
+  origin: EmployeeRoutePoint
+  stops: EmployeeRouteStop[]
+  unmappedStops: number
+}
+export interface EmployeeRoutePoint {
+  name: string
+  address: string
+  latitude: number | null
+  longitude: number | null
+}
+export interface EmployeeRouteStop extends EmployeeRoutePoint {
+  sequence: number
+  clientId: string
+  mobile: string
+}
 export interface EmployeeClientDetails {
   id: string
   name: string
@@ -58,6 +75,8 @@ async function read<T>(path: string): Promise<T> {
 export const getEmployeeOverview = () => read<EmployeeOverview>('/employees/me/overview')
 export const getEmployeeCollection = (id: number) =>
   read<EmployeeCollectionDetails>(`/employees/me/collections/${id}`)
+export const getEmployeeRoute = (id: number) =>
+  read<EmployeeCollectionRoute>(`/employees/me/collections/${id}/route`)
 export const getEmployeeClient = (collectionId: number, clientId: string) =>
   read<EmployeeClientDetails>(`/employees/me/collections/${collectionId}/clients/${clientId}`)
 

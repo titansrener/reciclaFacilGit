@@ -48,6 +48,15 @@ valor a receber com o preço definido pela cooperativa, atualiza todos os estado
 transação e cria a notificação do cliente. O script
 `database/006_purchase_value_precision.sql` preserva os centavos desses valores.
 
+O roteiro operacional usa
+`GET /api/v1/employees/me/collections/{id}/route`. A API confirma que o funcionário
+está atribuído à coleta, devolve a cooperativa como origem e somente clientes ainda
+pendentes como paradas. Pontos com coordenadas são ordenados por proximidade a partir
+da posição anterior; endereços sem coordenada continuam disponíveis com um alerta.
+O frontend abre direções por URL pública do Google Maps, sem armazenar chave de mapas
+no código. O contrato permanece independente do provedor para ser reutilizado pelos
+aplicativos Android e iOS.
+
 Quando o cliente vendedor recebe uma proposta, a coleta entra no estado de decisão
 pendente (`P`). O painel permite aceitar — concluindo a coleta e criando uma única
 movimentação na carteira — ou recusar, devolvendo materiais e atendimento ao funcionário.

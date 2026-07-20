@@ -729,6 +729,18 @@ employee.MapGet("/collections/{id:int}", async Task<Results<Ok<EmployeeCollectio
 })
 .WithName("EmployeeCollectionDetails");
 
+employee.MapGet("/collections/{id:int}/route", async Task<Results<
+    Ok<EmployeeCollectionRoute>, NotFound>> (
+    int id,
+    ClaimsPrincipal user,
+    IEmployeeOperations operations,
+    CancellationToken cancellationToken) =>
+{
+    var result = await operations.GetRouteAsync(user.FindFirstValue("sub")!, id, cancellationToken);
+    return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+})
+.WithName("EmployeeCollectionRoute");
+
 employee.MapGet("/collections/{collectionId:int}/clients/{clientId}", async Task<Results<
     Ok<EmployeeClientDetails>, NotFound>> (
     int collectionId,

@@ -69,6 +69,53 @@ public sealed class EmployeeOperations(ReciclaFacilDbContext database) : IEmploy
                 .OrderBy(x => x.Description).ToArray());
     }
 
+    public async Task<EmployeeCollectionRoute?> GetRouteAsync(
+        string employeeId, int collectionId, CancellationToken cancellationToken = default)
+    {
+        var employee = await database.Funcionarios.AsNoTracking()
+            .Where(x => x.Id == employeeId)
+            .Select(x => new
+            {
+                x.CooperativaId,
+                Name = x.Cooperativa!.RazaoSocial,
+                Address = x.Cooperativa.Endereco,
+                Latitude = x.Cooperativa.EnderecoCoordenada == null
+                    ? (double?)null : x.Cooperativa.EnderecoCoordenada.Y,
+                Longitude = x.Cooperativa.EnderecoCoordenada == null
+                    ? (double?)null : x.Cooperativa.EnderecoCoordenada.X
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+        if (employee is null) return null;
+
+        var assigned = await database.FuncionariosColetas.AsNoTracking()
+            .AnyAsync(x => x.FuncionarioId == employeeId && x.ColetaId == collectionId,
+                cancellationToken);
+        if (!assigned) return null;
+
+        var stops = await database.ClientesColetas.AsNoTracking()
+            .Where(x => x.ColetaId == collectionId && x.Status == "A" && x.Cliente != null)
+            .Select(x => new RouteCandidate(
+                x.ClienteId,
+                x.Cliente!.Nome,
+                x.Cliente.Endereco,
+                x.Cliente.Celular,
+                x.Cliente.EnderecoCoordenada == null
+                    ? (double?)null : x.Cliente.EnderecoCoordenada.Y,
+                x.Cliente.EnderecoCoordenada == null
+                    ? (double?)null : x.Cliente.EnderecoCoordenada.X))
+            .ToArrayAsync(cancellationToken);
+
+        var ordered = OrderStops(stops, employee.Latitude, employee.Longitude)
+            .Select((x, index) => new EmployeeRouteStop(
+                index + 1, x.ClientId, x.Name, x.Address, x.Mobile, x.Latitude, x.Longitude))
+            .ToArray();
+        return new(
+            collectionId,
+            new(employee.Name, employee.Address, employee.Latitude, employee.Longitude),
+            ordered,
+            ordered.Count(x => x.Latitude is null || x.Longitude is null));
+    }
+
     public async Task<EmployeeOperationResult> RecordAsync(
         string employeeId, int collectionId, string clientId,
         RecordCollectedMaterials command, CancellationToken cancellationToken = default)
@@ -137,4 +184,48 @@ public sealed class EmployeeOperations(ReciclaFacilDbContext database) : IEmploy
         await transaction.CommitAsync(cancellationToken);
         return new(TotalValue: total);
     }
+
+    private static IReadOnlyList<RouteCandidate> OrderStops(
+        IReadOnlyCollection<RouteCandidate> candidates, double? originLatitude,
+        double? originLongitude)
+    {
+        var located = candidates
+            .Where(x => x.Latitude is not null && x.Longitude is not null)
+            .ToList();
+        List<RouteCandidate> result = [];
+        var latitude = originLatitude;
+        var longitude = originLongitude;
+        while (located.Count > 0)
+        {
+            var next = latitude is null || longitude is null
+                ? located.OrderBy(x => x.Name).First()
+                : located.MinBy(x => DistanceSquared(
+                    latitude.Value, longitude.Value, x.Latitude!.Value, x.Longitude!.Value))!;
+            result.Add(next);
+            located.Remove(next);
+            latitude = next.Latitude;
+            longitude = next.Longitude;
+        }
+        result.AddRange(candidates
+            .Where(x => x.Latitude is null || x.Longitude is null)
+            .OrderBy(x => x.Name));
+        return result;
+    }
+
+    private static double DistanceSquared(
+        double latitude1, double longitude1, double latitude2, double longitude2)
+    {
+        var latitudeDelta = latitude2 - latitude1;
+        var longitudeDelta = (longitude2 - longitude1) *
+            Math.Cos((latitude1 + latitude2) * Math.PI / 360);
+        return latitudeDelta * latitudeDelta + longitudeDelta * longitudeDelta;
+    }
+
+    private sealed record RouteCandidate(
+        string ClientId,
+        string Name,
+        string Address,
+        string Mobile,
+        double? Latitude,
+        double? Longitude);
 }

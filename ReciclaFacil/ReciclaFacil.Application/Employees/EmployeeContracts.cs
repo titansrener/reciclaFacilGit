@@ -31,6 +31,27 @@ public sealed record EmployeeClientSummary(
     double? Latitude,
     double? Longitude);
 
+public sealed record EmployeeCollectionRoute(
+    int CollectionId,
+    EmployeeRoutePoint Origin,
+    IReadOnlyList<EmployeeRouteStop> Stops,
+    int UnmappedStops);
+
+public sealed record EmployeeRoutePoint(
+    string Name,
+    string Address,
+    double? Latitude,
+    double? Longitude);
+
+public sealed record EmployeeRouteStop(
+    int Sequence,
+    string ClientId,
+    string Name,
+    string Address,
+    string Mobile,
+    double? Latitude,
+    double? Longitude);
+
 public sealed record EmployeeClientDetails(
     string Id,
     string Name,
@@ -76,6 +97,7 @@ public interface IEmployeeOperations
 {
     Task<EmployeeOverview?> GetOverviewAsync(string employeeId, CancellationToken cancellationToken = default);
     Task<EmployeeCollectionDetails?> GetCollectionAsync(string employeeId, int collectionId, CancellationToken cancellationToken = default);
+    Task<EmployeeCollectionRoute?> GetRouteAsync(string employeeId, int collectionId, CancellationToken cancellationToken = default);
     Task<EmployeeClientDetails?> GetClientAsync(string employeeId, int collectionId, string clientId, CancellationToken cancellationToken = default);
     Task<EmployeeOperationResult> RecordAsync(string employeeId, int collectionId, string clientId, RecordCollectedMaterials command, CancellationToken cancellationToken = default);
 }

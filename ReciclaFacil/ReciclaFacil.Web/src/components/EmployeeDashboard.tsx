@@ -10,6 +10,7 @@ import type {
   EmployeeCollectionDetails,
   EmployeeOverview,
 } from '../services/employees'
+import { CollectionRouteDialog } from './CollectionRouteDialog'
 
 const statusLabel: Record<string, string> = {
   A: 'Agendada', I: 'Em andamento', F: 'Finalizada', S: 'Coletado', N: 'Não coletado',
@@ -22,6 +23,7 @@ export function EmployeeDashboard() {
   const [overview, setOverview] = useState<EmployeeOverview | null>(null)
   const [collection, setCollection] = useState<EmployeeCollectionDetails | null>(null)
   const [client, setClient] = useState<EmployeeClientDetails | null>(null)
+  const [routeCollectionId, setRouteCollectionId] = useState<number | null>(null)
   const [quantities, setQuantities] = useState<Record<number, string>>({})
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -104,6 +106,11 @@ export function EmployeeDashboard() {
             <button className="modal-close" onClick={() => setCollection(null)} aria-label="Fechar">×</button>
             <span className="eyebrow">{statusLabel[collection.status]}</span>
             <h2>Coleta de {formatDate(collection.scheduledAt)}</h2>
+            <button className="route-open-button"
+              disabled={!collection.clients.some((item) => item.status === 'A')}
+              onClick={() => setRouteCollectionId(collection.id)}>
+              Ver roteiro
+            </button>
             <h3>Caminhões</h3>
             <p>{collection.trucks.map((truck) => `${truck.plate} · ${truck.description}`).join(', ') || 'Nenhum caminhão associado.'}</p>
             <h3>Clientes</h3>
@@ -145,6 +152,10 @@ export function EmployeeDashboard() {
             </button>
           </section>
         </div>
+      )}
+      {routeCollectionId !== null && (
+        <CollectionRouteDialog collectionId={routeCollectionId}
+          onClose={() => setRouteCollectionId(null)} />
       )}
     </main>
   )
