@@ -21,6 +21,7 @@ public sealed class LegacyUser
     public required string Discriminator { get; set; }
     public ICollection<LegacyUserRole> UserRoles { get; set; } = [];
     public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = [];
 }
 
 public sealed class RefreshToken

@@ -76,6 +76,27 @@ Clientes podem alterar horário e materiais de uma coleta ainda agendada pelo fl
 propriedade e materiais dentro de uma transação serializável; coletas iniciadas,
 finalizadas ou vencidas são protegidas contra edição.
 
+## Credenciais
+
+A recuperação e a alteração de senha são oferecidas pela API:
+
+- `POST /api/v1/auth/password/forgot` sempre devolve a mesma resposta, exista ou não
+  uma conta para o e-mail informado;
+- `POST /api/v1/auth/password/reset` consome um token de uso único;
+- `PUT /api/v1/auth/password` exige autenticação e a senha atual.
+
+Os tokens de recuperação expiram em 60 minutos por padrão e somente o hash SHA-256
+é persistido pelo script idempotente `database/009_password_reset_tokens.sql`.
+Redefinir ou alterar a senha troca o `SecurityStamp` e revoga refresh tokens, encerrando
+imediatamente as sessões anteriores.
+
+O envio do link usa as opções `Smtp` e `PasswordReset` da API. Em produção, informe
+esses valores por configuração segura, por exemplo `Smtp__Host`, `Smtp__UserName`,
+`Smtp__Password` e `PasswordReset__FrontendBaseUrl`. O token só é devolvido no corpo
+da resposta quando a API está no ambiente `Development` e
+`PasswordReset__ExposeTokenInResponse` está habilitado; esse recurso existe apenas
+para desenvolvimento local.
+
 ## Verificações
 
 ```powershell

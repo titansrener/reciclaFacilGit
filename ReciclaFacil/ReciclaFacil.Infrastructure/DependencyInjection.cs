@@ -39,12 +39,18 @@ public static class DependencyInjection
         services.AddScoped<IPublicRegistrationService, PublicRegistrationService>();
         services.AddScoped<ICompanyQueries, CompanyQueries>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<PasswordResetOptions>(
+            configuration.GetSection(PasswordResetOptions.SectionName));
+        services.Configure<SmtpOptions>(
+            configuration.GetSection(SmtpOptions.SectionName));
         services.AddSingleton<IPasswordHasher<LegacyUser>>(
             new PasswordHasher<LegacyUser>(Options.Create(new PasswordHasherOptions
             {
                 CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV2
             })));
         services.AddScoped<IApiAuthenticationService, ApiAuthenticationService>();
+        services.AddScoped<IPasswordResetNotifier, PasswordResetNotifier>();
+        services.AddScoped<ICredentialService, CredentialService>();
         return services;
     }
 }

@@ -14,6 +14,9 @@ import { EmployeeDashboard } from './components/EmployeeDashboard'
 import { AdminDashboard } from './components/AdminDashboard'
 import { RegistrationDialog } from './components/RegistrationDialog'
 import { CompanyDashboard } from './components/CompanyDashboard'
+import { ForgotPasswordDialog } from './components/ForgotPasswordDialog'
+import { ResetPasswordDialog } from './components/ResetPasswordDialog'
+import { ChangePasswordDialog } from './components/ChangePasswordDialog'
 import { login, logout, restoreSession } from './services/auth'
 import type { WebSession } from './services/auth'
 
@@ -39,6 +42,10 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(false)
   const [registrationOpen, setRegistrationOpen] = useState(false)
   const [registrationMessage, setRegistrationMessage] = useState('')
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false)
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
+  const [resetToken, setResetToken] = useState<string | null>(() =>
+    new URLSearchParams(window.location.search).get('resetToken'))
 
   useEffect(() => {
     let active = true
@@ -105,6 +112,21 @@ function App() {
     setSession(null)
   }
 
+  function clearResetToken() {
+    setResetToken(null)
+    const url = new URL(window.location.href)
+    url.searchParams.delete('resetToken')
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
+  }
+
+  async function handlePasswordChanged() {
+    await logout()
+    setSession(null)
+    setChangePasswordOpen(false)
+    setRegistrationMessage('Senha alterada. Entre novamente com sua nova senha.')
+    setLoginOpen(true)
+  }
+
   const totalPages = Math.max(1, Math.ceil(total / query.pageSize))
 
   return (
@@ -126,6 +148,7 @@ function App() {
           ) : session ? (
             <div className="user-session">
               <span><strong>{session.user.email}</strong><small>{session.user.role}</small></span>
+              <button type="button" onClick={() => setChangePasswordOpen(true)}>Senha</button>
               <button type="button" onClick={handleLogout}>Sair</button>
             </div>
           ) : (
@@ -324,6 +347,10 @@ function App() {
           onClose={() => { setLoginOpen(false); setRegistrationMessage('') }}
           onLogin={handleLogin}
           message={registrationMessage}
+          onForgotPassword={() => {
+            setLoginOpen(false)
+            setForgotPasswordOpen(true)
+          }}
         />
       )}
       {registrationOpen && (
@@ -334,6 +361,32 @@ function App() {
             setRegistrationMessage(`Conta ${email} criada. Você já pode entrar.`)
             setLoginOpen(true)
           }}
+        />
+      )}
+      {forgotPasswordOpen && (
+        <ForgotPasswordDialog
+          onClose={() => setForgotPasswordOpen(false)}
+          onDevelopmentToken={(token) => {
+            setForgotPasswordOpen(false)
+            setResetToken(token)
+          }}
+        />
+      )}
+      {resetToken && (
+        <ResetPasswordDialog
+          token={resetToken}
+          onClose={clearResetToken}
+          onReset={() => {
+            clearResetToken()
+            setRegistrationMessage('Senha redefinida. Você já pode entrar.')
+            setLoginOpen(true)
+          }}
+        />
+      )}
+      {changePasswordOpen && (
+        <ChangePasswordDialog
+          onClose={() => setChangePasswordOpen(false)}
+          onChanged={handlePasswordChanged}
         />
       )}
     </div>

@@ -95,6 +95,7 @@ public sealed class ApiAuthenticationService(
             new Claim(JwtRegisteredClaimNames.Email, authenticatedUser.Email),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.Role, role),
+            new Claim("security_stamp", user.SecurityStamp ?? ""),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         var credentials = new SigningCredentials(

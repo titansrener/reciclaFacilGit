@@ -12,6 +12,8 @@ using ReciclaFacil.Application.Materials;
 using ReciclaFacil.Application.Employees;
 using ReciclaFacil.Application.Registrations;
 using ReciclaFacil.Application.Companies;
+using Microsoft.EntityFrameworkCore;
+using ReciclaFacil.Infrastructure.Data;
 using ReciclaFacil.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +43,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.FromSeconds(30),
             NameClaimType = ClaimTypes.Name,
             RoleClaimType = ClaimTypes.Role
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userId = context.Principal?.FindFirstValue("sub");
+                var securityStamp = context.Principal?.FindFirstValue("security_stamp");
+                if (string.IsNullOrWhiteSpace(userId) ||
+                    string.IsNullOrWhiteSpace(securityStamp))
+                {
+                    context.Fail("Sessão inválida.");
+                    return;
+                }
+                var database = context.HttpContext.RequestServices
+                    .GetRequiredService<ReciclaFacilDbContext>();
+                var valid = await database.Users.AsNoTracking().AnyAsync(
+                    x => x.Id == userId &&
+                         x.Ativo != false &&
+                         x.SecurityStamp == securityStamp,
+                    context.HttpContext.RequestAborted);
+                if (!valid)
+                    context.Fail("Sessão revogada.");
+            }
         };
     });
 builder.Services.AddAuthorization();
@@ -126,6 +151,51 @@ auth.MapGet("/me", (ClaimsPrincipal user) => TypedResults.Ok(new
 .RequireAuthorization()
 .WithName("CurrentUser")
 .WithSummary("Retorna os dados do usuário autenticado.");
+
+auth.MapPost("/password/forgot", async (
+    ForgotPasswordRequest request,
+    ICredentialService credentials,
+    IWebHostEnvironment environment,
+    IConfiguration configuration,
+    CancellationToken cancellationToken) =>
+{
+    var result = await credentials.RequestPasswordResetAsync(
+        request.Email ?? "", cancellationToken);
+    var exposeToken = environment.IsDevelopment() &&
+        configuration.GetValue<bool>("PasswordReset:ExposeTokenInDevelopment");
+    return TypedResults.Accepted((string?)null, new PasswordResetAcceptedResponse(
+        "Se o e-mail estiver cadastrado, as instruções serão enviadas.",
+        exposeToken ? result.DeliveryToken : null));
+})
+.WithName("ForgotPassword")
+.WithSummary("Solicita redefinição sem revelar se a conta existe.")
+.Produces<PasswordResetAcceptedResponse>(StatusCodes.Status202Accepted);
+
+auth.MapPost("/password/reset", async (
+    ResetPasswordCommand request,
+    ICredentialService credentials,
+    CancellationToken cancellationToken) =>
+    CredentialHttpResults.From(
+        await credentials.ResetPasswordAsync(request, cancellationToken)))
+.WithName("ResetPassword")
+.WithSummary("Redefine a senha com um token de uso único.")
+.Produces(StatusCodes.Status204NoContent)
+.ProducesValidationProblem()
+.ProducesProblem(StatusCodes.Status400BadRequest);
+
+auth.MapPut("/password", async (
+    ChangePasswordCommand request,
+    ClaimsPrincipal user,
+    ICredentialService credentials,
+    CancellationToken cancellationToken) =>
+    CredentialHttpResults.From(await credentials.ChangePasswordAsync(
+        user.FindFirstValue("sub")!, request, cancellationToken)))
+.RequireAuthorization()
+.WithName("ChangePassword")
+.WithSummary("Altera a senha e revoga todas as sessões existentes.")
+.Produces(StatusCodes.Status204NoContent)
+.ProducesValidationProblem()
+.ProducesProblem(StatusCodes.Status401Unauthorized);
 
 var registrations = auth.MapGroup("/register")
     .WithTags("Public Registration");
@@ -728,6 +798,10 @@ public partial class Program;
 
 public sealed record LoginRequest(string Email, string Password);
 public sealed record RefreshRequest(string RefreshToken);
+public sealed record ForgotPasswordRequest(string? Email);
+public sealed record PasswordResetAcceptedResponse(
+    string Message,
+    string? DevelopmentResetToken);
 public sealed record ScheduleClientCollectionRequest(
     int CollectionId,
     int[]? MaterialIds);

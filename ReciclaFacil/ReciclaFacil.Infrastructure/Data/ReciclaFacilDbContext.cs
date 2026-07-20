@@ -23,6 +23,7 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
     public DbSet<CaminhaoColeta> CaminhoesColetas => Set<CaminhaoColeta>();
     public DbSet<FuncionarioColeta> FuncionariosColetas => Set<FuncionarioColeta>();
     public DbSet<Empresa> Empresas => Set<Empresa>();
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +48,17 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
             entity.Property(x => x.ReplacedByHash).HasMaxLength(64).IsUnicode(false);
             entity.HasIndex(x => x.TokenHash).IsUnique();
             entity.HasOne(x => x.User).WithMany(x => x.RefreshTokens)
+                .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<PasswordResetToken>(entity =>
+        {
+            entity.ToTable("PasswordResetTokens");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.UserId).HasMaxLength(128);
+            entity.Property(x => x.TokenHash).HasMaxLength(64).IsUnicode(false);
+            entity.HasIndex(x => x.TokenHash).IsUnique();
+            entity.HasOne(x => x.User).WithMany(x => x.PasswordResetTokens)
                 .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
         });
 

@@ -67,6 +67,69 @@ export async function logout(): Promise<void> {
   }
 }
 
+export async function requestPasswordReset(email: string): Promise<string | null> {
+  const response = await fetch(`${apiBaseUrl}/auth/password/forgot`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  })
+  if (!response.ok) throw new Error('Não foi possível solicitar a redefinição.')
+  const result = await response.json() as { developmentResetToken?: string | null }
+  return result.developmentResetToken ?? null
+}
+
+export async function resetPassword(
+  token: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<void> {
+  const response = await fetch(`${apiBaseUrl}/auth/password/reset`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ token, newPassword, confirmPassword }),
+  })
+  if (!response.ok) throw new Error(await authProblem(
+    response, 'Não foi possível redefinir a senha.'))
+}
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<void> {
+  const response = await authorizedFetch('/auth/password', {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+  })
+  if (!response.ok) throw new Error(await authProblem(
+    response, 'Não foi possível alterar a senha.'))
+  currentSession = null
+}
+
+async function authProblem(response: Response, fallback: string) {
+  try {
+    const problem = await response.json() as {
+      title?: string
+      errors?: Record<string, string[]>
+    }
+    return problem.title ??
+      Object.values(problem.errors ?? {})[0]?.[0] ??
+      fallback
+  } catch {
+    return fallback
+  }
+}
+
 export async function authorizedFetch(
   path: string,
   init: RequestInit = {},

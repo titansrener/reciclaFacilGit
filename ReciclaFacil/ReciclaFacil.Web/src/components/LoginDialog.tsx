@@ -6,9 +6,10 @@ interface LoginDialogProps {
   onClose: () => void
   onLogin: (email: string, password: string) => Promise<WebSession>
   message?: string
+  onForgotPassword: () => void
 }
 
-export function LoginDialog({ onClose, onLogin, message }: LoginDialogProps) {
+export function LoginDialog({ onClose, onLogin, message, onForgotPassword }: LoginDialogProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -77,6 +78,9 @@ export function LoginDialog({ onClose, onLogin, message }: LoginDialogProps) {
           {error && <div className="login-error" role="alert">{error}</div>}
           <button type="submit" disabled={submitting}>
             {submitting ? 'Entrando…' : 'Entrar'}
+          </button>
+          <button className="forgot-password-link" type="button" onClick={onForgotPassword}>
+            Esqueci minha senha
           </button>
         </form>
         <small>O refresh token é protegido por cookie HttpOnly e não fica disponível ao JavaScript.</small>
