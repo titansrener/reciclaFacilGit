@@ -84,6 +84,13 @@ Para implantação, configure a sondagem de vivacidade em `/health/live` e a de
 prontidão em `/health/ready`. A rota histórica `/health` também verifica a conexão com
 o SQL Server e permanece disponível para compatibilidade.
 
+Login web/móvel, recuperação de senha e cadastros públicos possuem limites por IP,
+devolvendo HTTP 429 quando excedidos. Quando a API estiver atrás de proxy reverso,
+informe somente os endereços dos proxies controlados em
+`ReverseProxy__KnownProxies__0`, `ReverseProxy__KnownProxies__1` e assim por diante.
+Somente esses endereços podem fornecer `X-Forwarded-For`; cabeçalhos de origens não
+confiáveis são ignorados.
+
 Para Android e iOS, os endpoints gerais devolvem o par de tokens para armazenamento
 seguro do dispositivo. O frontend web usa os endpoints `/auth/web/*`: o refresh token
 fica em cookie `HttpOnly`, `SameSite=Strict`, restrito ao caminho da autenticação e nunca

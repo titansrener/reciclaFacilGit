@@ -15,6 +15,9 @@ using ReciclaFacil.Application.Registrations;
 using ReciclaFacil.Application.Companies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
+using System.Threading.RateLimiting;
 using ReciclaFacil.Infrastructure.Data;
 using ReciclaFacil.Infrastructure;
 
@@ -72,6 +75,52 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    foreach (var configured in builder.Configuration
+                 .GetSection("ReverseProxy:KnownProxies").Get<string[]>() ?? [])
+    {
+        if (IPAddress.TryParse(configured, out var address) &&
+            !options.KnownProxies.Contains(address))
+            options.KnownProxies.Add(address);
+    }
+});
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("login", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetClientPartition(context),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+    options.AddPolicy("password-recovery", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetClientPartition(context),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(15),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+    options.AddPolicy("registration", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetClientPartition(context),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromHours(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("web", policy =>
@@ -85,8 +134,10 @@ builder.Services.AddReciclaFacilInfrastructure(builder.Configuration);
 var app = builder.Build();
 
 app.UseExceptionHandler();
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseCors("web");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -124,7 +175,8 @@ auth.MapPost("/login", async Task<Results<Ok<TokenPair>, UnauthorizedHttpResult,
     return result is null ? TypedResults.Unauthorized() : TypedResults.Ok(result);
 })
 .WithName("Login")
-.WithSummary("Autentica e retorna access token e refresh token.");
+.WithSummary("Autentica e retorna access token e refresh token.")
+.RequireRateLimiting("login");
 
 auth.MapPost("/refresh", async Task<Results<Ok<TokenPair>, UnauthorizedHttpResult, ValidationProblem>> (
     RefreshRequest request,
@@ -183,6 +235,7 @@ auth.MapPost("/password/forgot", async (
 })
 .WithName("ForgotPassword")
 .WithSummary("Solicita redefinição sem revelar se a conta existe.")
+.RequireRateLimiting("password-recovery")
 .Produces<PasswordResetAcceptedResponse>(StatusCodes.Status202Accepted);
 
 auth.MapPost("/password/reset", async (
@@ -193,6 +246,7 @@ auth.MapPost("/password/reset", async (
         await credentials.ResetPasswordAsync(request, cancellationToken)))
 .WithName("ResetPassword")
 .WithSummary("Redefine a senha com um token de uso único.")
+.RequireRateLimiting("password-recovery")
 .Produces(StatusCodes.Status204NoContent)
 .ProducesValidationProblem()
 .ProducesProblem(StatusCodes.Status400BadRequest);
@@ -232,6 +286,7 @@ registrations.MapPost("/clients", async (
 })
 .WithName("RegisterClient")
 .WithSummary("Cria uma conta pública de cliente.")
+.RequireRateLimiting("registration")
 .Produces<RegisteredAccount>(StatusCodes.Status201Created)
 .ProducesValidationProblem()
 .ProducesProblem(StatusCodes.Status404NotFound)
@@ -248,6 +303,7 @@ registrations.MapPost("/cooperatives", async (
 })
 .WithName("RegisterCooperative")
 .WithSummary("Cria uma conta pública de cooperativa.")
+.RequireRateLimiting("registration")
 .Produces<RegisteredAccount>(StatusCodes.Status201Created)
 .ProducesValidationProblem()
 .ProducesProblem(StatusCodes.Status409Conflict);
@@ -263,6 +319,7 @@ registrations.MapPost("/companies", async (
 })
 .WithName("RegisterCompany")
 .WithSummary("Cria uma conta pública de empresa.")
+.RequireRateLimiting("registration")
 .Produces<RegisteredAccount>(StatusCodes.Status201Created)
 .ProducesValidationProblem()
 .ProducesProblem(StatusCodes.Status409Conflict);
@@ -288,7 +345,8 @@ webAuth.MapPost("/login", async Task<Results<
     return TypedResults.Ok(WebSessionResponse.From(result));
 })
 .WithName("WebLogin")
-.WithSummary("Autentica o frontend web e grava o refresh token em cookie HttpOnly.");
+.WithSummary("Autentica o frontend web e grava o refresh token em cookie HttpOnly.")
+.RequireRateLimiting("login");
 
 webAuth.MapPost("/refresh", async Task<Results<
     Ok<WebSessionResponse>, UnauthorizedHttpResult, BadRequest>> (
@@ -851,6 +909,9 @@ administration.MapDelete("/materials/{id:int}", async (
 .WithName("AdminDeleteMaterial");
 
 app.Run();
+
+static string GetClientPartition(HttpContext context) =>
+    context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
 public partial class Program;
 
