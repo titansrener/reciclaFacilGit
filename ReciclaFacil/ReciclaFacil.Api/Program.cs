@@ -11,6 +11,7 @@ using ReciclaFacil.Application.Cooperatives;
 using ReciclaFacil.Application.Materials;
 using ReciclaFacil.Application.Employees;
 using ReciclaFacil.Application.Registrations;
+using ReciclaFacil.Application.Companies;
 using ReciclaFacil.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -167,6 +168,21 @@ registrations.MapPost("/cooperatives", async (
 .ProducesValidationProblem()
 .ProducesProblem(StatusCodes.Status409Conflict);
 
+registrations.MapPost("/companies", async (
+    RegisterCompany request,
+    IPublicRegistrationService registration,
+    CancellationToken cancellationToken) =>
+{
+    var result = await registration.RegisterCompanyAsync(request, cancellationToken);
+    return RegistrationHttpResults.From(
+        result, result.Account is null ? "" : $"/api/v1/companies/{result.Account.Id}");
+})
+.WithName("RegisterCompany")
+.WithSummary("Cria uma conta pública de empresa.")
+.Produces<RegisteredAccount>(StatusCodes.Status201Created)
+.ProducesValidationProblem()
+.ProducesProblem(StatusCodes.Status409Conflict);
+
 var webAuth = auth.MapGroup("/web").WithTags("Web Authentication");
 
 webAuth.MapPost("/login", async Task<Results<
@@ -270,6 +286,22 @@ api.MapGet("/materials", async (
     TypedResults.Ok(await queries.ListAsync(cancellationToken)))
 .WithName("ListMaterials")
 .WithSummary("Lista materiais recicláveis.");
+
+api.MapGet("/companies/me/overview", async Task<Results<
+    Ok<CompanyOverview>, NotFound>> (
+    ClaimsPrincipal user,
+    ICompanyQueries queries,
+    CancellationToken cancellationToken) =>
+{
+    var overview = await queries.GetOverviewAsync(
+        user.FindFirstValue("sub")!, cancellationToken);
+    return overview is null
+        ? TypedResults.NotFound()
+        : TypedResults.Ok(overview);
+})
+.RequireAuthorization(policy => policy.RequireRole("Empresa"))
+.WithName("CompanyOverview")
+.WithSummary("Retorna o perfil da empresa autenticada.");
 
 api.MapGet("/clients/me/overview", async Task<Results<
     Ok<ClientOverview>, NotFound>> (

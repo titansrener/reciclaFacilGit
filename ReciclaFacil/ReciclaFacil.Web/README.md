@@ -65,6 +65,12 @@ e persistem usuário, papel e perfil em uma única transação. O script idempot
 `database/007_public_registration_constraints.sql` garante a unicidade de CPFs
 informados.
 
+O cadastro público também atende empresas, mantendo os campos e a composição de
+endereço da solução legada. Contas `Empresa` recebem um painel autenticado de perfil
+por meio de `/api/v1/companies/me/overview`. O schema idempotente correspondente está
+em `database/008_companies_schema.sql`, e o serviço impede que um mesmo CNPJ seja
+usado por empresa e cooperativa.
+
 ## Verificações
 
 ```powershell

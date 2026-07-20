@@ -33,6 +33,20 @@ export interface CooperativeRegistration {
   state: string
 }
 
+export interface CompanyRegistration {
+  email: string
+  password: string
+  confirmPassword: string
+  cnpj: string
+  corporateName: string
+  street: string
+  number: number
+  city: string
+  state: string
+  phone: string
+  fax: string
+}
+
 export interface RegisteredAccount {
   id: string
   email: string
@@ -65,6 +79,10 @@ export function registerClient(data: ClientRegistration): Promise<RegisteredAcco
 
 export function registerCooperative(data: CooperativeRegistration): Promise<RegisteredAccount> {
   return register('/auth/register/cooperatives', data)
+}
+
+export function registerCompany(data: CompanyRegistration): Promise<RegisteredAccount> {
+  return register('/auth/register/companies', data)
 }
 
 async function register(path: string, data: object): Promise<RegisteredAccount> {

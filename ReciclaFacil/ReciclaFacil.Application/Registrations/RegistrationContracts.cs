@@ -24,6 +24,19 @@ public sealed record RegisterCooperative(
     string City,
     string State);
 
+public sealed record RegisterCompany(
+    string Email,
+    string Password,
+    string ConfirmPassword,
+    string Cnpj,
+    string CorporateName,
+    string Street,
+    int Number,
+    string City,
+    string State,
+    string Phone,
+    string? Fax);
+
 public sealed record RegistrationCooperative(
     string Id,
     string Name,
@@ -63,5 +76,9 @@ public interface IPublicRegistrationService
 
     Task<RegistrationResult> RegisterCooperativeAsync(
         RegisterCooperative command,
+        CancellationToken cancellationToken = default);
+
+    Task<RegistrationResult> RegisterCompanyAsync(
+        RegisterCompany command,
         CancellationToken cancellationToken = default);
 }

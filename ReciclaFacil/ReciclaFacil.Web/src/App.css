@@ -224,7 +224,7 @@ footer p { color: var(--muted); font-size: .85rem; }
 .registration-modal h2 { font-size: clamp(2rem, 5vw, 3rem); }
 .registration-tabs {
   background: var(--surface); border-radius: 99px; display: grid;
-  gap: 4px; grid-template-columns: 1fr 1fr; margin: 24px 0; padding: 4px;
+  gap: 4px; grid-template-columns: repeat(3, 1fr); margin: 24px 0; padding: 4px;
 }
 .registration-tabs button {
   background: transparent; border: 0; border-radius: 99px; color: var(--muted);
@@ -254,6 +254,30 @@ footer p { color: var(--muted); font-size: .85rem; }
   cursor: pointer; font-weight: 750; margin-top: 4px; padding: 14px 20px;
 }
 .registration-submit:disabled { cursor: wait; opacity: .65; }
+.company-profile {
+  background: white; border: 1px solid var(--line); border-radius: 18px;
+  box-shadow: 0 16px 50px rgba(23, 46, 27, .06); margin-top: 28px; padding: 28px;
+}
+.company-profile dl {
+  display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin: 25px 0 0;
+}
+.company-profile dl > div {
+  background: var(--surface); border-radius: 12px; display: flex;
+  flex-direction: column; gap: 6px; padding: 17px;
+}
+.company-profile dt {
+  color: var(--muted); font-size: .68rem; font-weight: 800;
+  letter-spacing: .07em; text-transform: uppercase;
+}
+.company-profile dd { color: var(--ink); font-size: .9rem; margin: 0; }
+.company-profile .company-address { grid-column: 1 / -1; }
+.company-dashboard .impact-badge strong {
+  font-family: var(--display); font-size: 1.45rem; font-weight: 550;
+}
+.company-dashboard .impact-badge span {
+  font-size: .68rem; font-weight: 800; letter-spacing: .05em;
+  text-align: center; text-transform: uppercase;
+}
 .client-dashboard {
   margin: 0 auto;
   max-width: 1180px;
@@ -627,8 +651,11 @@ footer p { color: var(--muted); font-size: .85rem; }
   .details-modal { padding: 34px 25px; }
   .login-modal { padding: 34px 25px; }
   .registration-modal { border-radius: 16px; max-height: 96vh; padding: 34px 20px; }
+  .registration-tabs button { font-size: .72rem; padding: 10px 6px; }
   .registration-form { grid-template-columns: 1fr; }
   .field-wide, .registration-error, .registration-submit { grid-column: auto; }
+  .company-profile dl { grid-template-columns: 1fr; }
+  .company-profile .company-address { grid-column: auto; }
   .client-dashboard { padding: 50px 20px 75px; }
   .dashboard-welcome { align-items: start; }
   .impact-badge { display: none; }

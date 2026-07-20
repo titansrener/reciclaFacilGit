@@ -7,6 +7,7 @@ using ReciclaFacil.Application.Authentication;
 using ReciclaFacil.Application.Clients;
 using ReciclaFacil.Application.Employees;
 using ReciclaFacil.Application.Registrations;
+using ReciclaFacil.Application.Companies;
 using ReciclaFacil.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -36,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IClientFinancialService, ClientFinancialService>();
         services.AddScoped<IMaterialManagementService, MaterialManagementService>();
         services.AddScoped<IPublicRegistrationService, PublicRegistrationService>();
+        services.AddScoped<ICompanyQueries, CompanyQueries>();
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IPasswordHasher<LegacyUser>>(
             new PasswordHasher<LegacyUser>(Options.Create(new PasswordHasherOptions

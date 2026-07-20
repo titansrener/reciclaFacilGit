@@ -22,6 +22,7 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
     public DbSet<Funcionario> Funcionarios => Set<Funcionario>();
     public DbSet<CaminhaoColeta> CaminhoesColetas => Set<CaminhaoColeta>();
     public DbSet<FuncionarioColeta> FuncionariosColetas => Set<FuncionarioColeta>();
+    public DbSet<Empresa> Empresas => Set<Empresa>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -246,6 +247,20 @@ public sealed class ReciclaFacilDbContext(DbContextOptions<ReciclaFacilDbContext
                 .HasForeignKey(x => x.ColetaId).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(x => x.Funcionario).WithMany(x => x.Coletas)
                 .HasForeignKey(x => x.FuncionarioId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<Empresa>(entity =>
+        {
+            entity.ToTable("Empresas");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("empresaId").HasMaxLength(128);
+            entity.Property(x => x.Cnpj).HasColumnName("cnpj").HasMaxLength(14).IsUnicode(false);
+            entity.Property(x => x.RazaoSocial).HasColumnName("razaoSocial").HasMaxLength(150).IsUnicode(false);
+            entity.Property(x => x.Endereco).HasColumnName("endereco").HasMaxLength(150).IsUnicode(false);
+            entity.Property(x => x.EnderecoCoordenada).HasColumnName("enderecoCoordenada").HasColumnType("geometry");
+            entity.Property(x => x.Telefone).HasColumnName("telefone").HasMaxLength(11).IsUnicode(false);
+            entity.Property(x => x.Fax).HasColumnName("fax").HasMaxLength(25).IsUnicode(false);
+            entity.Property(x => x.Email).HasColumnName("email").HasMaxLength(45).IsUnicode(false);
         });
     }
 }

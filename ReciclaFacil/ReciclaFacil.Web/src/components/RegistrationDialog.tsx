@@ -3,11 +3,13 @@ import type { FormEvent, ReactNode } from 'react'
 import {
   listRegistrationCooperatives,
   registerClient,
+  registerCompany,
   registerCooperative,
   RegistrationRequestError,
 } from '../services/registrations'
 import type {
   ClientRegistration,
+  CompanyRegistration,
   CooperativeRegistration,
   RegistrationCooperative,
 } from '../services/registrations'
@@ -27,10 +29,16 @@ const emptyCooperative: CooperativeRegistration = {
   address: '', city: '', state: '',
 }
 
+const emptyCompany: CompanyRegistration = {
+  email: '', password: '', confirmPassword: '', cnpj: '', corporateName: '',
+  street: '', number: 0, city: '', state: '', phone: '', fax: '',
+}
+
 export function RegistrationDialog({ onClose, onRegistered }: RegistrationDialogProps) {
-  const [profile, setProfile] = useState<'client' | 'cooperative'>('client')
+  const [profile, setProfile] = useState<'client' | 'cooperative' | 'company'>('client')
   const [client, setClient] = useState(emptyClient)
   const [cooperative, setCooperative] = useState(emptyCooperative)
+  const [company, setCompany] = useState(emptyCompany)
   const [cooperatives, setCooperatives] = useState<RegistrationCooperative[]>([])
   const [loadingOptions, setLoadingOptions] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -62,7 +70,9 @@ export function RegistrationDialog({ onClose, onRegistered }: RegistrationDialog
     try {
       const account = profile === 'client'
         ? await registerClient(client)
-        : await registerCooperative(cooperative)
+        : profile === 'cooperative'
+          ? await registerCooperative(cooperative)
+          : await registerCompany(company)
       onRegistered(account.email)
     } catch (reason) {
       if (reason instanceof RegistrationRequestError) {
@@ -106,6 +116,14 @@ export function RegistrationDialog({ onClose, onRegistered }: RegistrationDialog
             onClick={() => { setProfile('cooperative'); setError(''); setFieldErrors({}) }}
           >
             Sou cooperativa
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={profile === 'company'}
+            onClick={() => { setProfile('company'); setError(''); setFieldErrors({}) }}
+          >
+            Sou empresa
           </button>
         </div>
 
@@ -164,7 +182,7 @@ export function RegistrationDialog({ onClose, onRegistered }: RegistrationDialog
                 </select>
               </Field>
             </>
-          ) : (
+          ) : profile === 'cooperative' ? (
             <>
               <Field label="Razão social" error={fieldError('corporateName')} wide>
                 <input required maxLength={100} value={cooperative.corporateName}
@@ -187,28 +205,74 @@ export function RegistrationDialog({ onClose, onRegistered }: RegistrationDialog
                   onChange={(e) => setCooperative({ ...cooperative, address: e.target.value })} />
               </Field>
             </>
+          ) : (
+            <>
+              <Field label="Razão social" error={fieldError('corporateName')} wide>
+                <input required maxLength={150} value={company.corporateName}
+                  onChange={(e) => setCompany({ ...company, corporateName: e.target.value })} />
+              </Field>
+              <Field label="CNPJ" error={fieldError('cnpj')}>
+                <input required inputMode="numeric" maxLength={14} value={company.cnpj}
+                  onChange={(e) => setCompany({ ...company, cnpj: digits(e.target.value) })} />
+              </Field>
+              <Field label="Telefone" error={fieldError('phone')}>
+                <input required inputMode="tel" maxLength={11} value={company.phone}
+                  onChange={(e) => setCompany({ ...company, phone: digits(e.target.value) })} />
+              </Field>
+              <Field label="Endereço" error={fieldError('street')}>
+                <input required maxLength={100} value={company.street}
+                  onChange={(e) => setCompany({ ...company, street: e.target.value })} />
+              </Field>
+              <Field label="Número" error={fieldError('number')}>
+                <input required type="number" min={1} value={company.number || ''}
+                  onChange={(e) => setCompany({ ...company, number: Number(e.target.value) })} />
+              </Field>
+              <Field label="Cidade" error={fieldError('city')}>
+                <input required maxLength={80} value={company.city}
+                  onChange={(e) => setCompany({ ...company, city: e.target.value })} />
+              </Field>
+              <Field label="UF" error={fieldError('state')}>
+                <input required maxLength={2} value={company.state}
+                  onChange={(e) => setCompany({ ...company, state: letters(e.target.value) })} />
+              </Field>
+              <Field label="Fax (opcional)" error={fieldError('fax')} wide>
+                <input inputMode="tel" maxLength={25} value={company.fax}
+                  onChange={(e) => setCompany({ ...company, fax: digits(e.target.value) })} />
+              </Field>
+            </>
           )}
 
           <Field label="E-mail" error={fieldError('email')} wide>
             <input required type="email" autoComplete="email"
-              value={profile === 'client' ? client.email : cooperative.email}
+              value={profile === 'client' ? client.email
+                : profile === 'cooperative' ? cooperative.email : company.email}
               onChange={(e) => profile === 'client'
                 ? setClient({ ...client, email: e.target.value })
-                : setCooperative({ ...cooperative, email: e.target.value })} />
+                : profile === 'cooperative'
+                  ? setCooperative({ ...cooperative, email: e.target.value })
+                  : setCompany({ ...company, email: e.target.value })} />
           </Field>
           <Field label="Senha" error={fieldError('password')}>
-            <input required minLength={6} maxLength={100} type="password" autoComplete="new-password"
-              value={profile === 'client' ? client.password : cooperative.password}
+            <input required minLength={profile === 'company' ? 8 : 6}
+              maxLength={100} type="password" autoComplete="new-password"
+              value={profile === 'client' ? client.password
+                : profile === 'cooperative' ? cooperative.password : company.password}
               onChange={(e) => profile === 'client'
                 ? setClient({ ...client, password: e.target.value })
-                : setCooperative({ ...cooperative, password: e.target.value })} />
+                : profile === 'cooperative'
+                  ? setCooperative({ ...cooperative, password: e.target.value })
+                  : setCompany({ ...company, password: e.target.value })} />
           </Field>
           <Field label="Confirmar senha" error={fieldError('confirmPassword')}>
-            <input required minLength={6} maxLength={100} type="password" autoComplete="new-password"
-              value={profile === 'client' ? client.confirmPassword : cooperative.confirmPassword}
+            <input required minLength={profile === 'company' ? 8 : 6}
+              maxLength={100} type="password" autoComplete="new-password"
+              value={profile === 'client' ? client.confirmPassword
+                : profile === 'cooperative' ? cooperative.confirmPassword : company.confirmPassword}
               onChange={(e) => profile === 'client'
                 ? setClient({ ...client, confirmPassword: e.target.value })
-                : setCooperative({ ...cooperative, confirmPassword: e.target.value })} />
+                : profile === 'cooperative'
+                  ? setCooperative({ ...cooperative, confirmPassword: e.target.value })
+                  : setCompany({ ...company, confirmPassword: e.target.value })} />
           </Field>
 
           {error && <div className="login-error registration-error" role="alert">{error}</div>}
