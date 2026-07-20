@@ -12,6 +12,7 @@ import { ClientDashboard } from './components/ClientDashboard'
 import { CooperativeDashboard } from './components/CooperativeDashboard'
 import { EmployeeDashboard } from './components/EmployeeDashboard'
 import { AdminDashboard } from './components/AdminDashboard'
+import { RegistrationDialog } from './components/RegistrationDialog'
 import { login, logout, restoreSession } from './services/auth'
 import type { WebSession } from './services/auth'
 
@@ -35,6 +36,8 @@ function App() {
   const [session, setSession] = useState<WebSession | null>(null)
   const [sessionReady, setSessionReady] = useState(false)
   const [loginOpen, setLoginOpen] = useState(false)
+  const [registrationOpen, setRegistrationOpen] = useState(false)
+  const [registrationMessage, setRegistrationMessage] = useState('')
 
   useEffect(() => {
     let active = true
@@ -125,7 +128,12 @@ function App() {
               <button type="button" onClick={handleLogout}>Sair</button>
             </div>
           ) : (
-            <button className="nav-login" type="button" onClick={() => setLoginOpen(true)}>Entrar</button>
+            <div className="guest-actions">
+              <button className="nav-register" type="button"
+                onClick={() => setRegistrationOpen(true)}>Criar conta</button>
+              <button className="nav-login" type="button"
+                onClick={() => setLoginOpen(true)}>Entrar</button>
+            </div>
           )}
         </nav>
       </header>
@@ -310,7 +318,21 @@ function App() {
         </div>
       )}
       {loginOpen && (
-        <LoginDialog onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
+        <LoginDialog
+          onClose={() => { setLoginOpen(false); setRegistrationMessage('') }}
+          onLogin={handleLogin}
+          message={registrationMessage}
+        />
+      )}
+      {registrationOpen && (
+        <RegistrationDialog
+          onClose={() => setRegistrationOpen(false)}
+          onRegistered={(email) => {
+            setRegistrationOpen(false)
+            setRegistrationMessage(`Conta ${email} criada. Você já pode entrar.`)
+            setLoginOpen(true)
+          }}
+        />
       )}
     </div>
   )

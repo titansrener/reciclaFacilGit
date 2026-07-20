@@ -5,9 +5,10 @@ import type { WebSession } from '../services/auth'
 interface LoginDialogProps {
   onClose: () => void
   onLogin: (email: string, password: string) => Promise<WebSession>
+  message?: string
 }
 
-export function LoginDialog({ onClose, onLogin }: LoginDialogProps) {
+export function LoginDialog({ onClose, onLogin, message }: LoginDialogProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -48,6 +49,7 @@ export function LoginDialog({ onClose, onLogin }: LoginDialogProps) {
         <span className="eyebrow">Área do usuário</span>
         <h2 id="login-title">Que bom ter você de volta.</h2>
         <p>Acesse sua conta para acompanhar coletas e atividades.</p>
+        {message && <div className="login-success" role="status">{message}</div>}
         <form className="login-form" onSubmit={submit}>
           <label>
             <span>E-mail</span>

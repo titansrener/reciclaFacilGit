@@ -1,4 +1,4 @@
-.app-shell { min-height: 100vh; }
+.app-shell { min-height: 100vh; overflow-x: hidden; }
 .site-header {
   align-items: center; display: flex; justify-content: space-between;
   margin: 0 auto; max-width: 1180px; padding: 24px 28px;
@@ -19,6 +19,11 @@ nav a { color: var(--muted); font-size: .9rem; font-weight: 650; text-decoration
   color: var(--ink); font-size: .82rem; font-weight: 700; padding: 10px 20px;
 }
 .nav-login { cursor: pointer; }
+.guest-actions { align-items: center; display: flex; gap: 9px; }
+.nav-register {
+  background: var(--green); border: 1px solid var(--green); border-radius: 99px;
+  color: white; cursor: pointer; font-size: .82rem; font-weight: 700; padding: 10px 20px;
+}
 .session-loading { color: var(--muted); font-size: .78rem; }
 .user-session { align-items: center; display: flex; gap: 13px; }
 .user-session > span { display: flex; flex-direction: column; text-align: right; }
@@ -207,6 +212,48 @@ footer p { color: var(--muted); font-size: .85rem; }
   background: #fff1ef; border: 1px solid #efc0b9; border-radius: 10px;
   color: #8f3427; font-size: .82rem; padding: 11px 13px;
 }
+.login-success {
+  background: var(--soft-green); border: 1px solid #bad89e; border-radius: 10px;
+  color: var(--green); font-size: .82rem; margin: -8px 0 18px; padding: 11px 13px;
+}
+.registration-modal {
+  background: white; border-radius: 22px; box-shadow: 0 30px 90px rgba(0, 0, 0, .25);
+  max-height: 92vh; max-width: 760px; overflow-y: auto; padding: 40px;
+  position: relative; width: 100%;
+}
+.registration-modal h2 { font-size: clamp(2rem, 5vw, 3rem); }
+.registration-tabs {
+  background: var(--surface); border-radius: 99px; display: grid;
+  gap: 4px; grid-template-columns: 1fr 1fr; margin: 24px 0; padding: 4px;
+}
+.registration-tabs button {
+  background: transparent; border: 0; border-radius: 99px; color: var(--muted);
+  cursor: pointer; font-weight: 750; padding: 11px 18px;
+}
+.registration-tabs button[aria-selected="true"] {
+  background: white; box-shadow: 0 3px 12px rgba(23, 46, 27, .09); color: var(--green);
+}
+.registration-form { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+.registration-form label { display: flex; flex-direction: column; gap: 6px; }
+.registration-form label > span {
+  color: var(--ink); font-size: .7rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.registration-form input, .registration-form select {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px;
+  box-sizing: border-box; color: var(--ink); min-height: 45px; padding: 11px 13px; width: 100%;
+}
+.registration-form input:focus, .registration-form select:focus {
+  border-color: var(--green); outline: 2px solid rgba(38, 99, 60, .12);
+}
+.field-wide, .registration-error, .registration-submit { grid-column: 1 / -1; }
+.field-error { color: #9d3528; font-size: .72rem; }
+.registration-error { margin: 0; }
+.registration-submit {
+  background: var(--green); border: 0; border-radius: 99px; color: white;
+  cursor: pointer; font-weight: 750; margin-top: 4px; padding: 14px 20px;
+}
+.registration-submit:disabled { cursor: wait; opacity: .65; }
 .client-dashboard {
   margin: 0 auto;
   max-width: 1180px;
@@ -562,7 +609,8 @@ footer p { color: var(--muted); font-size: .85rem; }
 @media (max-width: 560px) {
   .site-header { padding: 18px 20px; }
   .brand { font-size: 1.1rem; }
-  .nav-login { padding: 8px 15px; }
+  .guest-actions { gap: 5px; }
+  .nav-login, .nav-register { font-size: .72rem; padding: 8px 11px; }
   .session-loading { display: none; }
   .user-session strong { max-width: 125px; }
   .hero { gap: 30px; padding: 50px 20px 65px; }
@@ -578,6 +626,9 @@ footer p { color: var(--muted); font-size: .85rem; }
   footer { align-items: start; flex-direction: column; gap: 18px; padding: 36px 20px; }
   .details-modal { padding: 34px 25px; }
   .login-modal { padding: 34px 25px; }
+  .registration-modal { border-radius: 16px; max-height: 96vh; padding: 34px 20px; }
+  .registration-form { grid-template-columns: 1fr; }
+  .field-wide, .registration-error, .registration-submit { grid-column: auto; }
   .client-dashboard { padding: 50px 20px 75px; }
   .dashboard-welcome { align-items: start; }
   .impact-badge { display: none; }

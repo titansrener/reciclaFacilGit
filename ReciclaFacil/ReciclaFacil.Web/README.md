@@ -59,6 +59,12 @@ Criação, edição e exclusão usam `/api/v1/admin/materials`; descrições dup
 bloqueadas e materiais já utilizados por cooperativas ou coletas não podem ser
 apagados.
 
+Visitantes podem criar contas de cliente ou cooperativa sem depender da aplicação
+MVC legada. Os formulários usam `/api/v1/auth/register`, validam os dados no servidor
+e persistem usuário, papel e perfil em uma única transação. O script idempotente
+`database/007_public_registration_constraints.sql` garante a unicidade de CPFs
+informados.
+
 ## Verificações
 
 ```powershell

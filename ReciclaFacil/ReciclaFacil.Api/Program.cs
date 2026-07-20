@@ -10,6 +10,7 @@ using ReciclaFacil.Application.Clients;
 using ReciclaFacil.Application.Cooperatives;
 using ReciclaFacil.Application.Materials;
 using ReciclaFacil.Application.Employees;
+using ReciclaFacil.Application.Registrations;
 using ReciclaFacil.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -124,6 +125,47 @@ auth.MapGet("/me", (ClaimsPrincipal user) => TypedResults.Ok(new
 .RequireAuthorization()
 .WithName("CurrentUser")
 .WithSummary("Retorna os dados do usuário autenticado.");
+
+var registrations = auth.MapGroup("/register")
+    .WithTags("Public Registration");
+
+registrations.MapGet("/cooperatives", async (
+    IPublicRegistrationService registration,
+    CancellationToken cancellationToken) =>
+    TypedResults.Ok(await registration.ListCooperativesAsync(cancellationToken)))
+.WithName("RegistrationCooperatives")
+.WithSummary("Lista cooperativas disponíveis para o cadastro de clientes.");
+
+registrations.MapPost("/clients", async (
+    RegisterClient request,
+    IPublicRegistrationService registration,
+    CancellationToken cancellationToken) =>
+{
+    var result = await registration.RegisterClientAsync(request, cancellationToken);
+    return RegistrationHttpResults.From(
+        result, result.Account is null ? "" : $"/api/v1/clients/{result.Account.Id}");
+})
+.WithName("RegisterClient")
+.WithSummary("Cria uma conta pública de cliente.")
+.Produces<RegisteredAccount>(StatusCodes.Status201Created)
+.ProducesValidationProblem()
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status409Conflict);
+
+registrations.MapPost("/cooperatives", async (
+    RegisterCooperative request,
+    IPublicRegistrationService registration,
+    CancellationToken cancellationToken) =>
+{
+    var result = await registration.RegisterCooperativeAsync(request, cancellationToken);
+    return RegistrationHttpResults.From(
+        result, result.Account is null ? "" : $"/api/v1/cooperatives/{result.Account.Id}");
+})
+.WithName("RegisterCooperative")
+.WithSummary("Cria uma conta pública de cooperativa.")
+.Produces<RegisteredAccount>(StatusCodes.Status201Created)
+.ProducesValidationProblem()
+.ProducesProblem(StatusCodes.Status409Conflict);
 
 var webAuth = auth.MapGroup("/web").WithTags("Web Authentication");
 
