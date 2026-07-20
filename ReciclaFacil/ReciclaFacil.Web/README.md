@@ -118,7 +118,7 @@ O envio do link usa as opções `Smtp` e `PasswordReset` da API. Em produção, 
 esses valores por configuração segura, por exemplo `Smtp__Host`, `Smtp__UserName`,
 `Smtp__Password` e `PasswordReset__FrontendBaseUrl`. O token só é devolvido no corpo
 da resposta quando a API está no ambiente `Development` e
-`PasswordReset__ExposeTokenInResponse` está habilitado; esse recurso existe apenas
+`PasswordReset__ExposeTokenInDevelopment` está habilitado; esse recurso existe apenas
 para desenvolvimento local.
 
 ## Verificações

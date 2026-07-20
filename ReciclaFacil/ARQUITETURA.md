@@ -57,7 +57,8 @@ Endpoints iniciais:
 - `GET /clients/me/collections/{id}` (papel `Cliente`)
 - `POST /clients/me/collections` (papel `Cliente`)
 - `DELETE /clients/me/collections/{id}` (papel `Cliente`)
-- `GET /health`
+- `GET /health` e `GET /health/ready` (prontidão da API e do SQL Server)
+- `GET /health/live` (vivacidade do processo, sem depender do banco)
 - `GET /openapi/v1.json`
 
 As pesquisas de cooperativas são paginadas. `pageSize` aceita no máximo 100 registros.
@@ -78,6 +79,10 @@ $env:Jwt__SigningKey = '<segredo-fornecido-pelo-ambiente>'
 
 Aplicativos web, Android e iOS devem guardar refresh tokens em armazenamento seguro e
 enviar o access token no cabeçalho `Authorization: Bearer <token>`.
+
+Para implantação, configure a sondagem de vivacidade em `/health/live` e a de
+prontidão em `/health/ready`. A rota histórica `/health` também verifica a conexão com
+o SQL Server e permanece disponível para compatibilidade.
 
 Para Android e iOS, os endpoints gerais devolvem o par de tokens para armazenamento
 seguro do dispositivo. O frontend web usa os endpoints `/auth/web/*`: o refresh token

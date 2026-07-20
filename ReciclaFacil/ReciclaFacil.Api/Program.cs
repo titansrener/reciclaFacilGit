@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using ReciclaFacil.Api.Security;
 using ReciclaFacil.Api;
+using ReciclaFacil.Api.Health;
 using ReciclaFacil.Application.Authentication;
 using ReciclaFacil.Application.Clients;
 using ReciclaFacil.Application.Cooperatives;
@@ -13,6 +14,7 @@ using ReciclaFacil.Application.Employees;
 using ReciclaFacil.Application.Registrations;
 using ReciclaFacil.Application.Companies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using ReciclaFacil.Infrastructure.Data;
 using ReciclaFacil.Infrastructure;
 
@@ -25,7 +27,8 @@ builder.Services.AddOpenApi("v1", options =>
     options.ShouldInclude = description =>
         description.RelativePath?.StartsWith("api/v1/", StringComparison.Ordinal) == true;
 });
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("sql-server", tags: ["ready"]);
 builder.Services.AddProblemDetails();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -88,7 +91,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapOpenApi("/openapi/{documentName}.json");
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = registration => registration.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false
+});
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = registration => registration.Tags.Contains("ready")
+});
 
 var api = app.MapGroup("/api/v1")
     .WithGroupName("v1");

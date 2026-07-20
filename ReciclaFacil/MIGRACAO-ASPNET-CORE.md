@@ -57,11 +57,14 @@ validação, ausência e conflito.
 
 ## Próximas etapas
 
-1. Migrar o painel e as operações de Cooperativa para o frontend TypeScript.
-2. Migrar os fluxos administrativos restantes para API e React.
-3. Portar recuperação de senha e segundo fator para o fluxo da API.
-4. Automatizar testes de integração da autenticação e das regras operacionais.
-5. Preparar backup, observabilidade e configuração segura para homologação.
+1. Automatizar testes de integração da autenticação e das regras operacionais.
+2. Preparar backup e configuração segura para homologação.
+3. Definir a estratégia de segundo fator para web e aplicativos móveis.
+
+Os painéis de Cliente, Cooperativa, Funcionário, Empresa e Administração, assim como
+cadastros públicos e recuperação de senha, já usam a API e o frontend React. A API
+expõe `/health/live` para vivacidade e `/health/ready` para prontidão com verificação
+do SQL Server; `/health` preserva compatibilidade e também verifica o banco.
 
 ## Execução
 
